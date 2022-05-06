@@ -1,0 +1,2700 @@
+---
+title: "PFF Consent Date Ref - MethylFlash Global DNAm Analysis"
+author: "Gillian Goobie"
+date: "05/05/2022"
+output: 
+  bookdown::html_document2:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+  html_document: 
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE, warning=FALSE, echo=F}
+library(tidyverse)
+library(readxl)
+library(here)
+library(writexl)
+library(knitr)
+library(lintr)
+library(tidync)
+library(maps)
+library(ncmeta)
+library(devtools)
+library(RNetCDF)
+library(ncdf4)
+library(survival)
+library(survminer)
+library(lubridate)
+library(cmprsk)
+library(riskRegression)
+library(prodlim)
+library(RColorBrewer)
+library(prodlim)
+library(lme4)
+library(performance)
+library(psycho)
+library(report)
+library(rms)
+library(splines)
+library(Greg)
+library(rstpm2)
+library(pspline)
+```
+
+# Importing Datasets
+## Total PM2.5 Files
+Here I am importing the file which contains global DNAm estimates by ELISA-based MethylFlash that are linked to the patient ID.
+```{r}
+outfile1 <- here("PFF_Results/PFF_MethylFlash_ExptID_1-751_Combined_2022_05_05.xlsx")
+dnam <- read_excel(outfile1, sheet="CalculatedValues")
+```
+
+Match up PM25 data with methylation data
+```{r}
+outfile2 <- here("PM25_Data/Final_PFF_fILD_PM_BaselineData_2022_02_12.xlsx")
+PM <- read_excel(outfile2)
+```
+
+## Keep only required columns
+```{r}
+str(dnam)
+dnam <- dnam %>% dplyr::select(SSID, sampID, exptID, run_date, plate, pct_5mC)
+```
+
+
+## Join Columns
+```{r}
+dnam <- left_join(dnam, PM, by="SSID")
+```
+
+# Add Original PM2.5 Matching Files with All Months
+```{r}
+outfile2b <- here("PM25_Data/PFF_fILD_2000_2018_PM25_2021_10_08.xlsx")
+PM <- read_excel(outfile2b)
+PM <- PM %>% rename("SSID"="ID")
+```
+
+```{r}
+dnam <- inner_join(PM, dnam, by="SSID")
+```
+
+Reorder so "ID" is the first column
+```{r}
+dnam <- dnam %>% dplyr::select(ID, everything(.))
+dnam <- dnam %>% dplyr::select(!c(PM_date, value))
+```
+
+## Pivoting to Long Format
+First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
+```{r}
+dnam <- dnam %>% 
+  pivot_longer(cols=c(7:234), names_to="PM_date", names_prefix="PM25_")
+```
+
+## Convert date PM_date to same format as above
+```{r}
+dnamx <- dnam 
+dnamx$PM_date <- gsub("jan", "01-01-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("feb", "01-02-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("mar", "01-03-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("apr", "01-04-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("may", "01-05-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("jun", "01-06-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("jul", "01-07-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("aug", "01-08-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("sep", "01-09-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("oct", "01-10-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("nov", "01-11-20", dnamx$PM_date)
+dnamx$PM_date <- gsub("dec", "01-12-20", dnamx$PM_date)
+
+dnamx$PM_date <- format(as.Date(dnamx$PM_date, format="%d-%m-%Y"),"%Y-%m-%d")
+dnamx$PM_date <- as.Date(dnamx$PM_date)
+dnam <- dnamx
+```
+
+
+## Convert Date Columns to Date Format
+Next I need to convert all date columns to proper format
+```{r}
+dnam <- dnam %>% 
+  mutate_at(c("run_date", "dx_date", "consent_date", "death_date", "tx_date", "sample_date", "fvc_date", "dlco_date", "censor_date", "deathORtx_date", "DeathTxCensor_date", "PM_date"), as.Date)
+str(dnam)
+```
+
+## Remove unnecessary columns
+```{r}
+dnam <- dnam %>% dplyr::select(!c("nrow.x", "dist.x", "lon", "lat", "lat.x", "lon.x", "nrow.y", "dist.y", "lon.y", "lat.y"))
+```
+
+
+## Creating PM2.5 Exposure Variables
+Now I'm creating new variables where I am matching up PM averages per year to years of major events for patients (year of diagnosis, year of death/lung transplant/censoring, etc)
+
+### 5yrs Pre-Sampling
+Here I am calculating the average PM value in the 5yrs prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(PM_5yrPreSamp = mean(value[ymd(PM_date)>=(ymd(sample_date) - years(5)) & 
+                                        ymd(PM_date)<=ymd(sample_date)]))
+```
+
+### 1yr Pre-Sampling
+Here I am calculating the average PM value in the 1yr prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(PM_1yrPreSamp = mean(value[ymd(PM_date)>=(ymd(sample_date) - years(1)) & 
+                                        ymd(PM_date)<=ymd(sample_date)]))
+```
+
+### 6mo Pre-Sampling
+Here I am calculating the average PM value in the 6mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(PM_6moPreSamp = mean(value[ymd(PM_date)>=(ymd(sample_date) - months(6)) & 
+                                        ymd(PM_date)<=ymd(sample_date)]))
+```
+
+### 3mo Pre-Sampling
+Here I am calculating the average PM value in the 3mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(PM_3moPreSamp = mean(value[ymd(PM_date)>=(ymd(sample_date) - months(3)) & 
+                                        ymd(PM_date)<=ymd(sample_date)]))
+```
+
+### 1mo Pre-Sampling
+Here I am calculating the average PM value in the 1mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(PM_1moPreSamp = mean(value[ymd(PM_date)>=(ymd(sample_date) - months(2)) & 
+                                        ymd(PM_date)<=ymd(sample_date)]))
+```
+Of note, the 1mo pre-sampling with this method actually provides the average PM2.5 value for the month of sampling and the 1mo prior to sampling because the sampling could have occurred at the beginning or end of a month.
+
+### Remove Dataframes not in use
+```{r}
+rm(list=c("dnamx"))
+```
+
+### Getting Rid of Duplicated IDs
+Now that we have calculated the patient-specific PM exposures, I can get rid of all rows other than the first row for each patient.
+```{r}
+dnam <-  dnam %>% 
+  distinct_at(vars(ID), .keep_all=T)
+```
+This takes us down to 734 observations.
+
+### Get rid of non-specific "value" column
+```{r}
+dnam <- dnam %>% dplyr::select(!value)
+```
+
+
+### Remove UPitt patients
+```{r}
+dnam <- dnam %>% filter(!str_detect(SSID, "^08R"))
+```
+This takes us down to 733 observations after we remove UPitt patients which may be doubled up in our Simmons analyses.
+
+# Add PM2.5 Constituent Files
+## SO4 add Original SO4 Matching Files with All Months
+```{r}
+outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_SO4_2021_11_05.xlsx")
+SO4 <- read_excel(outfile3)
+```
+
+```{r}
+dnam <- inner_join(SO4, dnam, by="ID")
+```
+
+Reorder so "ID" is the first column
+```{r}
+dnam <- dnam %>% dplyr::select(ID, everything(.))
+```
+
+### Pivoting to Long Format
+First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
+```{r}
+dnam <- dnam %>% 
+  pivot_longer(cols=c(6:221), names_to="SO4_date", names_prefix="SO4_", names_repair = "minimal")
+```
+
+### Convert date PM_date to same format as above
+```{r}
+dnamx <- dnam 
+dnamx$SO4_date <- gsub("jan", "01-01-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("feb", "01-02-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("mar", "01-03-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("apr", "01-04-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("may", "01-05-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("jun", "01-06-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("jul", "01-07-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("aug", "01-08-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("sep", "01-09-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("oct", "01-10-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("nov", "01-11-20", dnamx$SO4_date)
+dnamx$SO4_date <- gsub("dec", "01-12-20", dnamx$SO4_date)
+
+dnamx$SO4_date <- format(as.Date(dnamx$SO4_date, format="%d-%m-%Y"),"%Y-%m-%d")
+dnamx$SO4_date <- as.Date(dnamx$SO4_date)
+dnam <- dnamx
+```
+
+
+# Convert Date Columns to Date Format
+Next I need to convert all date columns to proper format
+```{r}
+dnam <- dnam %>% 
+  mutate_at(c("SO4_date"), as.Date)
+str(dnam)
+```
+
+## Creating SO4 Exposure Variables
+Now I'm creating new variables where I am matching up PM averages per year to years of major events for patients (year of diagnosis, year of death/lung transplant/censoring, etc)
+
+### 5yrs Pre-Sampling
+Here I am calculating the average SO4 value in the 5yrs prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SO4_5yrPreSamp = mean(value[ymd(SO4_date)>=(ymd(sample_date) - years(5)) & 
+                                        ymd(SO4_date)<=ymd(sample_date)]))
+```
+
+### 1yr Pre-Sampling
+Here I am calculating the average SO4 value in the 1yr prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SO4_1yrPreSamp = mean(value[ymd(SO4_date)>=(ymd(sample_date) - years(1)) & 
+                                        ymd(SO4_date)<=ymd(sample_date)]))
+```
+
+### 6mo Pre-Sampling
+Here I am calculating the average SO4 value in the 6mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SO4_6moPreSamp = mean(value[ymd(SO4_date)>=(ymd(sample_date) - months(6)) & 
+                                        ymd(SO4_date)<=ymd(sample_date)]))
+```
+
+### 3mo Pre-Sampling
+Here I am calculating the average SO4 value in the 3mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SO4_3moPreSamp = mean(value[ymd(SO4_date)>=(ymd(sample_date) - months(3)) & 
+                                        ymd(SO4_date)<=ymd(sample_date)]))
+```
+
+### 1mo Pre-Sampling
+Here I am calculating the average SO4 value in the 1mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SO4_1moPreSamp = mean(value[ymd(SO4_date)>=(ymd(sample_date) - months(2)) & 
+                                        ymd(SO4_date)<=ymd(sample_date)]))
+```
+Of note, the 1mo pre-sampling with this method actually provides the average PM2.5 value for the month of sampling and the 1mo prior to sampling because the sampling could have occurred at the beginning or end of a month.
+
+### Remove Dataframes and variables not in use
+```{r}
+rm(list=c("dnamx", "PM", "SO4"))
+```
+
+### Getting Rid of Duplicated IDs
+Now that we have calculated the patient-specific PM exposures, I can get rid of all rows other than the first row for each patient.
+```{r}
+dnam <-  dnam %>% 
+  distinct_at(vars(ID), .keep_all=T)
+```
+This takes us down to 733 observations.
+
+### Getting rid of unnecessary columns
+```{r}
+dnam <- dnam %>% dplyr::select(!c(nrow, dist, lon, lat, SO4_date, value))
+```
+
+
+## NO3 add Original NO3 Matching Files with All Months
+```{r}
+outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_NO3_2021_11_05.xlsx")
+NO3 <- read_excel(outfile3)
+```
+
+```{r}
+dnam <- inner_join(NO3, dnam, by="ID")
+```
+
+Reorder so "ID" is the first column
+```{r}
+dnam <- dnam %>% dplyr::select(ID, everything(.))
+```
+
+### Pivoting to Long Format
+First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
+```{r}
+dnam <- dnam %>% 
+  pivot_longer(cols=c(6:221), names_to="NO3_date", names_prefix="NIT_", names_repair = "minimal")
+```
+
+### Convert date PM_date to same format as above
+```{r}
+dnamx <- dnam 
+dnamx$NO3_date <- gsub("jan", "01-01-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("feb", "01-02-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("mar", "01-03-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("apr", "01-04-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("may", "01-05-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("jun", "01-06-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("jul", "01-07-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("aug", "01-08-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("sep", "01-09-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("oct", "01-10-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("nov", "01-11-20", dnamx$NO3_date)
+dnamx$NO3_date <- gsub("dec", "01-12-20", dnamx$NO3_date)
+
+dnamx$NO3_date <- format(as.Date(dnamx$NO3_date, format="%d-%m-%Y"),"%Y-%m-%d")
+dnamx$NO3_date <- as.Date(dnamx$NO3_date)
+dnam <- dnamx
+```
+
+
+# Convert Date Columns to Date Format
+Next I need to convert all date columns to proper format
+```{r}
+dnam <- dnam %>% 
+  mutate_at(c("NO3_date"), as.Date)
+str(dnam)
+```
+
+## Creating NO3 Exposure Variables
+Now I'm creating new variables where I am matching up PM averages per year to years of major events for patients (year of diagnosis, year of death/lung transplant/censoring, etc)
+
+### 5yrs Pre-Sampling
+Here I am calculating the average NO3 value in the 5yrs prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NO3_5yrPreSamp = mean(value[ymd(NO3_date)>=(ymd(sample_date) - years(5)) & 
+                                        ymd(NO3_date)<=ymd(sample_date)]))
+```
+
+### 1yr Pre-Sampling
+Here I am calculating the average NO3 value in the 1yr prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NO3_1yrPreSamp = mean(value[ymd(NO3_date)>=(ymd(sample_date) - years(1)) & 
+                                        ymd(NO3_date)<=ymd(sample_date)]))
+```
+
+### 6mo Pre-Sampling
+Here I am calculating the average NO3 value in the 6mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NO3_6moPreSamp = mean(value[ymd(NO3_date)>=(ymd(sample_date) - months(6)) & 
+                                        ymd(NO3_date)<=ymd(sample_date)]))
+```
+
+### 3mo Pre-Sampling
+Here I am calculating the average NO3 value in the 3mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NO3_3moPreSamp = mean(value[ymd(NO3_date)>=(ymd(sample_date) - months(3)) & 
+                                        ymd(NO3_date)<=ymd(sample_date)]))
+```
+
+### 1mo Pre-Sampling
+Here I am calculating the average NO3 value in the 1mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NO3_1moPreSamp = mean(value[ymd(NO3_date)>=(ymd(sample_date) - months(2)) & 
+                                        ymd(NO3_date)<=ymd(sample_date)]))
+```
+Of note, the 1mo pre-sampling with this method actually provides the average PM2.5 value for the month of sampling and the 1mo prior to sampling because the sampling could have occurred at the beginning or end of a month.
+
+### Remove Dataframes and variables not in use
+```{r}
+rm(list=c("dnamx", "NO3"))
+dnam <- dnam %>% dplyr::select(!c(nrow, dist, lon, lat, value, NO3_date))
+```
+
+### Getting Rid of Duplicated IDs
+Now that we have calculated the patient-specific PM exposures, I can get rid of all rows other than the first row for each patient.
+```{r}
+dnam <-  dnam %>% 
+  distinct_at(vars(ID), .keep_all=T)
+```
+This takes us down to 733 observations.
+
+
+## NH4 add Original NH4 Matching Files with All Months
+```{r}
+outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_NH4_2021_11_05.xlsx")
+NH4 <- read_excel(outfile3)
+```
+
+```{r}
+dnam <- inner_join(NH4, dnam, by="ID")
+```
+
+Reorder so "ID" is the first column
+```{r}
+dnam <- dnam %>% dplyr::select(ID, everything(.))
+```
+
+### Pivoting to Long Format
+First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
+```{r}
+dnam <- dnam %>% 
+  pivot_longer(cols=c(6:221), names_to="NH4_date", names_prefix="NH4_", names_repair = "minimal")
+```
+
+### Convert date PM_date to same format as above
+```{r}
+dnamx <- dnam 
+dnamx$NH4_date <- gsub("jan", "01-01-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("feb", "01-02-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("mar", "01-03-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("apr", "01-04-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("may", "01-05-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("jun", "01-06-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("jul", "01-07-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("aug", "01-08-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("sep", "01-09-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("oct", "01-10-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("nov", "01-11-20", dnamx$NH4_date)
+dnamx$NH4_date <- gsub("dec", "01-12-20", dnamx$NH4_date)
+
+dnamx$NH4_date <- format(as.Date(dnamx$NH4_date, format="%d-%m-%Y"),"%Y-%m-%d")
+dnamx$NH4_date <- as.Date(dnamx$NH4_date)
+dnam <- dnamx
+```
+
+
+# Convert Date Columns to Date Format
+Next I need to convert all date columns to proper format
+```{r}
+dnam <- dnam %>% 
+  mutate_at(c("NH4_date"), as.Date)
+str(dnam)
+```
+
+## Creating NH4 Exposure Variables
+Now I'm creating new variables where I am matching up PM averages per year to years of major events for patients (year of diagnosis, year of death/lung transplant/censoring, etc)
+
+### 5yrs Pre-Sampling
+Here I am calculating the average NH4 value in the 5yrs prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NH4_5yrPreSamp = mean(value[ymd(NH4_date)>=(ymd(sample_date) - years(5)) & 
+                                        ymd(NH4_date)<=ymd(sample_date)]))
+```
+
+### 1yr Pre-Sampling
+Here I am calculating the average NH4 value in the 1yr prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NH4_1yrPreSamp = mean(value[ymd(NH4_date)>=(ymd(sample_date) - years(1)) & 
+                                        ymd(NH4_date)<=ymd(sample_date)]))
+```
+
+### 6mo Pre-Sampling
+Here I am calculating the average NH4 value in the 6mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NH4_6moPreSamp = mean(value[ymd(NH4_date)>=(ymd(sample_date) - months(6)) & 
+                                        ymd(NH4_date)<=ymd(sample_date)]))
+```
+
+### 3mo Pre-Sampling
+Here I am calculating the average NH4 value in the 3mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NH4_3moPreSamp = mean(value[ymd(NH4_date)>=(ymd(sample_date) - months(3)) & 
+                                        ymd(NH4_date)<=ymd(sample_date)]))
+```
+
+### 1mo Pre-Sampling
+Here I am calculating the average NH4 value in the 1mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(NH4_1moPreSamp = mean(value[ymd(NH4_date)>=(ymd(sample_date) - months(2)) & 
+                                        ymd(NH4_date)<=ymd(sample_date)]))
+```
+Of note, the 1mo pre-sampling with this method actually provides the average PM2.5 value for the month of sampling and the 1mo prior to sampling because the sampling could have occurred at the beginning or end of a month.
+
+### Remove Dataframes and variables not in use
+```{r}
+rm(list=c("dnamx", "NH4"))
+dnam <- dnam %>% dplyr::select(!c(nrow, dist, lon, lat, value, NH4_date))
+```
+
+### Getting Rid of Duplicated IDs
+Now that we have calculated the patient-specific PM exposures, I can get rid of all rows other than the first row for each patient.
+```{r}
+dnam <-  dnam %>% 
+  distinct_at(vars(ID), .keep_all=T)
+```
+This takes us down to 733 observations.
+
+## BC add Original BC Matching Files with All Months
+```{r}
+outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_BC_2021_11_05.xlsx")
+BC <- read_excel(outfile3)
+```
+
+```{r}
+dnam <- inner_join(BC, dnam, by="ID")
+```
+
+Reorder so "ID" is the first column
+```{r}
+dnam <- dnam %>% dplyr::select(ID, everything(.))
+```
+
+### Pivoting to Long Format
+First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
+```{r}
+dnam <- dnam %>% 
+  pivot_longer(cols=c(6:221), names_to="BC_date", names_prefix="BC_", names_repair = "minimal")
+```
+
+### Convert date PM_date to same format as above
+```{r}
+dnamx <- dnam 
+dnamx$BC_date <- gsub("jan", "01-01-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("feb", "01-02-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("mar", "01-03-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("apr", "01-04-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("may", "01-05-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("jun", "01-06-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("jul", "01-07-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("aug", "01-08-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("sep", "01-09-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("oct", "01-10-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("nov", "01-11-20", dnamx$BC_date)
+dnamx$BC_date <- gsub("dec", "01-12-20", dnamx$BC_date)
+
+dnamx$BC_date <- format(as.Date(dnamx$BC_date, format="%d-%m-%Y"),"%Y-%m-%d")
+dnamx$BC_date <- as.Date(dnamx$BC_date)
+dnam <- dnamx
+```
+
+
+# Convert Date Columns to Date Format
+Next I need to convert all date columns to proper format
+```{r}
+dnam <- dnam %>% 
+  mutate_at(c("BC_date"), as.Date)
+str(dnam)
+```
+
+## Creating BC Exposure Variables
+Now I'm creating new variables where I am matching up PM averages per year to years of major events for patients (year of diagnosis, year of death/lung transplant/censoring, etc)
+
+### 5yrs Pre-Sampling
+Here I am calculating the average BC value in the 5yrs prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(BC_5yrPreSamp = mean(value[ymd(BC_date)>=(ymd(sample_date) - years(5)) & 
+                                        ymd(BC_date)<=ymd(sample_date)]))
+```
+
+### 1yr Pre-Sampling
+Here I am calculating the average BC value in the 1yr prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(BC_1yrPreSamp = mean(value[ymd(BC_date)>=(ymd(sample_date) - years(1)) & 
+                                        ymd(BC_date)<=ymd(sample_date)]))
+```
+
+### 6mo Pre-Sampling
+Here I am calculating the average BC value in the 6mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(BC_6moPreSamp = mean(value[ymd(BC_date)>=(ymd(sample_date) - months(6)) & 
+                                        ymd(BC_date)<=ymd(sample_date)]))
+```
+
+### 3mo Pre-Sampling
+Here I am calculating the average BC value in the 3mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(BC_3moPreSamp = mean(value[ymd(BC_date)>=(ymd(sample_date) - months(3)) & 
+                                        ymd(BC_date)<=ymd(sample_date)]))
+```
+
+### 1mo Pre-Sampling
+Here I am calculating the average BC value in the 1mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(BC_1moPreSamp = mean(value[ymd(BC_date)>=(ymd(sample_date) - months(2)) & 
+                                        ymd(BC_date)<=ymd(sample_date)]))
+```
+Of note, the 1mo pre-sampling with this method actually provides the average PM2.5 value for the month of sampling and the 1mo prior to sampling because the sampling could have occurred at the beginning or end of a month.
+
+### Remove Dataframes and variables not in use
+```{r}
+rm(list=c("dnamx", "BC"))
+dnam <- dnam %>% dplyr::select(!c(nrow, dist, lon, lat, value, BC_date))
+```
+
+### Getting Rid of Duplicated IDs
+Now that we have calculated the patient-specific PM exposures, I can get rid of all rows other than the first row for each patient.
+```{r}
+dnam <-  dnam %>% 
+  distinct_at(vars(ID), .keep_all=T)
+```
+This takes us down to 733 observations.
+
+
+## OM add Original OM Matching Files with All Months
+```{r}
+outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_OM_2021_11_05.xlsx")
+OM <- read_excel(outfile3)
+```
+
+```{r}
+dnam <- inner_join(OM, dnam, by="ID")
+```
+
+Reorder so "ID" is the first column
+```{r}
+dnam <- dnam %>% dplyr::select(ID, everything(.))
+```
+
+### Pivoting to Long Format
+First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
+```{r}
+dnam <- dnam %>% 
+  pivot_longer(cols=c(6:221), names_to="OM_date", names_prefix="OM_", names_repair = "minimal")
+```
+
+### Convert date PM_date to same format as above
+```{r}
+dnamx <- dnam 
+dnamx$OM_date <- gsub("jan", "01-01-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("feb", "01-02-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("mar", "01-03-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("apr", "01-04-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("may", "01-05-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("jun", "01-06-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("jul", "01-07-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("aug", "01-08-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("sep", "01-09-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("oct", "01-10-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("nov", "01-11-20", dnamx$OM_date)
+dnamx$OM_date <- gsub("dec", "01-12-20", dnamx$OM_date)
+
+dnamx$OM_date <- format(as.Date(dnamx$OM_date, format="%d-%m-%Y"),"%Y-%m-%d")
+dnamx$OM_date <- as.Date(dnamx$OM_date)
+dnam <- dnamx
+```
+
+
+# Convert Date Columns to Date Format
+Next I need to convert all date columns to proper format
+```{r}
+dnam <- dnam %>% 
+  mutate_at(c("OM_date"), as.Date)
+str(dnam)
+```
+
+## Creating OM Exposure Variables
+Now I'm creating new variables where I am matching up PM averages per year to years of major events for patients (year of diagnosis, year of death/lung transplant/censoring, etc)
+
+### 5yrs Pre-Sampling
+Here I am calculating the average OM value in the 5yrs prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(OM_5yrPreSamp = mean(value[ymd(OM_date)>=(ymd(sample_date) - years(5)) & 
+                                        ymd(OM_date)<=ymd(sample_date)]))
+```
+
+### 1yr Pre-Sampling
+Here I am calculating the average OM value in the 1yr prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(OM_1yrPreSamp = mean(value[ymd(OM_date)>=(ymd(sample_date) - years(1)) & 
+                                        ymd(OM_date)<=ymd(sample_date)]))
+```
+
+### 6mo Pre-Sampling
+Here I am calculating the average OM value in the 6mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(OM_6moPreSamp = mean(value[ymd(OM_date)>=(ymd(sample_date) - months(6)) & 
+                                        ymd(OM_date)<=ymd(sample_date)]))
+```
+
+### 3mo Pre-Sampling
+Here I am calculating the average OM value in the 3mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(OM_3moPreSamp = mean(value[ymd(OM_date)>=(ymd(sample_date) - months(3)) & 
+                                        ymd(OM_date)<=ymd(sample_date)]))
+```
+
+### 1mo Pre-Sampling
+Here I am calculating the average OM value in the 1mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(OM_1moPreSamp = mean(value[ymd(OM_date)>=(ymd(sample_date) - months(2)) & 
+                                        ymd(OM_date)<=ymd(sample_date)]))
+```
+Of note, the 1mo pre-sampling with this method actually provides the average PM2.5 value for the month of sampling and the 1mo prior to sampling because the sampling could have occurred at the beginning or end of a month.
+
+### Remove Dataframes and variables not in use
+```{r}
+rm(list=c("dnamx", "OM"))
+dnam <- dnam %>% dplyr::select(!c(nrow, dist, lon, lat, value, OM_date))
+```
+
+### Getting Rid of Duplicated IDs
+Now that we have calculated the patient-specific PM exposures, I can get rid of all rows other than the first row for each patient.
+```{r}
+dnam <-  dnam %>% 
+  distinct_at(vars(ID), .keep_all=T)
+```
+This takes us down to 733 observations.
+
+
+## SS add Original SS Matching Files with All Months
+```{r}
+outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_SS_2021_11_05.xlsx")
+SS <- read_excel(outfile3)
+```
+
+```{r}
+dnam <- inner_join(SS, dnam, by="ID")
+```
+
+Reorder so "ID" is the first column
+```{r}
+dnam <- dnam %>% dplyr::select(ID, everything(.))
+```
+
+### Pivoting to Long Format
+First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
+```{r}
+dnam <- dnam %>% 
+  pivot_longer(cols=c(6:221), names_to="SS_date", names_prefix="SS_", names_repair = "minimal")
+```
+
+### Convert date PM_date to same format as above
+```{r}
+dnamx <- dnam 
+dnamx$SS_date <- gsub("jan", "01-01-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("feb", "01-02-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("mar", "01-03-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("apr", "01-04-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("may", "01-05-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("jun", "01-06-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("jul", "01-07-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("aug", "01-08-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("sep", "01-09-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("oct", "01-10-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("nov", "01-11-20", dnamx$SS_date)
+dnamx$SS_date <- gsub("dec", "01-12-20", dnamx$SS_date)
+
+dnamx$SS_date <- format(as.Date(dnamx$SS_date, format="%d-%m-%Y"),"%Y-%m-%d")
+dnamx$SS_date <- as.Date(dnamx$SS_date)
+dnam <- dnamx
+```
+
+
+# Convert Date Columns to Date Format
+Next I need to convert all date columns to proper format
+```{r}
+dnam <- dnam %>% 
+  mutate_at(c("SS_date"), as.Date)
+str(dnam)
+```
+
+## Creating SS Exposure Variables
+Now I'm creating new variables where I am matching up PM averages per year to years of major events for patients (year of diagnosis, year of death/lung transplant/censoring, etc)
+
+### 5yrs Pre-Sampling
+Here I am calculating the average SS value in the 5yrs prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SS_5yrPreSamp = mean(value[ymd(SS_date)>=(ymd(sample_date) - years(5)) & 
+                                        ymd(SS_date)<=ymd(sample_date)]))
+```
+
+### 1yr Pre-Sampling
+Here I am calculating the average SS value in the 1yr prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SS_1yrPreSamp = mean(value[ymd(SS_date)>=(ymd(sample_date) - years(1)) & 
+                                        ymd(SS_date)<=ymd(sample_date)]))
+```
+
+### 6mo Pre-Sampling
+Here I am calculating the average SS value in the 6mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SS_6moPreSamp = mean(value[ymd(SS_date)>=(ymd(sample_date) - months(6)) & 
+                                        ymd(SS_date)<=ymd(sample_date)]))
+```
+
+### 3mo Pre-Sampling
+Here I am calculating the average SS value in the 3mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SS_3moPreSamp = mean(value[ymd(SS_date)>=(ymd(sample_date) - months(3)) & 
+                                        ymd(SS_date)<=ymd(sample_date)]))
+```
+
+### 1mo Pre-Sampling
+Here I am calculating the average SS value in the 1mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(SS_1moPreSamp = mean(value[ymd(SS_date)>=(ymd(sample_date) - months(2)) & 
+                                        ymd(SS_date)<=ymd(sample_date)]))
+```
+Of note, the 1mo pre-sampling with this method actually provides the average PM2.5 value for the month of sampling and the 1mo prior to sampling because the sampling could have occurred at the beginning or end of a month.
+
+### Remove Dataframes and variables not in use
+```{r}
+rm(list=c("dnamx", "SS"))
+dnam <- dnam %>% dplyr::select(!c(nrow, dist, lon, lat, value, SS_date))
+```
+
+### Getting Rid of Duplicated IDs
+Now that we have calculated the patient-specific PM exposures, I can get rid of all rows other than the first row for each patient.
+```{r}
+dnam <-  dnam %>% 
+  distinct_at(vars(ID), .keep_all=T)
+```
+This takes us down to 733 observations.
+
+
+## Soil add Original Soil Matching Files with All Months
+```{r}
+outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_soil_2021_11_05.xlsx")
+Soil <- read_excel(outfile3)
+```
+
+```{r}
+dnam <- inner_join(Soil, dnam, by="ID")
+```
+
+Reorder so "ID" is the first column
+```{r}
+dnam <- dnam %>% dplyr::select(ID, everything(.))
+```
+
+### Pivoting to Long Format
+First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
+```{r}
+dnam <- dnam %>% 
+  pivot_longer(cols=c(6:221), names_to="Soil_date", names_prefix="soil_", names_repair = "minimal")
+```
+
+### Convert date PM_date to same format as above
+```{r}
+dnamx <- dnam 
+dnamx$Soil_date <- gsub("jan", "01-01-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("feb", "01-02-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("mar", "01-03-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("apr", "01-04-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("may", "01-05-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("jun", "01-06-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("jul", "01-07-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("aug", "01-08-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("sep", "01-09-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("oct", "01-10-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("nov", "01-11-20", dnamx$Soil_date)
+dnamx$Soil_date <- gsub("dec", "01-12-20", dnamx$Soil_date)
+
+dnamx$Soil_date <- format(as.Date(dnamx$Soil_date, format="%d-%m-%Y"),"%Y-%m-%d")
+dnamx$Soil_date <- as.Date(dnamx$Soil_date)
+dnam <- dnamx
+```
+
+
+# Convert Date Columns to Date Format
+Next I need to convert all date columns to proper format
+```{r}
+dnam <- dnam %>% 
+  mutate_at(c("Soil_date"), as.Date)
+str(dnam)
+```
+
+## Creating Soil Exposure Variables
+Now I'm creating new variables where I am matching up PM averages per year to years of major events for patients (year of diagnosis, year of death/lung transplant/censoring, etc)
+
+### 5yrs Pre-Sampling
+Here I am calculating the average Soil value in the 5yrs prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(Soil_5yrPreSamp = mean(value[ymd(Soil_date)>=(ymd(sample_date) - years(5)) & 
+                                        ymd(Soil_date)<=ymd(sample_date)]))
+```
+
+### 1yr Pre-Sampling
+Here I am calculating the average Soil value in the 1yr prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(Soil_1yrPreSamp = mean(value[ymd(Soil_date)>=(ymd(sample_date) - years(1)) & 
+                                        ymd(Soil_date)<=ymd(sample_date)]))
+```
+
+### 6mo Pre-Sampling
+Here I am calculating the average Soil value in the 6mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(Soil_6moPreSamp = mean(value[ymd(Soil_date)>=(ymd(sample_date) - months(6)) & 
+                                        ymd(Soil_date)<=ymd(sample_date)]))
+```
+
+### 3mo Pre-Sampling
+Here I am calculating the average Soil value in the 3mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(Soil_3moPreSamp = mean(value[ymd(Soil_date)>=(ymd(sample_date) - months(3)) & 
+                                        ymd(Soil_date)<=ymd(sample_date)]))
+```
+
+### 1mo Pre-Sampling
+Here I am calculating the average Soil value in the 1mo prior to sampling.
+```{r}
+dnam <- dnam %>% 
+  group_by(ID) %>% 
+  mutate(Soil_1moPreSamp = mean(value[ymd(Soil_date)>=(ymd(sample_date) - months(2)) & 
+                                        ymd(Soil_date)<=ymd(sample_date)]))
+```
+Of note, the 1mo pre-sampling with this method actually provides the average PM2.5 value for the month of sampling and the 1mo prior to sampling because the sampling could have occurred at the beginning or end of a month.
+
+### Remove Dataframes and variables not in use
+```{r}
+rm(list=c("dnamx", "Soil"))
+dnam <- dnam %>% dplyr::select(!c(nrow, dist, lon, lat, value, Soil_date))
+```
+
+### Getting Rid of Duplicated IDs
+Now that we have calculated the patient-specific PM exposures, I can get rid of all rows other than the first row for each patient.
+```{r}
+dnam <-  dnam %>% 
+  distinct_at(vars(ID), .keep_all=T)
+```
+This takes us down to 733 observations.
+
+
+
+## Reorder columns
+```{r}
+dnam <- dnam %>% select(ID, everything(.))
+```
+
+# Export File with All PM2.5 and Constituent Time Frames Matched
+```{r}
+write_xlsx(dnam, path="PFF_fILD_PM25andConstituentsMatched_forMethylFlash_2022_04_28.xlsx")
+```
+
+# Releveling Factors
+Here I am releveling factors so that they are in an intuitive order for my later analyses.
+```{r}
+dnam$sex <- fct_relevel(dnam$sex, c("Male","Female"))
+dnam$race <- fct_relevel(dnam$race, c("W","B","A","U"))
+dnam$ethnicity <- fct_relevel(dnam$ethnicity, c("N","H","U"))
+dnam$dich_Race <- fct_relevel(dnam$dich_Race, c("White","Non-White"))
+dnam$smokeHx <- fct_relevel(dnam$smokeHx, c("Never","Ever"))
+
+#For dx and dx_group, I just want IPF to be first and then the rest of the categories are alphabetical
+dnam$dx <- fct_relevel(dnam$dx, c("IPF"))
+dnam$dx_group <- fct_relevel(dnam$dx_group, c("IPF"))
+dnam$dx_IPF <- fct_relevel(dnam$dx_IPF, c("IPF"))
+#dnam$PM5yrCensor_dich <- fct_relevel(dnam$PM5yrCensor_dich, c("Low"))
+#dnam$PM5yr_dich <- fct_relevel(dnam$PM5yr_dich, c("Low"))
+#dnam$SO45yrCensor_dich <- fct_relevel(dnam$SO45yrCensor_dich, c("Low"))
+#dnam$SO45yr_dich <- fct_relevel(dnam$SO45yr_dich, c("Low"))
+#dnam$NO35yrCensor_dich <- fct_relevel(dnam$NO35yrCensor_dich, c("Low"))
+#dnam$NO35yr_dich <- fct_relevel(dnam$NO35yr_dich, c("Low"))
+#dnam$NH45yrCensor_dich <- fct_relevel(dnam$NH45yrCensor_dich, c("Low"))
+#dnam$NH45yr_dich <- fct_relevel(dnam$NH45yr_dich, c("Low"))
+#dnam$BC5yrCensor_dich <- fct_relevel(dnam$BC5yrCensor_dich, c("Low"))
+#dnam$BC5yr_dich <- fct_relevel(dnam$BC5yr_dich, c("Low"))
+#dnam$OM5yrCensor_dich <- fct_relevel(dnam$OM5yrCensor_dich, c("Low"))
+#dnam$OM5yr_dich <- fct_relevel(dnam$OM5yr_dich, c("Low"))
+#dnam$SS5yrCensor_dich <- fct_relevel(dnam$SS5yrCensor_dich, c("Low"))
+#dnam$SS5yr_dich <- fct_relevel(dnam$SS5yr_dich, c("Low"))
+#dnam$Soil5yrCensor_dich <- fct_relevel(dnam$Soil5yrCensor_dich, c("Low"))
+#dnam$Soil5yr_dich <- fct_relevel(dnam$Soil5yr_dich, c("Low"))
+str(dnam)
+```
+
+# Creating New Variables
+## Time between Registry Enrollment and Sample Date
+Need to know if consent_date is a reasonable time point to be basing our DNAm results from
+```{r}
+dnam <- dnam %>% mutate(time_sample=(sample_date-consent_date)/365.25)
+dnam$time_sample <- as.numeric(dnam$time_sample)
+```
+
+
+# Exploratory Data Analysis
+This is a function that allows me to make tables which summarize the count and percentages of each level of factor variables
+```{r}
+n_prop_tbl <- function(x) {
+  tbl <- table(x)
+  res <- cbind(tbl, round(prop.table(tbl)*100,2))
+  colnames(res) <-  c('Count', 'Percentage')
+  res
+}
+```
+
+
+## PM Breakdown 
+```{r}
+print("PM2.5")
+summary(dnam$PM_5yrPreSamp)
+summary(dnam$PM_1yrPreSamp)
+summary(dnam$PM_6moPreSamp)
+summary(dnam$PM_3moPreSamp)
+summary(dnam$PM_1moPreSamp)
+
+print("/nSO4")
+summary(dnam$SO4_5yrPreSamp)
+summary(dnam$SO4_1yrPreSamp)
+summary(dnam$SO4_6moPreSamp)
+summary(dnam$SO4_3moPreSamp)
+summary(dnam$SO4_1moPreSamp)
+
+print("/nNO3")
+summary(dnam$NO3_5yrPreSamp)
+summary(dnam$NO3_1yrPreSamp)
+summary(dnam$NO3_6moPreSamp)
+summary(dnam$NO3_3moPreSamp)
+summary(dnam$NO3_1moPreSamp)
+
+print("/nNH4")
+summary(dnam$NH4_5yrPreSamp)
+summary(dnam$NH4_1yrPreSamp)
+summary(dnam$NH4_6moPreSamp)
+summary(dnam$NH4_3moPreSamp)
+summary(dnam$NH4_1moPreSamp)
+
+print("/nBC")
+summary(dnam$BC_5yrPreSamp)
+summary(dnam$BC_1yrPreSamp)
+summary(dnam$BC_6moPreSamp)
+summary(dnam$BC_3moPreSamp)
+summary(dnam$BC_1moPreSamp)
+
+print("/nOM")
+summary(dnam$OM_5yrPreSamp)
+summary(dnam$OM_1yrPreSamp)
+summary(dnam$OM_6moPreSamp)
+summary(dnam$OM_3moPreSamp)
+summary(dnam$OM_1moPreSamp)
+
+print("/nSS")
+summary(dnam$SS_5yrPreSamp)
+summary(dnam$SS_1yrPreSamp)
+summary(dnam$SS_6moPreSamp)
+summary(dnam$SS_3moPreSamp)
+summary(dnam$SS_1moPreSamp)
+
+print("/nSoil")
+summary(dnam$Soil_5yrPreSamp)
+summary(dnam$Soil_1yrPreSamp)
+summary(dnam$Soil_6moPreSamp)
+summary(dnam$Soil_3moPreSamp)
+summary(dnam$Soil_1moPreSamp)
+```
+
+## Sex Breakdown
+```{r}
+n_prop_tbl(dnam$sex)
+```
+
+## Race and Ethnicity Breakdown 
+```{r}
+n_prop_tbl(dnam$race)
+
+n_prop_tbl(dnam$ethnicity)
+```
+
+## Smoking History Breakdown
+```{r}
+n_prop_tbl(dnam$smokeHx)
+```
+
+
+## Diagnostic Group Breakdown
+```{r}
+n_prop_tbl(dnam$dx_group)
+```
+
+
+## State Breakdown
+```{r}
+n_prop_tbl(dnam$state)
+```
+
+## Metropolitan Breakdown
+```{r}
+n_prop_tbl(dnam$metro)
+```
+Overwhelming majority of the patients are considered "metropolitan".
+
+## Age at Diagnosis Breakdown
+```{r}
+shapiro.test(dnam$age_dx)
+#Shapiro tests tells us that age_dx is not normally distributed, so should report median, IQR
+summary(dnam$age_dx)
+```
+Not normally distributed.
+
+## Vital Status Breakdown
+```{r}
+n_prop_tbl(dnam$status)
+```
+
+
+## Baseline Lung Function Breakdown
+```{r}
+shapiro.test(dnam$fvc_pct)
+summary(dnam$fvc_pct)
+sd(dnam$fvc_pct, na.rm=T)
+```
+
+```{r}
+shapiro.test(dnam$dlco_pct)
+summary(dnam$dlco_pct)
+sd(dnam$dlco_pct, na.rm=T)
+```
+
+## Time to Censoring Breakdown
+```{r}
+summary(dnam$time_DeathTxCensor)
+sd(dnam$time_DeathTxCensor, na.rm=T)
+```
+
+## Time between registry enrollment and sample collection
+```{r}
+summary(dnam$time_sample)
+sd(dnam$time_sample, na.rm=T)
+```
+This indicates that the majority of samples are taken very close to the time of consent, which is our reference for the _5yrPreDx periods for exposure matching, although there are a few where samples were taken far before or far after the consent_date.
+
+# Visual Exploratory Data Analysis
+## Histograms
+Histogram of %5mC
+```{r}
+(dnam %>% ggplot(aes(x=pct_5mC))+
+   geom_histogram(fill="blue", color="black")+
+   labs(x="% 5mC", y="Number of patients with IPF", title="% 5mC in Patients with IPF")+
+   theme(plot.title = element_text(hjust = 0.5)))
+```
+We have some very high outliers, whreas the rest is generally <0.3%
+
+Histogram of %5mC
+```{r}
+(dnam %>% ggplot(aes(x=pct_5mC))+
+   geom_histogram(fill="blue", color="black")+
+   labs(x="% 5mC", y="Number of patients with IPF", title="% 5mC in Patients with IPF")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,0.5))
+```
+Slightly right-skewed distribution.
+
+## Scatterplots
+### PM2.5 Scatterplots
+Scatterplot of continuous PM2.5 5yrs Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=PM_5yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="PM2.5 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 5yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,20)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous PM2.5 1yr Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=PM_1yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 1yr Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,20)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous PM2.5 6mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=PM_6moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="PM2.5 in 6mo Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 6mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,20)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous PM2.5 3mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=PM_3moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="PM2.5 in 3mo Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 3mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,20)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous PM2.5 1mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=PM_1moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="PM2.5 in 1mo Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 1mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,20)+
+   ylim(0, 0.5))
+```
+
+
+## SO4 Scatterplots
+Scatterplot of continuous SO4 5yrs Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SO4_5yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SO4 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by SO4 5yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2.5)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous SO4 1yr Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=PM_1yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SO4 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by SO4 1yr Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,20)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous SO4 6mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SO4_6moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SO4 in 6mo Pre-Sampling", y="% 5mC", title="%5mC by SO4 6mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2.5)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous SO4 3mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SO4_3moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SO4 in 3mo Pre-Sampling", y="% 5mC", title="%5mC by SO4 3mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2.5)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous SO4 1mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SO4_1moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SO4 in 1mo Pre-Sampling", y="% 5mC", title="%5mC by SO4 1mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2.5)+
+   ylim(0, 0.5))
+```
+
+
+### NO3 Scatterplots
+Scatterplot of continuous NO3 5yrs Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NO3_5yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NO3 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by NO3 5yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,5)+
+   ylim(0, 0.5))
+```
+
+
+
+Scatterplot of continuous NO3 1yr Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NO3_1yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NO3 in 1yrs Pre-Sampling", y="% 5mC", title="%5mC by NO3 1yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,5)+
+   ylim(0, 0.5))
+```
+
+
+
+Scatterplot of continuous NO3 6mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NO3_6moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NO3 in 6mo Pre-Sampling", y="% 5mC", title="%5mC by NO3 6mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,5)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous NO3 3mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NO3_3moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NO3 in 3mo Pre-Sampling", y="% 5mC", title="%5mC by NO3 3mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,5)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous NO3 1mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NO3_1moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NO3 in 1mo Pre-Sampling", y="% 5mC", title="%5mC by NO3 1mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,5)+
+   ylim(0, 0.5))
+```
+
+
+### NH4 Scatterplots
+Scatterplot of continuous NH4 5yrs Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NH4_5yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NH4 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by NH4 5yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 1.5)+
+   ylim(0, 0.5))
+```
+
+
+
+Scatterplot of continuous NH4 1yr Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NH4_1yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NH4 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by NH4 1yr Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 1.5)+
+   ylim(0, 0.5))
+```
+
+
+Scatterplot of continuous NH4 6mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NH4_6moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NH4 in 6mo Pre-Sampling", y="% 5mC", title="%5mC by NH4 6mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous NH4 3mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NH4_3moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NH4 in 3mo Pre-Sampling", y="% 5mC", title="%5mC by NH4 3mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous NH4 1mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=NH4_1moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="NH4 in 1mo Pre-Sampling", y="% 5mC", title="%5mC by NH4 1mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2)+
+   ylim(0, 0.5))
+```
+
+
+### BC Scatterplots
+Scatterplot of continuous BC 5yrs Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=BC_5yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="BC in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by BC 5yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 2)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous BC 1yr Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=BC_1yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="BC in 1yr Pre-Sampling", y="% 5mC", title="%5mC by BC 1yr Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 2)+
+   ylim(0, 0.5))
+```
+
+
+Scatterplot of continuous BC 6mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=BC_6moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="BC in 6mo Pre-Sampling", y="% 5mC", title="%5mC by BC 6mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous BC 3mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=BC_3moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="BC in 3mo Pre-Sampling", y="% 5mC", title="%5mC by BC 3mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous BC 1mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=BC_1moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="BC in 1mo Pre-Sampling", y="% 5mC", title="%5mC by BC 1mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,2)+
+   ylim(0, 0.5))
+```
+
+
+### OM Scatterplots
+Scatterplot of continuous OM 5yrs Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=OM_5yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="OM in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by OM 5yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 8)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous OM 1yr Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=OM_1yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="OM in 1yr Pre-Sampling", y="% 5mC", title="%5mC by OM 1yr Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 8)+
+   ylim(0, 0.5))
+```
+
+
+Scatterplot of continuous OM 6mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=OM_6moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="OM in 6mo Pre-Sampling", y="% 5mC", title="%5mC by OM 6mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,10)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous OM 3mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=OM_3moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="OM in 3mo Pre-Sampling", y="% 5mC", title="%5mC by OM 3mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,10)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous OM 1mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=OM_1moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="OM in 1mo Pre-Sampling", y="% 5mC", title="%5mC by OM 1mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,10)+
+   ylim(0, 0.5))
+```
+
+
+## SS Scatterplots
+Scatterplot of continuous SS 5yrs Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SS_5yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SS in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by SS 5yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 2.5)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous SS 1yr Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SS_1yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SS in 1yr Pre-Sampling", y="% 5mC", title="%5mC by SS 1yr Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 2.5)+
+   ylim(0, 0.5))
+```
+
+
+Scatterplot of continuous SS 6mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SS_6moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SS in 6mo Pre-Sampling", y="% 5mC", title="%5mC by SS 6mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,5)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous SS 3mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SS_3moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SS in 3mo Pre-Sampling", y="% 5mC", title="%5mC by SS 3mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,5)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous SS 1mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=SS_1moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="SS in 1mo Pre-Sampling", y="% 5mC", title="%5mC by SS 1mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,5)+
+   ylim(0, 0.5))
+```
+
+
+### Soil Scatterplots
+Scatterplot of continuous Soil 5yrs Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=Soil_5yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="Soil in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by Soil 5yrs Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 3)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous Soil 1yr Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=Soil_1yrPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="Soil in 1yr Pre-Sampling", y="% 5mC", title="%5mC by Soil 1yr Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0, 3)+
+   ylim(0, 0.5))
+```
+
+
+Scatterplot of continuous Soil 6mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=Soil_6moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="Soil in 6mo Pre-Sampling", y="% 5mC", title="%5mC by Soil 6mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,3)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous Soil 3mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=Soil_3moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="Soil in 3mo Pre-Sampling", y="% 5mC", title="%5mC by Soil 3mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,3)+
+   ylim(0, 0.5))
+```
+
+Scatterplot of continuous Soil 1mo Pre-Sampling vs %5mC
+```{r}
+(dnam %>% ggplot(aes(x=Soil_1moPreSamp, y=pct_5mC))+
+   geom_point()+
+   labs(x="Soil in 1mo Pre-Sampling", y="% 5mC", title="%5mC by Soil 1mo Pre-Sampling")+
+   geom_smooth(method="lm", se = FALSE) +
+   theme(plot.title = element_text(hjust = 0.5))+
+   xlim(0,3)+
+   ylim(0, 0.5))
+```
+
+
+
+### Violin Plots
+Violin plot wrapping boxplot to visualize NO3 5yrs Pre-Sampling low vs high vs %5mC
+```{r}
+#dnamb <- dnam %>% filter(!is.na(NO35yrCensor_dich))
+#(dnamb %>% ggplot(aes(x=NO35yrCensor_dich, y=pct_5mC, fill=NO35yrCensor_dich))+
+ #  geom_boxplot(width=0.2, color="black", alpha=1.0)+
+  # geom_violin(width=1.0, alpha=0.5)+
+  # labs(x="NO3 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NO3 5yrs Pre-Sampling Low vs High")+
+  # theme_light()+
+  # theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+  # scale_fill_brewer(type="seq", palette="YlOrRd")+
+  # ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize NO3 5yrs pre-dx low vs high vs %5mC
+```{r}
+#dnamb <- dnam %>% filter(!is.na(NO35yr_dich))
+#(dnamb %>% ggplot(aes(x=NO35yr_dich, y=pct_5mC, fill=NO35yr_dich))+
+#  geom_boxplot(width=0.2, color="black", alpha=1.0)+
+#   geom_violin(width=1.0, alpha=0.5)+
+#   labs(x="NO3 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NO3 1yr Pre-Sampling Low vs High")+
+#  theme_light()+
+#   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+#   scale_fill_brewer(type="seq", palette="YlOrRd")+
+#   ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize NH4 5yrs Pre-Sampling low vs high vs %5mC
+```{r}
+#dnamb <- dnam %>% filter(!is.na(NH45yrCensor_dich))
+#(dnamb %>% ggplot(aes(x=NH45yrCensor_dich, y=pct_5mC, fill=NH45yrCensor_dich))+
+#   geom_boxplot(width=0.2, color="black", alpha=1.0)+
+#   geom_violin(width=1.0, alpha=0.5)+
+#   labs(x="NH4 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NH4 5yrs Pre-Sampling Low vs High")+
+#   theme_light()+
+#   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+#   scale_fill_brewer(type="seq", palette="YlOrRd")+
+#   ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize NH4 5yrs pre-dx low vs high vs %5mC
+```{r}
+#dnamb <- dnam %>% filter(!is.na(NH45yr_dich))
+#(dnamb %>% ggplot(aes(x=NH45yr_dich, y=pct_5mC, fill=NH45yr_dich))+
+#   geom_boxplot(width=0.2, color="black", alpha=1.0)+
+#   geom_violin(width=1.0, alpha=0.5)+
+#   labs(x="NH4 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NH4 1yr Pre-Sampling Low vs High")+
+#   theme_light()+
+#   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+#   scale_fill_brewer(type="seq", palette="YlOrRd")+
+#   ylim(0,0.25))
+```
+
+
+
+# Linear Regression Analyses
+## PM2.5 Models
+###Continuous PM2.5 5yr Pre-Censor
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of sex on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + sex, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of age_dx on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + age_dx, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of smokeHx on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + smokeHx, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of race on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + dich_Race, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of urbanicity on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + metro, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM_5yrPreSamp and pct_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- lm(pct_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM_5yrPreSamp and pct_5mC in this model.
+
+
+### Continuous PM2.5 1yr Pre-Sampling
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of sex on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + sex, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of age_dx on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + age_dx, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of smokeHx on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + smokeHx, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of race on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + dich_Race, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+Impact of urbanicity on model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + metro, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM_1yrPreSamp and pct_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- lm(pct_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM_1yrPreSamp and pct_5mC in this model.
+
+
+### Continuous PM2.5 5yr Pre-Sample
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between PM_5yrPreSamp and pct_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM_5yrPreSamp and pct_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- lm(pct_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM_5yrPreSamp and pct_5mC in this model.
+
+
+
+### Continuous PM2.5 6mo Pre-Sample
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_6moPreSamp, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between PM_6moPreSamp and pct_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM_6moPreSamp and pct_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- lm(pct_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM_6moPreSamp and pct_5mC in this model.
+
+
+### Continuous PM2.5 3mo Pre-Sample
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_3moPreSamp, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between PM_3moPreSamp and pct_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM_3moPreSamp and pct_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- lm(pct_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM_3moPreSamp and pct_5mC in this model.
+
+
+### Continuous PM2.5 1mo Pre-Sample
+```{r}
+dnam_model1 <- lm(pct_5mC ~ PM_1moPreSamp, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between PM_1moPreSamp and pct_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM_1moPreSamp and pct_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- lm(pct_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM_1moPreSamp and pct_5mC in this model.
+
+
+## SO4 Models
+### Continuous SO4 in 5yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SO4_5yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO4_5yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SO4_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO4_5yrPreSamp and pct_5mC in this model.
+
+
+### Continuous SO4 in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SO4_1yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO4_1yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SO4_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO4_1yrPreSamp and pct_5mC in this model.
+
+### Continuous SO4 in 6mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SO4_6moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO4_6moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SO4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO4_6moPreSamp and pct_5mC in this model.
+
+### Continuous SO4 in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SO4_3moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO4_3moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SO4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO4_3moPreSamp and pct_5mC in this model.
+
+### Continuous SO4 in 1mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SO4_1moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO4_1moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SO4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO4_1moPreSamp and pct_5mC in this model.
+
+
+## NO3 Models
+### Continuous NO3 in 5yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NO3_5yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+**Nitrate is significantly associated with higher global DNAm in this base model.**
+
+Adjuted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NO3_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+**Nitrate is significantly associated with higher global DNAm in this model.**
+
+### Continuous NO3 in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NO3_1yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+**Higher nitrate is associated with higher global DNAm in this model.**
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NO3_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+**Higher nitrate is associated with higher global DNAm in this model.**
+
+
+### Continuous NO3 in 6mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NO3_6moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+**Higher nitrate is associated with higher global DNAm in this model.**
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NO3_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+**Higher nitrate is associated with higher global DNAm in this model.**
+
+
+### Continuous NO3 in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NO3_3moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No association between nitrate and global DNAm in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NO3_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No association between nitrate and global DNAm in this model.
+
+
+### Continuous NO3 in 1mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NO3_1moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No association between nitrate and global DNAm in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NO3_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No association between nitrate and global DNAm in this model.
+
+
+## NH4 Models
+### Continuous NH4 in 5yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NH4_5yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+**Higher NH4 significantly associated with higher global DNAm in this model.**
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NH4_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+**Higher NH4 significantly associated with higher global DNAm in this model.**
+
+
+### Continuous NH4 in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NH4_1yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+*Higher NH4 marginally associated with higher global DNAm in this model.*
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NH4_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+*Higher NH4 marginally associated with higher global DNAm in this model.*
+
+### Continuous NH4 in 6mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NH4_6moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NH4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+### Continuous NH4 in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NH4_3moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NH4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+### Continuous NH4 in 1mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ NH4_1moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ NH4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+
+## BC Models
+### Continuous BC in 5yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ BC_5yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC_5yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ BC_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC_5yrPreSamp and pct_5mC in this model.
+
+### Continuous BC in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ BC_1yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC_1yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ BC_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC_1yrPreSamp and pct_5mC in this model.
+
+### Continuous BC in 6mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ BC_6moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC_6moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ BC_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC_6moPreSamp and pct_5mC in this model.
+
+
+### Continuous BC in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ BC_3moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC_3moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ BC_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC_3moPreSamp and pct_5mC in this model.
+
+### Continuous BC in 1mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ BC_1moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC_1moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ BC_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC_1moPreSamp and pct_5mC in this model.
+
+
+## OM Models
+### Continuous OM in 5yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ OM_5yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM_5yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ OM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM_5yrPreSamp and pct_5mC in this model.
+
+
+### Continuous OM in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ OM_1yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM_1yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ OM_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM_1yrPreSamp and pct_5mC in this model.
+
+### Continuous OM in 6mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ OM_6moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM_6moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ OM_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM_6moPreSamp and pct_5mC in this model.
+
+### Continuous OM in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ OM_3moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM_3moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ OM_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM_3moPreSamp and pct_5mC in this model.
+
+### Continuous OM in 1mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ OM_1moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM_1moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ OM_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM_1moPreSamp and pct_5mC in this model.
+
+
+## SS Models
+### Continuous SS in 5yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SS_5yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS_5yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SS_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS_5yrPreSamp and pct_5mC in this model.
+
+
+### Continuous SS in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SS_1yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS_1yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SS_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS_1yrPreSamp and pct_5mC in this model.
+
+
+### Continuous SS in 6mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SS_6moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS_6moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SS_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS_6moPreSamp and pct_5mC in this model.
+
+### Continuous SS in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SS_3moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS_3moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SS_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS_3moPreSamp and pct_5mC in this model.
+
+
+### Continuous SS in 1mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ SS_1moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS_1moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ SS_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS_1moPreSamp and pct_5mC in this model.
+
+
+
+## Soil Models
+### Continuous Soil in 5yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ Soil_5yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil_5yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ Soil_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil_5yrPreSamp and pct_5mC in this model.
+
+### Continuous Soil in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ Soil_1yrPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil_1yrPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ Soil_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil_1yrPreSamp and pct_5mC in this model.
+
+### Continuous Soil in 6mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ Soil_6moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil_6moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ Soil_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil_6moPreSamp and pct_5mC in this model.
+
+
+### Continuous Soil in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ Soil_3moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil_3moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ Soil_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil_3moPreSamp and pct_5mC in this model.
+
+
+### Continuous Soil in 1mo Pre-Sampling
+Unadjusted model
+```{r}
+dnam_model1 <- lm(pct_5mC ~ Soil_1moPreSamp, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil_1moPreSamp and pct_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- lm(pct_5mC ~ Soil_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil_1moPreSamp and pct_5mC in this model.
+
+
+# Impact of DNAm on Mortality
+Base model
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant association between %5mC and mortality in this model.
+
+Partial Model
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant association between %5mC and mortality in this model.
+
+Complete Model
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant association between %5mC and mortality in this model.
+
+# Impact of DNAm on Baseline FVC
+Base Model
+```{r}
+FVC_model1 <- lm(fvc_pct ~ pct_5mC, data=dnam)
+summary(FVC_model1)
+confint(FVC_model1)
+```
+No significant association between %5mC and baseline FVC.
+
+Partial Model
+```{r}
+FVC_model2 <- lm(fvc_pct ~ pct_5mC + sex + age_dx, data=dnam)
+summary(FVC_model2)
+confint(FVC_model2)
+```
+No significant association between %5mC and baseline FVC.
+
+Complete Model
+```{r}
+FVC_model3 <- lm(fvc_pct ~ pct_5mC + sex + age_dx + dich_Race + smokeHx, data=dnam)
+summary(FVC_model3)
+confint(FVC_model3)
+```
+No significant association between %5mC and baseline FVC.
+
+
+# Impact of DNAm on Baseline DLCO
+Base Model
+```{r}
+DLCO_model1 <- lm(dlco_pct ~ pct_5mC, data=dnam)
+summary(DLCO_model1)
+confint(DLCO_model1)
+```
+No significant association between %5mC and baseline DLCO
+
+Partial Model
+```{r}
+DLCO_model2 <- lm(dlco_pct ~ pct_5mC + sex + age_dx, data=dnam)
+summary(DLCO_model2)
+confint(DLCO_model2)
+```
+No significant association between %5mC and baseline DLCO
+
+Complete Model
+```{r}
+DLCO_model3 <- lm(dlco_pct ~ pct_5mC + sex + age_dx + dich_Race + smokeHx, data=dnam)
+summary(DLCO_model3)
+confint(DLCO_model3)
+```
+No significant association between %5mC and baseline DLCO
+
+
+
+
+
