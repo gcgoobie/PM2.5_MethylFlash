@@ -1,7 +1,7 @@
 ---
-title: "PFF Consent Date Ref - MethylFlash Global DNAm Analysis"
+title: "Simmons - MethylFlash Global DNAm Analysis"
 author: "Gillian Goobie"
-date: "2022/04/27"
+date: "2022/05/09"
 output: 
   bookdown::html_document2:
     toc: yes
@@ -49,43 +49,45 @@ library(splines)
 library(Greg)
 library(rstpm2)
 library(pspline)
+library(usethis)
+library(betareg)
 ```
 
 # Importing Datasets
 ## Total PM2.5 Files
 Here I am importing the file which contains global DNAm estimates by ELISA-based MethylFlash that are linked to the patient ID.
 ```{r}
-outfile1 <- here("PFF_Results/PFF_MethylFlash_ExptID_1-738_Combined_2022_04_26.xlsx")
+outfile1 <- here("Simmons_Results/Simmons_MethylFlash_ExptID_752-984_2022_05_09.xlsx")
 dnam <- read_excel(outfile1, sheet="CalculatedValues")
 ```
 
 Match up PM25 data with methylation data
 ```{r}
-outfile2 <- here("PM25_Data/Final_PFF_fILD_PM_BaselineData_2022_02_12.xlsx")
+outfile2 <- here("PM25_Data/Final_Simmons_fILD_PM_BaselineData_2022_03_28.xlsx")
 PM <- read_excel(outfile2)
 ```
 
 ## Keep only required columns
 ```{r}
 str(dnam)
-dnam <- dnam %>% dplyr::select(SSID, sampID, exptID, run_date, plate, pct_5mC)
+dnam <- dnam %>% dplyr::select(WH_demID, exptID, sample_date, run_date, plate, pct_5mC)
 ```
 
 
 ## Join Columns
 ```{r}
-dnam <- left_join(dnam, PM, by="SSID")
+dnam <- dnam %>% rename("ID"="WH_demID")
+dnam <- left_join(dnam, PM, by="ID")
 ```
 
 # Add Original PM2.5 Matching Files with All Months
 ```{r}
-outfile2b <- here("PM25_Data/PFF_fILD_2000_2018_PM25_2021_10_08.xlsx")
+outfile2b <- here("PM25_Data/Simmons_fILD_2000_2018_PM25_2021_09_08.xlsx")
 PM <- read_excel(outfile2b)
-PM <- PM %>% rename("SSID"="ID")
 ```
 
 ```{r}
-dnam <- inner_join(PM, dnam, by="SSID")
+dnam <- inner_join(PM, dnam, by="ID")
 ```
 
 Reorder so "ID" is the first column
@@ -98,7 +100,7 @@ dnam <- dnam %>% dplyr::select(!c(PM_date, value))
 First we need to convert the PM dataframe into the long rather than the wide format, which will allow us to use it more easily in R's tidyverse as this is "tidy" formatting.
 ```{r}
 dnam <- dnam %>% 
-  pivot_longer(cols=c(7:234), names_to="PM_date", names_prefix="PM25_")
+  pivot_longer(cols=c(6:232), names_to="PM_date", names_prefix="PM25_")
 ```
 
 ## Convert date PM_date to same format as above
@@ -127,7 +129,7 @@ dnam <- dnamx
 Next I need to convert all date columns to proper format
 ```{r}
 dnam <- dnam %>% 
-  mutate_at(c("run_date", "dx_date", "consent_date", "death_date", "tx_date", "sample_date", "fvc_date", "dlco_date", "censor_date", "deathORtx_date", "DeathTxCensor_date", "PM_date"), as.Date)
+  mutate_at(c("sample_date", "run_date", "dob", "death_date", "last_updated", "tx_date", "dx_date", "UPMC_lastvisit", "Simmons_lastvisit", "consent_date",  "pft_date", "deathORtx_date", "DeathTxCensor_date", "PM_date"), as.Date)
 str(dnam)
 ```
 
@@ -197,7 +199,7 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 734 observations.
+This takes us down to 233 observations.
 
 ### Get rid of non-specific "value" column
 ```{r}
@@ -205,16 +207,10 @@ dnam <- dnam %>% dplyr::select(!value)
 ```
 
 
-### Remove UPitt patients
-```{r}
-dnam <- dnam %>% filter(!str_detect(SSID, "^08R"))
-```
-This takes us down to 733 observations after we remove UPitt patients which may be doubled up in our Simmons analyses.
-
 # Add PM2.5 Constituent Files
 ## SO4 add Original SO4 Matching Files with All Months
 ```{r}
-outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_SO4_2021_11_05.xlsx")
+outfile3 <- here("PM25_Data/Simmons_fILD_2000_2017_SO4_2021_11_07.xlsx")
 SO4 <- read_excel(outfile3)
 ```
 
@@ -324,7 +320,7 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 733 observations.
+This takes us down to 233 observations.
 
 ### Getting rid of unnecessary columns
 ```{r}
@@ -334,7 +330,7 @@ dnam <- dnam %>% dplyr::select(!c(nrow, dist, lon, lat, SO4_date, value))
 
 ## NO3 add Original NO3 Matching Files with All Months
 ```{r}
-outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_NO3_2021_11_05.xlsx")
+outfile3 <- here("PM25_Data/Simmons_fILD_2000_2017_NO3_2021_11_05.xlsx")
 NO3 <- read_excel(outfile3)
 ```
 
@@ -445,12 +441,12 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 733 observations.
+This takes us down to 233 observations.
 
 
 ## NH4 add Original NH4 Matching Files with All Months
 ```{r}
-outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_NH4_2021_11_05.xlsx")
+outfile3 <- here("PM25_Data/Simmons_fILD_2000_2017_NH4_2021_11_05.xlsx")
 NH4 <- read_excel(outfile3)
 ```
 
@@ -561,11 +557,11 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 733 observations.
+This takes us down to 233 observations.
 
 ## BC add Original BC Matching Files with All Months
 ```{r}
-outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_BC_2021_11_05.xlsx")
+outfile3 <- here("PM25_Data/Simmons_fILD_2000_2017_BC_2021_11_05.xlsx")
 BC <- read_excel(outfile3)
 ```
 
@@ -676,12 +672,12 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 733 observations.
+This takes us down to 233 observations.
 
 
 ## OM add Original OM Matching Files with All Months
 ```{r}
-outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_OM_2021_11_05.xlsx")
+outfile3 <- here("PM25_Data/Simmons_fILD_2000_2017_OM_2021_11_05.xlsx")
 OM <- read_excel(outfile3)
 ```
 
@@ -792,12 +788,12 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 733 observations.
+This takes us down to 233 observations.
 
 
 ## SS add Original SS Matching Files with All Months
 ```{r}
-outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_SS_2021_11_05.xlsx")
+outfile3 <- here("PM25_Data/Simmons_fILD_2000_2017_SS_2021_11_05.xlsx")
 SS <- read_excel(outfile3)
 ```
 
@@ -908,12 +904,12 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 733 observations.
+This takes us down to 233 observations.
 
 
 ## Soil add Original Soil Matching Files with All Months
 ```{r}
-outfile3 <- here("PM25_Data/PFF_fILD_2000_2017_soil_2021_11_05.xlsx")
+outfile3 <- here("PM25_Data/Simmons_fILD_2000_2017_soil_2021_11_05.xlsx")
 Soil <- read_excel(outfile3)
 ```
 
@@ -1024,7 +1020,7 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 733 observations.
+This takes us down to 233 observations.
 
 
 
@@ -1035,13 +1031,13 @@ dnam <- dnam %>% select(ID, everything(.))
 
 # Export File with All PM2.5 and Constituent Time Frames Matched
 ```{r}
-write_xlsx(dnam, path="PFF_fILD_PM25andConstituentsMatched_forMethylFlash_2022_04_28.xlsx")
+write_xlsx(dnam, path="Simmons_fILD_PM25andConstituentsMatched_forMethylFlash_2022_05_09.xlsx")
 ```
 
 # Releveling Factors
 Here I am releveling factors so that they are in an intuitive order for my later analyses.
 ```{r}
-dnam$sex <- fct_relevel(dnam$sex, c("Male","Female"))
+dnam$sex <- fct_relevel(dnam$sex, c("M","F"))
 dnam$race <- fct_relevel(dnam$race, c("W","B","A","U"))
 dnam$ethnicity <- fct_relevel(dnam$ethnicity, c("N","H","U"))
 dnam$dich_Race <- fct_relevel(dnam$dich_Race, c("White","Non-White"))
@@ -1076,6 +1072,12 @@ Need to know if consent_date is a reasonable time point to be basing our DNAm re
 ```{r}
 dnam <- dnam %>% mutate(time_sample=(sample_date-consent_date)/365.25)
 dnam$time_sample <- as.numeric(dnam$time_sample)
+```
+
+# Proportion %5mC
+Will need to use the actual proportion of 5mC for beta regression analyses where values must be between 0 and 1
+```{r}
+dnam <- dnam %>% mutate(prop_5mC=pct_5mC/100)
 ```
 
 
@@ -1176,7 +1178,7 @@ n_prop_tbl(dnam$dx_group)
 
 ## State Breakdown
 ```{r}
-n_prop_tbl(dnam$state)
+n_prop_tbl(dnam$State)
 ```
 
 ## Metropolitan Breakdown
@@ -1234,7 +1236,7 @@ Histogram of %5mC
    labs(x="% 5mC", y="Number of patients with IPF", title="% 5mC in Patients with IPF")+
    theme(plot.title = element_text(hjust = 0.5)))
 ```
-We have some very high outliers, whreas the rest is generally <0.3%
+We have some very high outliers, whreas the rest is generally <1%
 
 Histogram of %5mC
 ```{r}
@@ -1244,473 +1246,473 @@ Histogram of %5mC
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,0.5))
 ```
-Slightly right-skewed distribution.
+Right-skewed distribution.
 
 ## Scatterplots
 ### PM2.5 Scatterplots
 Scatterplot of continuous PM2.5 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=PM_5yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=PM_5yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="PM2.5 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,20)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous PM2.5 1yr Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=PM_1yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=PM_1yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="PM2.5 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 1yr Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,20)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous PM2.5 6mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=PM_6moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=PM_6moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="PM2.5 in 6mo Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 6mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,20)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous PM2.5 3mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=PM_3moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=PM_3moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="PM2.5 in 3mo Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 3mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,20)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous PM2.5 1mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=PM_1moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=PM_1moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="PM2.5 in 1mo Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 1mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,20)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 
 ## SO4 Scatterplots
 Scatterplot of continuous SO4 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SO4_5yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SO4_5yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SO4 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by SO4 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,2.5)+
-   ylim(0, 0.5))
+   xlim(0,7)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous SO4 1yr Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=PM_1yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SO4_1yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SO4 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by SO4 1yr Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,20)+
-   ylim(0, 0.5))
+   xlim(0,8)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous SO4 6mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SO4_6moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SO4_6moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SO4 in 6mo Pre-Sampling", y="% 5mC", title="%5mC by SO4 6mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,2.5)+
-   ylim(0, 0.5))
+   xlim(0,8)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous SO4 3mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SO4_3moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SO4_3moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SO4 in 3mo Pre-Sampling", y="% 5mC", title="%5mC by SO4 3mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,2.5)+
-   ylim(0, 0.5))
+   xlim(0,8)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous SO4 1mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SO4_1moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SO4_1moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SO4 in 1mo Pre-Sampling", y="% 5mC", title="%5mC by SO4 1mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,2.5)+
-   ylim(0, 0.5))
+   xlim(0,8)+
+   ylim(0, 1.5))
 ```
 
 
 ### NO3 Scatterplots
 Scatterplot of continuous NO3 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NO3_5yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NO3_5yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NO3 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by NO3 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,5)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 
 
 Scatterplot of continuous NO3 1yr Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NO3_1yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NO3_1yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NO3 in 1yrs Pre-Sampling", y="% 5mC", title="%5mC by NO3 1yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,5)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 
 
 Scatterplot of continuous NO3 6mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NO3_6moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NO3_6moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NO3 in 6mo Pre-Sampling", y="% 5mC", title="%5mC by NO3 6mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,5)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous NO3 3mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NO3_3moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NO3_3moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NO3 in 3mo Pre-Sampling", y="% 5mC", title="%5mC by NO3 3mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,5)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous NO3 1mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NO3_1moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NO3_1moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NO3 in 1mo Pre-Sampling", y="% 5mC", title="%5mC by NO3 1mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,5)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 
 ### NH4 Scatterplots
 Scatterplot of continuous NH4 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NH4_5yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NH4_5yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NH4 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by NH4 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0, 1.5)+
-   ylim(0, 0.5))
+   xlim(0, 3)+
+   ylim(0, 1.5))
 ```
 
 
 
 Scatterplot of continuous NH4 1yr Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NH4_1yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NH4_1yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NH4 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by NH4 1yr Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0, 1.5)+
-   ylim(0, 0.5))
+   xlim(0, 3)+
+   ylim(0, 1.5))
 ```
 
 
 Scatterplot of continuous NH4 6mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NH4_6moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NH4_6moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NH4 in 6mo Pre-Sampling", y="% 5mC", title="%5mC by NH4 6mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,2)+
-   ylim(0, 0.5))
+   xlim(0, 3)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous NH4 3mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NH4_3moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NH4_3moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NH4 in 3mo Pre-Sampling", y="% 5mC", title="%5mC by NH4 3mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,2)+
-   ylim(0, 0.5))
+   xlim(0,3)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous NH4 1mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=NH4_1moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=NH4_1moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="NH4 in 1mo Pre-Sampling", y="% 5mC", title="%5mC by NH4 1mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,2)+
-   ylim(0, 0.5))
+   xlim(0,3)+
+   ylim(0, 1.5))
 ```
 
 
 ### BC Scatterplots
 Scatterplot of continuous BC 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=BC_5yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=BC_5yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="BC in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by BC 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0, 2)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous BC 1yr Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=BC_1yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=BC_1yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="BC in 1yr Pre-Sampling", y="% 5mC", title="%5mC by BC 1yr Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0, 2)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 
 Scatterplot of continuous BC 6mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=BC_6moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=BC_6moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="BC in 6mo Pre-Sampling", y="% 5mC", title="%5mC by BC 6mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,2)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous BC 3mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=BC_3moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=BC_3moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="BC in 3mo Pre-Sampling", y="% 5mC", title="%5mC by BC 3mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,2)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous BC 1mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=BC_1moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=BC_1moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="BC in 1mo Pre-Sampling", y="% 5mC", title="%5mC by BC 1mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,2)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 
 ### OM Scatterplots
 Scatterplot of continuous OM 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=OM_5yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=OM_5yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="OM in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by OM 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0, 8)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous OM 1yr Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=OM_1yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=OM_1yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="OM in 1yr Pre-Sampling", y="% 5mC", title="%5mC by OM 1yr Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0, 8)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 
 Scatterplot of continuous OM 6mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=OM_6moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=OM_6moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="OM in 6mo Pre-Sampling", y="% 5mC", title="%5mC by OM 6mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,10)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous OM 3mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=OM_3moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=OM_3moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="OM in 3mo Pre-Sampling", y="% 5mC", title="%5mC by OM 3mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,10)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous OM 1mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=OM_1moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=OM_1moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="OM in 1mo Pre-Sampling", y="% 5mC", title="%5mC by OM 1mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
    xlim(0,10)+
-   ylim(0, 0.5))
+   ylim(0, 1.5))
 ```
 
 
 ## SS Scatterplots
 Scatterplot of continuous SS 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SS_5yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SS_5yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SS in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by SS 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0, 2.5)+
-   ylim(0, 0.5))
+   xlim(0, 1)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous SS 1yr Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SS_1yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SS_1yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SS in 1yr Pre-Sampling", y="% 5mC", title="%5mC by SS 1yr Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0, 2.5)+
-   ylim(0, 0.5))
+   xlim(0, 1)+
+   ylim(0, 1.5))
 ```
 
 
 Scatterplot of continuous SS 6mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SS_6moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SS_6moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SS in 6mo Pre-Sampling", y="% 5mC", title="%5mC by SS 6mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,5)+
-   ylim(0, 0.5))
+   xlim(0,2)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous SS 3mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SS_3moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SS_3moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SS in 3mo Pre-Sampling", y="% 5mC", title="%5mC by SS 3mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,5)+
-   ylim(0, 0.5))
+   xlim(0,2)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous SS 1mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=SS_1moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=SS_1moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="SS in 1mo Pre-Sampling", y="% 5mC", title="%5mC by SS 1mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,5)+
-   ylim(0, 0.5))
+   xlim(0,2)+
+   ylim(0, 1.5))
 ```
 
 
 ### Soil Scatterplots
 Scatterplot of continuous Soil 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=Soil_5yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=Soil_5yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="Soil in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by Soil 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0, 3)+
-   ylim(0, 0.5))
+   xlim(0, 1.5)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous Soil 1yr Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=Soil_1yrPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=Soil_1yrPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="Soil in 1yr Pre-Sampling", y="% 5mC", title="%5mC by Soil 1yr Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0, 3)+
-   ylim(0, 0.5))
+   xlim(0, 1.5)+
+   ylim(0, 1.5))
 ```
 
 
 Scatterplot of continuous Soil 6mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=Soil_6moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=Soil_6moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="Soil in 6mo Pre-Sampling", y="% 5mC", title="%5mC by Soil 6mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,3)+
-   ylim(0, 0.5))
+   xlim(0,1.5)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous Soil 3mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=Soil_3moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=Soil_3moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="Soil in 3mo Pre-Sampling", y="% 5mC", title="%5mC by Soil 3mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,3)+
-   ylim(0, 0.5))
+   xlim(0,1.5)+
+   ylim(0, 1.5))
 ```
 
 Scatterplot of continuous Soil 1mo Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=Soil_1moPreSamp, y=pct_5mC))+
+(dnam %>% ggplot(aes(x=Soil_1moPreSamp, y=pct_5mC, color=sex))+
    geom_point()+
    labs(x="Soil in 1mo Pre-Sampling", y="% 5mC", title="%5mC by Soil 1mo Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+
-   xlim(0,3)+
-   ylim(0, 0.5))
+   xlim(0,1.5)+
+   ylim(0, 1.5))
 ```
 
 
@@ -1719,7 +1721,7 @@ Scatterplot of continuous Soil 1mo Pre-Sampling vs %5mC
 Violin plot wrapping boxplot to visualize NO3 5yrs Pre-Sampling low vs high vs %5mC
 ```{r}
 #dnamb <- dnam %>% filter(!is.na(NO35yrCensor_dich))
-#(dnamb %>% ggplot(aes(x=NO35yrCensor_dich, y=pct_5mC, fill=NO35yrCensor_dich))+
+#(dnamb %>% ggplot(aes(x=NO35yrCensor_dich, y=pct_5mC, color=sex, fill=NO35yrCensor_dich))+
  #  geom_boxplot(width=0.2, color="black", alpha=1.0)+
   # geom_violin(width=1.0, alpha=0.5)+
   # labs(x="NO3 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NO3 5yrs Pre-Sampling Low vs High")+
@@ -1732,7 +1734,7 @@ Violin plot wrapping boxplot to visualize NO3 5yrs Pre-Sampling low vs high vs %
 Violin plot wrapping boxplot to visualize NO3 5yrs pre-dx low vs high vs %5mC
 ```{r}
 #dnamb <- dnam %>% filter(!is.na(NO35yr_dich))
-#(dnamb %>% ggplot(aes(x=NO35yr_dich, y=pct_5mC, fill=NO35yr_dich))+
+#(dnamb %>% ggplot(aes(x=NO35yr_dich, y=pct_5mC, color=sex, fill=NO35yr_dich))+
 #  geom_boxplot(width=0.2, color="black", alpha=1.0)+
 #   geom_violin(width=1.0, alpha=0.5)+
 #   labs(x="NO3 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NO3 1yr Pre-Sampling Low vs High")+
@@ -1745,7 +1747,7 @@ Violin plot wrapping boxplot to visualize NO3 5yrs pre-dx low vs high vs %5mC
 Violin plot wrapping boxplot to visualize NH4 5yrs Pre-Sampling low vs high vs %5mC
 ```{r}
 #dnamb <- dnam %>% filter(!is.na(NH45yrCensor_dich))
-#(dnamb %>% ggplot(aes(x=NH45yrCensor_dich, y=pct_5mC, fill=NH45yrCensor_dich))+
+#(dnamb %>% ggplot(aes(x=NH45yrCensor_dich, y=pct_5mC, color=sex, fill=NH45yrCensor_dich))+
 #   geom_boxplot(width=0.2, color="black", alpha=1.0)+
 #   geom_violin(width=1.0, alpha=0.5)+
 #   labs(x="NH4 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NH4 5yrs Pre-Sampling Low vs High")+
@@ -1758,7 +1760,7 @@ Violin plot wrapping boxplot to visualize NH4 5yrs Pre-Sampling low vs high vs %
 Violin plot wrapping boxplot to visualize NH4 5yrs pre-dx low vs high vs %5mC
 ```{r}
 #dnamb <- dnam %>% filter(!is.na(NH45yr_dich))
-#(dnamb %>% ggplot(aes(x=NH45yr_dich, y=pct_5mC, fill=NH45yr_dich))+
+#(dnamb %>% ggplot(aes(x=NH45yr_dich, y=pct_5mC, color=sex, fill=NH45yr_dich))+
 #   geom_boxplot(width=0.2, color="black", alpha=1.0)+
 #   geom_violin(width=1.0, alpha=0.5)+
 #   labs(x="NH4 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NH4 1yr Pre-Sampling Low vs High")+
@@ -1774,42 +1776,42 @@ Violin plot wrapping boxplot to visualize NH4 5yrs pre-dx low vs high vs %5mC
 ## PM2.5 Models
 ###Continuous PM2.5 5yr Pre-Censor
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of sex on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + sex, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of age_dx on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + age_dx, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + age_dx, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of smokeHx on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + smokeHx, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + smokeHx, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of race on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + dich_Race, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + dich_Race, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of urbanicity on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp + metro, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + metro, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
@@ -1817,60 +1819,60 @@ confint(dnam_model1)
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_5yrPreSamp and pct_5mC in this model.
+No significant association between PM_5yrPreSamp and prop_5mC in this model.
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
-dnam_model3 <- lm(pct_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_5yrPreSamp and pct_5mC in this model.
+No significant association between PM_5yrPreSamp and prop_5mC in this model.
 
 
 ### Continuous PM2.5 1yr Pre-Sampling
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of sex on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + sex, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of age_dx on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + age_dx, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + age_dx, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of smokeHx on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + smokeHx, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + smokeHx, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of race on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + dich_Race, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + dich_Race, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
 
 Impact of urbanicity on model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_1yrPreSamp + metro, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + metro, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
@@ -1878,273 +1880,273 @@ confint(dnam_model1)
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_1yrPreSamp and pct_5mC in this model.
+No significant association between PM_1yrPreSamp and prop_5mC in this model.
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
-dnam_model3 <- lm(pct_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_1yrPreSamp and pct_5mC in this model.
+No significant association between PM_1yrPreSamp and prop_5mC in this model.
 
 
 ### Continuous PM2.5 5yr Pre-Sample
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_5yrPreSamp, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between PM_5yrPreSamp and pct_5mC in this model.
+No significant association between PM_5yrPreSamp and prop_5mC in this model.
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_5yrPreSamp and pct_5mC in this model.
+No significant association between PM_5yrPreSamp and prop_5mC in this model.
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
-dnam_model3 <- lm(pct_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_5yrPreSamp and pct_5mC in this model.
+No significant association between PM_5yrPreSamp and prop_5mC in this model.
 
 
 
 ### Continuous PM2.5 6mo Pre-Sample
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_6moPreSamp, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_6moPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between PM_6moPreSamp and pct_5mC in this model.
+No significant association between PM_6moPreSamp and prop_5mC in this model.
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_6moPreSamp and pct_5mC in this model.
+No significant association between PM_6moPreSamp and prop_5mC in this model.
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
-dnam_model3 <- lm(pct_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_6moPreSamp and pct_5mC in this model.
+No significant association between PM_6moPreSamp and prop_5mC in this model.
 
 
 ### Continuous PM2.5 3mo Pre-Sample
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_3moPreSamp, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_3moPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between PM_3moPreSamp and pct_5mC in this model.
+No significant association between PM_3moPreSamp and prop_5mC in this model.
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_3moPreSamp and pct_5mC in this model.
+No significant association between PM_3moPreSamp and prop_5mC in this model.
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
-dnam_model3 <- lm(pct_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_3moPreSamp and pct_5mC in this model.
+No significant association between PM_3moPreSamp and prop_5mC in this model.
 
 
 ### Continuous PM2.5 1mo Pre-Sample
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ PM_1moPreSamp, dnam)
+dnam_model1 <- betareg(prop_5mC ~ PM_1moPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between PM_1moPreSamp and pct_5mC in this model.
+**Significant association between higher PM_1moPreSamp and higher prop_5mC in this model.**
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_1moPreSamp and pct_5mC in this model.
+*Marginal association between higher PM_1moPreSamp and higher prop_5mC in this model.*
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
-dnam_model3 <- lm(pct_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_1moPreSamp and pct_5mC in this model.
+*Marginal association between higher PM_1moPreSamp and higher prop_5mC in this model.*
 
 
 ## SO4 Models
 ### Continuous SO4 in 5yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SO4_5yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SO4_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SO4_5yrPreSamp and pct_5mC in this model.
+No significant association between SO4_5yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SO4_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SO4_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SO4_5yrPreSamp and pct_5mC in this model.
+No significant association between SO4_5yrPreSamp and prop_5mC in this model.
 
 
 ### Continuous SO4 in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SO4_1yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SO4_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SO4_1yrPreSamp and pct_5mC in this model.
+No significant association between SO4_1yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SO4_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SO4_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SO4_1yrPreSamp and pct_5mC in this model.
+No significant association between SO4_1yrPreSamp and prop_5mC in this model.
 
 ### Continuous SO4 in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SO4_6moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SO4_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SO4_6moPreSamp and pct_5mC in this model.
+No significant association between SO4_6moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SO4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SO4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SO4_6moPreSamp and pct_5mC in this model.
+No significant association between SO4_6moPreSamp and prop_5mC in this model.
 
 ### Continuous SO4 in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SO4_3moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SO4_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SO4_3moPreSamp and pct_5mC in this model.
+**Significant association between higher SO4_3moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SO4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SO4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SO4_3moPreSamp and pct_5mC in this model.
+**Significant association between higher SO4_3moPreSamp and higher prop_5mC in this model.**
 
 ### Continuous SO4 in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SO4_1moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SO4_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SO4_1moPreSamp and pct_5mC in this model.
+**Significant association between higher SO4_1moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SO4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SO4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SO4_1moPreSamp and pct_5mC in this model.
+**Significant association between higher SO4_1moPreSamp and higher prop_5mC in this model.**
 
 
 ## NO3 Models
 ### Continuous NO3 in 5yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NO3_5yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NO3_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-**Nitrate is significantly associated with higher global DNAm in this base model.**
+No assoc between nitrate and higher global DNAm in this model.
 
 Adjuted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NO3_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NO3_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-**Nitrate is significantly associated with higher global DNAm in this model.**
+No assoc between nitrate and higher global DNAm in this model.
 
 ### Continuous NO3 in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NO3_1yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NO3_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-**Higher nitrate is associated with higher global DNAm in this model.**
+No assoc between nitrate and higher global DNAm in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NO3_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NO3_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-**Higher nitrate is associated with higher global DNAm in this model.**
+No assoc between nitrate and higher global DNAm in this model.
 
 
 ### Continuous NO3 in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NO3_6moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NO3_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-**Higher nitrate is associated with higher global DNAm in this model.**
+No assoc of nitrate with global DNAm in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NO3_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NO3_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-**Higher nitrate is associated with higher global DNAm in this model.**
+No assoc of nitrate with global DNAm in this model.
 
 
 ### Continuous NO3 in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NO3_3moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NO3_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
@@ -2152,7 +2154,7 @@ No association between nitrate and global DNAm in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NO3_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NO3_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
@@ -2162,7 +2164,7 @@ No association between nitrate and global DNAm in this model.
 ### Continuous NO3 in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NO3_1moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NO3_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
@@ -2170,7 +2172,7 @@ No association between nitrate and global DNAm in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NO3_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NO3_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
@@ -2181,25 +2183,25 @@ No association between nitrate and global DNAm in this model.
 ### Continuous NH4 in 5yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NH4_5yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NH4_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-**Higher NH4 significantly associated with higher global DNAm in this model.**
+No assoc between ammonium and higher global DNAm in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NH4_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NH4_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-**Higher NH4 significantly associated with higher global DNAm in this model.**
+No assoc between ammonium and higher global DNAm in this model.
 
 
 ### Continuous NH4 in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NH4_1yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NH4_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
@@ -2207,328 +2209,328 @@ confint(dnam_model1)
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NH4_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NH4_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-*Higher NH4 marginally associated with higher global DNAm in this model.*
+No assoc between ammonium and higher global DNAm in this model.
 
 ### Continuous NH4 in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NH4_6moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NH4_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-Higher NH4 not associated with global DNAm in this model.
+*Higher NH4 marginally associated with higher global DNAm in this model.*
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NH4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NH4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-Higher NH4 not associated with global DNAm in this model.
+*Higher NH4 marginally associated with higher global DNAm in this model.*
 
 ### Continuous NH4 in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NH4_3moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NH4_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-Higher NH4 not associated with global DNAm in this model.
+*Higher NH4 marginally associated with higher global DNAm in this model.*
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NH4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NH4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-Higher NH4 not associated with global DNAm in this model.
+*Higher NH4 marginally associated with higher global DNAm in this model.*
 
 ### Continuous NH4 in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ NH4_1moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ NH4_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-Higher NH4 not associated with global DNAm in this model.
+**Higher NH4 associated with higher global DNAm in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ NH4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ NH4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-Higher NH4 not associated with global DNAm in this model.
+**Higher NH4 associated with higher global DNAm in this model.**
 
 
 ## BC Models
 ### Continuous BC in 5yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ BC_5yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ BC_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_5yrPreSamp and pct_5mC in this model.
+No significant association between BC_5yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ BC_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ BC_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_5yrPreSamp and pct_5mC in this model.
+No significant association between BC_5yrPreSamp and prop_5mC in this model.
 
 ### Continuous BC in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ BC_1yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ BC_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_1yrPreSamp and pct_5mC in this model.
+*Marginal association between higher BC and higher prop_5mC in this model.*
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ BC_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ BC_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_1yrPreSamp and pct_5mC in this model.
+No significant association between BC_1yrPreSamp and prop_5mC in this model.
 
 ### Continuous BC in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ BC_6moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ BC_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_6moPreSamp and pct_5mC in this model.
+No significant association between BC_6moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ BC_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ BC_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_6moPreSamp and pct_5mC in this model.
+No significant association between BC_6moPreSamp and prop_5mC in this model.
 
 
 ### Continuous BC in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ BC_3moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ BC_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_3moPreSamp and pct_5mC in this model.
+No significant association between BC_3moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ BC_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ BC_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_3moPreSamp and pct_5mC in this model.
+No significant association between BC_3moPreSamp and prop_5mC in this model.
 
 ### Continuous BC in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ BC_1moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ BC_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_1moPreSamp and pct_5mC in this model.
+No significant association between BC_1moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ BC_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ BC_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_1moPreSamp and pct_5mC in this model.
+No significant association between BC_1moPreSamp and prop_5mC in this model.
 
 
 ## OM Models
 ### Continuous OM in 5yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ OM_5yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ OM_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between OM_5yrPreSamp and pct_5mC in this model.
+No significant association between OM_5yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ OM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ OM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between OM_5yrPreSamp and pct_5mC in this model.
+No significant association between OM_5yrPreSamp and prop_5mC in this model.
 
 
 ### Continuous OM in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ OM_1yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ OM_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between OM_1yrPreSamp and pct_5mC in this model.
+No significant association between OM_1yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ OM_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ OM_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between OM_1yrPreSamp and pct_5mC in this model.
+No significant association between OM_1yrPreSamp and prop_5mC in this model.
 
 ### Continuous OM in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ OM_6moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ OM_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between OM_6moPreSamp and pct_5mC in this model.
+No significant association between OM_6moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ OM_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ OM_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between OM_6moPreSamp and pct_5mC in this model.
+No significant association between OM_6moPreSamp and prop_5mC in this model.
 
 ### Continuous OM in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ OM_3moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ OM_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between OM_3moPreSamp and pct_5mC in this model.
+No significant association between OM_3moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ OM_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ OM_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between OM_3moPreSamp and pct_5mC in this model.
+No significant association between OM_3moPreSamp and prop_5mC in this model.
 
 ### Continuous OM in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ OM_1moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ OM_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between OM_1moPreSamp and pct_5mC in this model.
+No significant association between OM_1moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ OM_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ OM_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between OM_1moPreSamp and pct_5mC in this model.
+No significant association between OM_1moPreSamp and prop_5mC in this model.
 
 
 ## SS Models
 ### Continuous SS in 5yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SS_5yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SS_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SS_5yrPreSamp and pct_5mC in this model.
+No significant association between SS_5yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SS_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SS_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SS_5yrPreSamp and pct_5mC in this model.
+No significant association between SS_5yrPreSamp and prop_5mC in this model.
 
 
 ### Continuous SS in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SS_1yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SS_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SS_1yrPreSamp and pct_5mC in this model.
+No significant association between SS_1yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SS_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SS_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SS_1yrPreSamp and pct_5mC in this model.
+No significant association between SS_1yrPreSamp and prop_5mC in this model.
 
 
 ### Continuous SS in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SS_6moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SS_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SS_6moPreSamp and pct_5mC in this model.
+No significant association between SS_6moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SS_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SS_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SS_6moPreSamp and pct_5mC in this model.
+No significant association between SS_6moPreSamp and prop_5mC in this model.
 
 ### Continuous SS in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SS_3moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SS_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SS_3moPreSamp and pct_5mC in this model.
+No significant association between SS_3moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SS_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SS_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SS_3moPreSamp and pct_5mC in this model.
+No significant association between SS_3moPreSamp and prop_5mC in this model.
 
 
 ### Continuous SS in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ SS_1moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ SS_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SS_1moPreSamp and pct_5mC in this model.
+No significant association between SS_1moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ SS_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ SS_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SS_1moPreSamp and pct_5mC in this model.
+No significant association between SS_1moPreSamp and prop_5mC in this model.
 
 
 
@@ -2536,112 +2538,220 @@ No significant association between SS_1moPreSamp and pct_5mC in this model.
 ### Continuous Soil in 5yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ Soil_5yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ Soil_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between Soil_5yrPreSamp and pct_5mC in this model.
+No significant association between Soil_5yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ Soil_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ Soil_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between Soil_5yrPreSamp and pct_5mC in this model.
+No significant association between Soil_5yrPreSamp and prop_5mC in this model.
 
 ### Continuous Soil in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ Soil_1yrPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ Soil_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between Soil_1yrPreSamp and pct_5mC in this model.
+No significant association between Soil_1yrPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ Soil_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ Soil_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between Soil_1yrPreSamp and pct_5mC in this model.
+No significant association between Soil_1yrPreSamp and prop_5mC in this model.
 
 ### Continuous Soil in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ Soil_6moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ Soil_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between Soil_6moPreSamp and pct_5mC in this model.
+No significant association between Soil_6moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ Soil_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ Soil_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between Soil_6moPreSamp and pct_5mC in this model.
+No significant association between Soil_6moPreSamp and prop_5mC in this model.
 
 
 ### Continuous Soil in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ Soil_3moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ Soil_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between Soil_3moPreSamp and pct_5mC in this model.
+No significant association between Soil_3moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ Soil_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ Soil_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between Soil_3moPreSamp and pct_5mC in this model.
+No significant association between Soil_3moPreSamp and prop_5mC in this model.
 
 
 ### Continuous Soil in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
-dnam_model1 <- lm(pct_5mC ~ Soil_1moPreSamp, data=dnam)
+dnam_model1 <- betareg(prop_5mC ~ Soil_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between Soil_1moPreSamp and pct_5mC in this model.
+No significant association between Soil_1moPreSamp and prop_5mC in this model.
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- lm(pct_5mC ~ Soil_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ Soil_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between Soil_1moPreSamp and pct_5mC in this model.
+No significant association between Soil_1moPreSamp and prop_5mC in this model.
 
 
 # Impact of DNAm on Mortality
-Base model
+## PM2.5 in 5yrs Pre-Sampling Models
+Base model with just PM2.5
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**Sig association between higher PM2.5 in 5yrs pre-censoring and mortality in this model.**
+
+Base model with just pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-No significant association between %5mC and mortality in this model.
+*Marginal association between higher %5mC and mortality in this model.*
 
-Partial Model
+Base model with PM2.5 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**HR for PM_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+
+Partial Model with just PM2.5
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+**Sig association between higher PM_5yrPreSamp and mortality in this model.**
+
+Partial Model with just pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-No significant association between %5mC and mortality in this model.
+*Marginal association between higher %5mC and mortality in this model.*
 
-Complete Model
+Partial Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+**HR for PM_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+
+Complete Model with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No sig assoc between PM_5yrPreSamp and mortality in this model, likely because the mortality impact is largely based on PM2.5 impact on baseline FVC and DLCO. The impact on mortality itself is most pronounced in the 5yr pre-censoring time period, which doesn't make sense to evaluate in the DNAm analyses where the reference date is the sample date.
+
+Complete Model with just pct_5mC
 ```{r}
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
 No significant association between %5mC and mortality in this model.
+
+Complete Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No clear difference in the PM2.5 HR in this complete model.
+
+## PM2.5 in 1yr Pre-Sampling Models
+Base model with just PM2.5
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**Sig association between higher PM2.5 in 1yr pre-sampling and mortality in this model.**
+
+Base model with just pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+*Marginal association between higher %5mC and mortality in this model.*
+
+Base model with PM2.5 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**HR for PM_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+
+Partial Model with just PM2.5
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+**Sig association between higher PM_1yrPreSamp and mortality in this model.**
+
+Partial Model with just pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal association between higher %5mC and mortality in this model.*
+
+Partial Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+**HR for PM_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+
+Complete Model with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+Significance for PM2.5 assoc with mortality lost in this model, likely because the primary impact is on baseline lung function, and the later PM2.5 impact on mortality is from the 5yr pre-censoring time period.
+
+Complete Model with just pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant association between %5mC and mortality in this model.
+
+Complete Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No clear difference in the PM2.5 HR in this complete model.
+
 
 # Impact of DNAm on Baseline FVC
 Base Model
@@ -2692,7 +2802,7 @@ DLCO_model3 <- lm(dlco_pct ~ pct_5mC + sex + age_dx + dich_Race + smokeHx, data=
 summary(DLCO_model3)
 confint(DLCO_model3)
 ```
-No significant association between %5mC and baseline DLCO
+No significant association between %5mC and baseline DLCO.
 
 
 
