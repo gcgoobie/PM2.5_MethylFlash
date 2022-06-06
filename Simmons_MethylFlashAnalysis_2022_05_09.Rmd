@@ -57,7 +57,7 @@ library(betareg)
 ## Total PM2.5 Files
 Here I am importing the file which contains global DNAm estimates by ELISA-based MethylFlash that are linked to the patient ID.
 ```{r}
-outfile1 <- here("Simmons_Results/Simmons_MethylFlash_ExptID_752-984_2022_05_09.xlsx")
+outfile1 <- here("Simmons_Results/Simmons_MethylFlash_ExptID_752-1091_2022_06_03.xlsx")
 dnam <- read_excel(outfile1, sheet="CalculatedValues")
 ```
 
@@ -1020,7 +1020,7 @@ Now that we have calculated the patient-specific PM exposures, I can get rid of 
 dnam <-  dnam %>% 
   distinct_at(vars(ID), .keep_all=T)
 ```
-This takes us down to 233 observations.
+This takes us down to 317 observations.
 
 
 
@@ -1029,9 +1029,16 @@ This takes us down to 233 observations.
 dnam <- dnam %>% select(ID, everything(.))
 ```
 
+## Remove extreme outliers
+```{r}
+dnam <- dnam %>% filter(pct_5mC<5)
+```
+This takes us down to 313 observations.
+
+
 # Export File with All PM2.5 and Constituent Time Frames Matched
 ```{r}
-write_xlsx(dnam, path="Simmons_fILD_PM25andConstituentsMatched_forMethylFlash_2022_05_09.xlsx")
+write_xlsx(dnam, path="Simmons_fILD_PM25andConstituentsMatched_forMethylFlash_2022_06_03.xlsx")
 ```
 
 # Releveling Factors
@@ -1780,6 +1787,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+**Higher PM2.5 in 5yrs pre-sampling associated with higher 5mC in this model.**
 
 Impact of sex on model
 ```{r}
@@ -1787,6 +1795,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+**Higher PM2.5 in 5yrs pre-sampling associated with higher 5mC in this model.**
 
 Impact of age_dx on model
 ```{r}
@@ -1794,6 +1803,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + age_dx, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+**Higher PM2.5 in 5yrs pre-sampling associated with higher 5mC in this model.**
 
 Impact of smokeHx on model
 ```{r}
@@ -1801,6 +1811,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + smokeHx, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+*Higher PM2.5 in 5yrs pre-sampling marginally associated with higher 5mC in this model.*
 
 Impact of race on model
 ```{r}
@@ -1808,6 +1819,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + dich_Race, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+**Higher PM2.5 in 5yrs pre-sampling associated with higher 5mC in this model.**
 
 Impact of urbanicity on model
 ```{r}
@@ -1815,6 +1827,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + metro, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+*Higher PM2.5 in 5yrs pre-sampling marginally associated with higher 5mC in this model.*
 
 
 Partial model with age_dx, sex, smokeHx
@@ -1823,7 +1836,7 @@ dnam_model2 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=d
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_5yrPreSamp and prop_5mC in this model.
+*Higher PM2.5 in 5yrs pre-sampling marginally associated with higher 5mC in this model.*
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
@@ -1832,7 +1845,7 @@ dnam_model3 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_5yrPreSamp and prop_5mC in this model.
+*Higher PM2.5 in 5yrs pre-sampling marginally associated with higher 5mC in this model.*
 
 
 ### Continuous PM2.5 1yr Pre-Sampling
@@ -1841,6 +1854,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+**Higher PM2.5 in 1yr pre-sampling associated with higher 5mC in this model.**
 
 Impact of sex on model
 ```{r}
@@ -1848,6 +1862,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+*Higher PM2.5 in 1yr pre-sampling marginally associated with higher 5mC in this model.*
 
 Impact of age_dx on model
 ```{r}
@@ -1855,6 +1870,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + age_dx, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+**Higher PM2.5 in 1yr pre-sampling associated with higher 5mC in this model.**
 
 Impact of smokeHx on model
 ```{r}
@@ -1862,6 +1878,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + smokeHx, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+*Higher PM2.5 in 1yr pre-sampling marginally associated with higher 5mC in this model.*
 
 Impact of race on model
 ```{r}
@@ -1869,6 +1886,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + dich_Race, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
+**Higher PM2.5 in 1yr pre-sampling associated with higher 5mC in this model.**
 
 Impact of urbanicity on model
 ```{r}
@@ -1876,7 +1894,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + metro, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-
+*Higher PM2.5 in 1yr pre-sampling marginally associated with higher 5mC in this model.*
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
@@ -1884,7 +1902,7 @@ dnam_model2 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx, data=d
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_1yrPreSamp and prop_5mC in this model.
+*Higher PM2.5 in 1yr pre-sampling marginally associated with higher 5mC in this model.*
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
@@ -1893,34 +1911,7 @@ dnam_model3 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx + dich_
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_1yrPreSamp and prop_5mC in this model.
-
-
-### Continuous PM2.5 5yr Pre-Sample
-```{r}
-dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp, dnam)
-summary(dnam_model1)
-confint(dnam_model1)
-```
-No significant association between PM_5yrPreSamp and prop_5mC in this model.
-
-Partial model with age_dx, sex, smokeHx
-```{r}
-dnam_model2 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
-summary(dnam_model2)
-confint(dnam_model2)
-```
-No significant association between PM_5yrPreSamp and prop_5mC in this model.
-
-
-Complete model with age_dx, sex, smokeHx, race, urbanicity
-```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
-summary(dnam_model3)
-confint(dnam_model3)
-```
-No significant association between PM_5yrPreSamp and prop_5mC in this model.
-
+*Higher PM2.5 in 1yr pre-sampling marginally associated with higher 5mC in this model.*
 
 
 ### Continuous PM2.5 6mo Pre-Sample
@@ -1955,7 +1946,7 @@ dnam_model1 <- betareg(prop_5mC ~ PM_3moPreSamp, dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between PM_3moPreSamp and prop_5mC in this model.
+**Higher PM2.5 in 3mo pre-sampling associated with higher 5mC in this model.**
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
@@ -1963,7 +1954,7 @@ dnam_model2 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx, data=d
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_3moPreSamp and prop_5mC in this model.
+**Higher PM2.5 in 3mo pre-sampling associated with higher 5mC in this model.**
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
@@ -1972,7 +1963,7 @@ dnam_model3 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx + dich_
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_3moPreSamp and prop_5mC in this model.
+*Higher PM2.5 in 3mo pre-sampling marginally associated with higher 5mC in this model.*
 
 
 ### Continuous PM2.5 1mo Pre-Sample
@@ -1989,7 +1980,7 @@ dnam_model2 <- betareg(prop_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx, data=d
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-*Marginal association between higher PM_1moPreSamp and higher prop_5mC in this model.*
+**Significant association between higher PM_1moPreSamp and higher prop_5mC in this model.**
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
@@ -1998,7 +1989,7 @@ dnam_model3 <- betareg(prop_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx + dich_
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-*Marginal association between higher PM_1moPreSamp and higher prop_5mC in this model.*
+**Significant association between higher PM_1moPreSamp and higher prop_5mC in this model.**
 
 
 ## SO4 Models
@@ -2009,7 +2000,7 @@ dnam_model1 <- betareg(prop_5mC ~ SO4_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SO4_5yrPreSamp and prop_5mC in this model.
+**Significant association between SO4_5yrPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2017,7 +2008,7 @@ dnam_model2 <- betareg(prop_5mC ~ SO4_5yrPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SO4_5yrPreSamp and prop_5mC in this model.
+**Significant association between SO4_5yrPreSamp and higher prop_5mC in this model.**
 
 
 ### Continuous SO4 in 1yrs Pre-Sampling
@@ -2027,7 +2018,7 @@ dnam_model1 <- betareg(prop_5mC ~ SO4_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SO4_1yrPreSamp and prop_5mC in this model.
+**Significant association between SO4_1yrPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2035,7 +2026,7 @@ dnam_model2 <- betareg(prop_5mC ~ SO4_1yrPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SO4_1yrPreSamp and prop_5mC in this model.
+**Significant association between SO4_1yrPreSamp and higher prop_5mC in this model.**
 
 ### Continuous SO4 in 6mo Pre-Sampling
 Unadjusted model
@@ -2044,7 +2035,7 @@ dnam_model1 <- betareg(prop_5mC ~ SO4_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SO4_6moPreSamp and prop_5mC in this model.
+**Significant association between SO4_6moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2052,7 +2043,7 @@ dnam_model2 <- betareg(prop_5mC ~ SO4_6moPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between SO4_6moPreSamp and prop_5mC in this model.
+**Significant association between SO4_6moPreSamp and higher prop_5mC in this model.**
 
 ### Continuous SO4 in 3mo Pre-Sampling
 Unadjusted model
@@ -2187,7 +2178,7 @@ dnam_model1 <- betareg(prop_5mC ~ NH4_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No assoc between ammonium and higher global DNAm in this model.
+**Significant association between NH4_5yrPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2195,7 +2186,7 @@ dnam_model2 <- betareg(prop_5mC ~ NH4_5yrPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No assoc between ammonium and higher global DNAm in this model.
+**Significant association between NH4_5yrPreSamp and higher prop_5mC in this model.**
 
 
 ### Continuous NH4 in 1yrs Pre-Sampling
@@ -2205,7 +2196,7 @@ dnam_model1 <- betareg(prop_5mC ~ NH4_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-*Higher NH4 marginally associated with higher global DNAm in this model.*
+**Significant association between NH4_1yrPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2213,7 +2204,7 @@ dnam_model2 <- betareg(prop_5mC ~ NH4_1yrPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No assoc between ammonium and higher global DNAm in this model.
+**Significant association between NH4_1yrPreSamp and higher prop_5mC in this model.**
 
 ### Continuous NH4 in 6mo Pre-Sampling
 Unadjusted model
@@ -2222,7 +2213,7 @@ dnam_model1 <- betareg(prop_5mC ~ NH4_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-*Higher NH4 marginally associated with higher global DNAm in this model.*
+**Significant association between NH4_6moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2230,7 +2221,7 @@ dnam_model2 <- betareg(prop_5mC ~ NH4_6moPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-*Higher NH4 marginally associated with higher global DNAm in this model.*
+**Significant association between NH4_6moPreSamp and higher prop_5mC in this model.**
 
 ### Continuous NH4 in 3mo Pre-Sampling
 Unadjusted model
@@ -2239,7 +2230,7 @@ dnam_model1 <- betareg(prop_5mC ~ NH4_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-*Higher NH4 marginally associated with higher global DNAm in this model.*
+**Significant association between NH4_3moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2247,7 +2238,7 @@ dnam_model2 <- betareg(prop_5mC ~ NH4_3moPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-*Higher NH4 marginally associated with higher global DNAm in this model.*
+**Significant association between NH4_3moPreSamp and higher prop_5mC in this model.**
 
 ### Continuous NH4 in 1mo Pre-Sampling
 Unadjusted model
@@ -2256,7 +2247,7 @@ dnam_model1 <- betareg(prop_5mC ~ NH4_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-**Higher NH4 associated with higher global DNAm in this model.**
+**Significant association between NH4_1moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2264,7 +2255,7 @@ dnam_model2 <- betareg(prop_5mC ~ NH4_1moPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-**Higher NH4 associated with higher global DNAm in this model.**
+**Significant association between NH4_1moPreSamp and higher prop_5mC in this model.**
 
 
 ## BC Models
@@ -2275,7 +2266,7 @@ dnam_model1 <- betareg(prop_5mC ~ BC_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_5yrPreSamp and prop_5mC in this model.
+*Marginal association between higher BC_5yrPreSamp and higher prop_5mC in this model.*
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2292,7 +2283,7 @@ dnam_model1 <- betareg(prop_5mC ~ BC_1yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-*Marginal association between higher BC and higher prop_5mC in this model.*
+**Significant association between higher BC_1yrPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2300,7 +2291,7 @@ dnam_model2 <- betareg(prop_5mC ~ BC_1yrPreSamp + sex + age_dx + smokeHx, data=d
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_1yrPreSamp and prop_5mC in this model.
+**Significant association between higher BC_1yrPreSamp and higher prop_5mC in this model.**
 
 ### Continuous BC in 6mo Pre-Sampling
 Unadjusted model
@@ -2309,7 +2300,7 @@ dnam_model1 <- betareg(prop_5mC ~ BC_6moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_6moPreSamp and prop_5mC in this model.
+**Significant association between higher BC_6moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2317,7 +2308,7 @@ dnam_model2 <- betareg(prop_5mC ~ BC_6moPreSamp + sex + age_dx + smokeHx, data=d
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_6moPreSamp and prop_5mC in this model.
+*Marginal association between higher BC_6moPreSamp and higher prop_5mC in this model.*
 
 
 ### Continuous BC in 3mo Pre-Sampling
@@ -2327,7 +2318,7 @@ dnam_model1 <- betareg(prop_5mC ~ BC_3moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_3moPreSamp and prop_5mC in this model.
+**Significant association between higher BC_3moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2335,7 +2326,7 @@ dnam_model2 <- betareg(prop_5mC ~ BC_3moPreSamp + sex + age_dx + smokeHx, data=d
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_3moPreSamp and prop_5mC in this model.
+**Significant association between higher BC_3moPreSamp and higher prop_5mC in this model.**
 
 ### Continuous BC in 1mo Pre-Sampling
 Unadjusted model
@@ -2344,7 +2335,7 @@ dnam_model1 <- betareg(prop_5mC ~ BC_1moPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between BC_1moPreSamp and prop_5mC in this model.
+**Significant association between higher BC_1moPreSamp and higher prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2352,7 +2343,7 @@ dnam_model2 <- betareg(prop_5mC ~ BC_1moPreSamp + sex + age_dx + smokeHx, data=d
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between BC_1moPreSamp and prop_5mC in this model.
+**Significant association between higher BC_1moPreSamp and higher prop_5mC in this model.**
 
 
 ## OM Models
@@ -2451,7 +2442,7 @@ dnam_model1 <- betareg(prop_5mC ~ SS_5yrPreSamp, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between SS_5yrPreSamp and prop_5mC in this model.
+*Marginal association between higher SS_5yrPreSamp and higher prop_5mC in this model.*
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -2637,7 +2628,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Base model with PM2.5 and pct_5mC
 ```{r}
@@ -2658,7 +2649,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Partial Model with PM2.5 and pct_5mC
 ```{r}
@@ -2701,7 +2692,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Base model with PM2.5 and pct_5mC
 ```{r}
@@ -2722,7 +2713,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Partial Model with PM2.5 and pct_5mC
 ```{r}
@@ -2765,14 +2756,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Base model with PM2.5 and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**HR for PM_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for PM_6moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 Partial Model with just PM2.5
 ```{r}
@@ -2786,14 +2777,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Partial Model with PM2.5 and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for PM_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for PM_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
 
 Complete Model with just PM2.5
 ```{r}
@@ -2830,14 +2821,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Base model with PM2.5 and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**HR for PM_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for PM_6moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC**
 
 Partial Model with just PM2.5
 ```{r}
@@ -2851,21 +2842,21 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Partial Model with PM2.5 and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for PM_3moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for PM_3moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC**
 
 Complete Model with just PM2.5
 ```{r}
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-**Significance assoc between PM_3moPreSamp and mort in this model.**
+No assoc between PM_3moPreSamp and mort in this model.
 
 Complete Model with just pct_5mC
 ```{r}
@@ -2879,7 +2870,7 @@ Complete Model with PM2.5 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-**HR for PM_3moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for PM_3moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC**
 
 ## PM2.5 in 1mo Pre-Sampling Models
 Base model with just PM2.5
@@ -2894,14 +2885,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Base model with PM2.5 and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**HR for PM_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for PM_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
 
 Partial Model with just PM2.5
 ```{r}
@@ -2915,21 +2906,21 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No association between higher %5mC and mortality in this model.
 
 Partial Model with PM2.5 and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for PM_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for PM_1moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC**
 
 Complete Model with just PM2.5
 ```{r}
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-**Significance assoc between PM_1moPreSamp and mort in this model.**
+No assoc between PM_1moPreSamp and mort in this model.
 
 Complete Model with just pct_5mC
 ```{r}
@@ -2943,7 +2934,7 @@ Complete Model with PM2.5 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-**HR for PM_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for PM_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
 
 ## SO4 in 5yrs Pre-Sampling Models
 Base model with just SO4
@@ -2958,7 +2949,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SO4 and pct_5mC
 ```{r}
@@ -2979,7 +2970,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SO4 and pct_5mC
 ```{r}
@@ -3022,7 +3013,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SO4 and pct_5mC
 ```{r}
@@ -3043,7 +3034,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SO4 and pct_5mC
 ```{r}
@@ -3071,7 +3062,7 @@ Complete Model with SO4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No clear difference in the SO4 HR in this complete model.
+**HR for SO4_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
 
 ## SO4 in 6mo Pre-Sampling Models
 Base model with just SO4
@@ -3086,7 +3077,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SO4 and pct_5mC
 ```{r}
@@ -3107,7 +3098,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SO4 and pct_5mC
 ```{r}
@@ -3135,7 +3126,7 @@ Complete Model with SO4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No clear difference in the SO4 HR in this complete model.
+**HR for SO4_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
 
 
 ## SO4 in 3mo Pre-Sampling Models
@@ -3151,7 +3142,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SO4 and pct_5mC
 ```{r}
@@ -3172,7 +3163,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SO4 and pct_5mC
 ```{r}
@@ -3215,7 +3206,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SO4 and pct_5mC
 ```{r}
@@ -3236,7 +3227,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SO4 and pct_5mC
 ```{r}
@@ -3250,7 +3241,7 @@ Complete Model with just SO4
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-*Marginal assoc between SO4_1moPreSamp and mort in this model.*
+No assoc between SO4_1moPreSamp and mort in this model.
 
 Complete Model with just pct_5mC
 ```{r}
@@ -3264,7 +3255,7 @@ Complete Model with SO4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-*HR for SO4_1moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
+*HR for SO4_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC*
 
 
 
@@ -3281,14 +3272,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NO3 and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**HR for NO3_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for NO3_1yrPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 Partial Model with just NO3
 ```{r}
@@ -3302,21 +3293,21 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NO3 and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for NO3_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+HR for NO3_1yrPreSamp does not decrease in this model indicating no mediation by pct_5mC.
 
 Complete Model with just NO3
 ```{r}
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-**Sig assoc between higher NO3_5yrPreSamp and mort in this model.**
+No assoc between higher NO3_5yrPreSamp and mort in this model.
 
 Complete Model with just pct_5mC
 ```{r}
@@ -3330,7 +3321,7 @@ Complete Model with NO3 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No clear difference in the NO3 HR in this complete model.
+*HR for NO3_5yrPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 ## NO3 in 1yr Pre-Sampling Models
 Base model with just NO3
@@ -3345,7 +3336,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NO3 and pct_5mC
 ```{r}
@@ -3366,7 +3357,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NO3 and pct_5mC
 ```{r}
@@ -3380,7 +3371,7 @@ Complete Model with just NO3
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-*Marginal assoc between higher NO3_1yrPreSamp and increased mort in this model.*
+No assoc between higher NO3_1yrPreSamp and increased mort in this model.
 
 Complete Model with just pct_5mC
 ```{r}
@@ -3394,7 +3385,7 @@ Complete Model with NO3 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No clear difference in the NO3 HR in this complete model.
+*HR for NO3_1yrPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 ## NO3 in 6mo Pre-Sampling Models
 Base model with just NO3
@@ -3402,21 +3393,21 @@ Base model with just NO3
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher NO3 in 6mo pre-sampling and mortality in this model.*
+No association between higher NO3 in 6mo pre-sampling and mortality in this model.
 
 Base model with just pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NO3 and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**HR for NO3_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for NO3_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC*
 
 Partial Model with just NO3
 ```{r}
@@ -3430,21 +3421,21 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NO3 and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-HR for NO3_6moPreSamp decreases slightly in this model, but not significant
+*HR for NO3_6moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 Complete Model with just NO3
 ```{r}
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-Significance for NO3 assoc with mortality lost in this model, likely because the primary impact is on baseline lung function, and the later NO3 impact on mortality is from the 5yr pre-censoring time period.
+No sig assoc between NO3_6moPreSamp and mort in this model.
 
 Complete Model with just pct_5mC
 ```{r}
@@ -3458,7 +3449,7 @@ Complete Model with NO3 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-Slight decrease NO3 HR in this complete model, but not significant.
+*HR for NO3_6moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 
 ## NO3 in 3mo Pre-Sampling Models
@@ -3474,14 +3465,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NO3 and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-No sig association between higher NO3 in 3mo pre-sampling and mortality in this model.
+*HR for NO3_3moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 Partial Model with just NO3
 ```{r}
@@ -3495,14 +3486,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NO3 and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-No sig association between higher NO3 in 3mo pre-sampling and mortality in this model.
+*HR for NO3_3moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 Complete Model with just NO3
 ```{r}
@@ -3523,7 +3514,7 @@ Complete Model with NO3 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No sig association between higher NO3 in 3mo pre-sampling and mortality in this model.
+*HR for NO3_3moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 ## NO3 in 1mo Pre-Sampling Models
 Base model with just NO3
@@ -3538,7 +3529,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NO3 and pct_5mC
 ```{r}
@@ -3559,7 +3550,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NO3 and pct_5mC
 ```{r}
@@ -3603,7 +3594,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NH4 and pct_5mC
 ```{r}
@@ -3624,7 +3615,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NH4 and pct_5mC
 ```{r}
@@ -3652,7 +3643,7 @@ Complete Model with NH4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No clear difference in the NH4 HR in this complete model.
+*HR for NH4_5yrPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 ## NH4 in 1yr Pre-Sampling Models
 Base model with just NH4
@@ -3667,7 +3658,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NH4 and pct_5mC
 ```{r}
@@ -3688,7 +3679,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NH4 and pct_5mC
 ```{r}
@@ -3716,7 +3707,7 @@ Complete Model with NH4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No clear difference in the NH4 HR in this complete model.
+*HR for NH4_1yrPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 ## NH4 in 6mo Pre-Sampling Models
 Base model with just NH4
@@ -3731,7 +3722,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NH4 and pct_5mC
 ```{r}
@@ -3752,7 +3743,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NH4 and pct_5mC
 ```{r}
@@ -3780,7 +3771,7 @@ Complete Model with NH4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-NH4 HR decreases slightly but is not significant in this complete model.
+*HR for NH4_6moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 
 ## NH4 in 3mo Pre-Sampling Models
@@ -3796,7 +3787,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NH4 and pct_5mC
 ```{r}
@@ -3817,7 +3808,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NH4 and pct_5mC
 ```{r}
@@ -3845,7 +3836,7 @@ Complete Model with NH4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-HR for NH4_3moPreSamp decreases slightly in this model but is not significant
+*HR for NH4_6moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 ## NH4 in 1mo Pre-Sampling Models
 Base model with just NH4
@@ -3860,7 +3851,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with NH4 and pct_5mC
 ```{r}
@@ -3881,7 +3872,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with NH4 and pct_5mC
 ```{r}
@@ -3909,7 +3900,7 @@ Complete Model with NH4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-HR for NH4_1moPreSamp decreases slightly but is not significant in this model.
+*HR for NH4_6moPreSamp decreases very slightly in this model indicating some mediation by pct_5mC*
 
 
 ## BC in 5yrs Pre-Sampling Models
@@ -3925,7 +3916,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with BC and pct_5mC
 ```{r}
@@ -3946,7 +3937,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with BC and pct_5mC
 ```{r}
@@ -3989,7 +3980,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with BC and pct_5mC
 ```{r}
@@ -4010,7 +4001,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with BC and pct_5mC
 ```{r}
@@ -4053,7 +4044,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with BC and pct_5mC
 ```{r}
@@ -4074,14 +4065,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with BC and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-No sig assoc between BC and mortality in this model, **although pct_5mC becomes significant indicating that higher pct_5mC assoc with increased mort.**
+No sig assoc between BC and mortality in this model
 
 Complete Model with just BC
 ```{r}
@@ -4118,7 +4109,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with BC and pct_5mC
 ```{r}
@@ -4139,14 +4130,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with BC and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for BC_3moPreSamp decreases slightly in this model and the impact of pct_5mC on mortality becomes significant indicating some mediation by pct_5mC**
+HR for BC_3moPreSamp decreases slightly in this model indicating some mediation by pct_5mC.
 
 Complete Model with just BC
 ```{r}
@@ -4182,14 +4173,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with BC and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**HR for BC_1moPreSamp decreases slightly in this model and the impact of pct_5mC on mortality becomes significant indicating some mediation by pct_5mC**
+*HR for BC_1moPreSamp decreases slightly in this model and the impact of pct_5mC on mortality becomes marginally significant indicating some mediation by pct_5mC*
 
 Partial Model with just BC
 ```{r}
@@ -4203,14 +4194,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with BC and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for BC_1moPreSamp decreases slightly in this model and the impact of pct_5mC on mort becomes significant indicating some mediation by pct_5mC**
+*HR for BC_1moPreSamp decreases slightly in this model and the impact of pct_5mC on mort becomes marginally significant indicating some mediation by pct_5mC*
 
 Complete Model with just BC
 ```{r}
@@ -4231,8 +4222,7 @@ Complete Model with BC and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No sig assoc in this complete model.
-
+*Higher BC_1moPreSamp marginally assoc with lower mort in this model.*
 
 
 
@@ -4242,14 +4232,14 @@ Base model with just OM
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher OM in 5yrs pre-censoring and mortality in this model.*
+**Sig association between higher OM in 5yrs pre-censoring and mortality in this model.**
 
 Base model with just pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with OM and pct_5mC
 ```{r}
@@ -4270,7 +4260,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with OM and pct_5mC
 ```{r}
@@ -4298,7 +4288,7 @@ Complete Model with OM and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-HR for OM actually increases in this model when pct_5mC included, arguing against any pct_5mC mediation of this association.
+No clear evidence of mediation here.
 
 ## OM in 1yr Pre-Sampling Models
 Base model with just OM
@@ -4313,7 +4303,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with OM and pct_5mC
 ```{r}
@@ -4334,14 +4324,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with OM and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-Minimal diff in HR for OM_1yrPreSamp when pct_5mC included in this model.
+Minimal increase in HR for OM_1yrPreSamp when pct_5mC included in this model.
 
 Complete Model with just OM
 ```{r}
@@ -4377,7 +4367,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with OM and pct_5mC
 ```{r}
@@ -4398,7 +4388,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with OM and pct_5mC
 ```{r}
@@ -4442,14 +4432,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with OM and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-HR for OM_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC, but OM still not sig assoc with mort
+No significant change in HR in this model indicating minimal medication by pct_5mC.
 
 Partial Model with just OM
 ```{r}
@@ -4463,14 +4453,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with OM and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-HR for OM_3moPreSamp decreases slightly in this model indicating some mediation by pct_5mC, but OM still not sig assoc with mort.
+No significant change in HR in this model indicating minimal medication by pct_5mC.
 
 Complete Model with just OM
 ```{r}
@@ -4506,14 +4496,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with OM and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**HR for OM_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC and the assoc between pct_5mC and mort becomes significant**
+No significant change in HR in this model indicating minimal medication by pct_5mC, *but pct_5mC assoc with increased mortality becomes marginally significant*.
 
 Partial Model with just OM
 ```{r}
@@ -4527,21 +4517,21 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with OM and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for OM_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC and the impact of pct_5mC on mort becomes signifcant**
+No significant change in HR in this model indicating minimal medication by pct_5mC, *but pct_5mC assoc with increased mortality becomes marginally significant*.
 
 Complete Model with just OM
 ```{r}
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No sig association between higher OM in 1mo pre-sampling and mortality in this model.
+**Sig association between higher OM_1moPreSamp and lower mortality in this model.**
 
 Complete Model with just pct_5mC
 ```{r}
@@ -4555,7 +4545,7 @@ Complete Model with OM and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No sig diff in HR
+*Very slight reduction in HR by pct_5mC indicating some small mediation effect.*
 
 
 
@@ -4572,14 +4562,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SS and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-HR for SS_1yrPreSamp increases slightly in this model indicating it is not mediated by pct_5mC
+**HR for SS_5yrPreSamp decreases slightly in this model indicating it is partially mediated by pct_5mC.**
 
 Partial Model with just SS
 ```{r}
@@ -4593,14 +4583,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SS and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-HR for SS_1yrPreSamp increases slightly in this model indicating it is not mediated by pct_5mC
+**HR for SS_5yrPreSamp decreases slightly in this model indicating it is partially mediated by pct_5mC.**
 
 Complete Model with just SS
 ```{r}
@@ -4621,7 +4611,7 @@ Complete Model with SS and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-SS HR increases in this complete model, indicating pct_5mC does not mediate SS and mort assoc.
+**HR for SS_5yrPreSamp decreases slightly in this model indicating it is partially mediated by pct_5mC.**
 
 ## SS in 1yr Pre-Sampling Models
 Base model with just SS
@@ -4636,14 +4626,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SS and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-HR for SS_1yrPreSamp increases slightly in this model indicating any assoc is NOT mediated by pct_5mC
+*HR for SS_5yrPreSamp decreases slightly in this model indicating it is partially mediated by pct_5mC.*
 
 Partial Model with just SS
 ```{r}
@@ -4657,14 +4647,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SS and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for SS_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+*HR for SS_1yrPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
 
 Complete Model with just SS
 ```{r}
@@ -4685,7 +4675,7 @@ Complete Model with SS and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No clear difference in the SS HR in this complete model.
+*HR for SS_1yrPreSamp decreases slightly in this model indicating it is partially mediated by pct_5mC.*
 
 ## SS in 6mo Pre-Sampling Models
 Base model with just SS
@@ -4700,14 +4690,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SS and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-HR for SS_6moPreSamp increases in this model indicating no mediation by pct_5mC
+*HR for SS_6moPreSamp decreases slightly in this model indicating it is partially mediated by pct_5mC.*
 
 Partial Model with just SS
 ```{r}
@@ -4721,14 +4711,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SS and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-HR for SS_6moPreSamp increases slightly in this model indicating no mediation by pct_5mC
+*HR for SS_6moPreSamp decreases slightly in this model indicating it is partially mediated by pct_5mC.*
 
 Complete Model with just SS
 ```{r}
@@ -4765,7 +4755,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SS and pct_5mC
 ```{r}
@@ -4786,7 +4776,7 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SS and pct_5mC
 ```{r}
@@ -4829,7 +4819,7 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with SS and pct_5mC
 ```{r}
@@ -4850,14 +4840,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with SS and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**pct_5mC sig assoc with mort in this model.**
+*pct_5mC marginally assoc with mort in this model.*
 
 Complete Model with just SS
 ```{r}
@@ -4888,42 +4878,42 @@ Base model with just Soil
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**Sig association between higher Soil in 5yrs pre-censoring and mortality in this model.**
+*Marginal association between higher Soil_5yrPreSamp and mortality in this model.*
 
 Base model with just pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with Soil and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**HR for Soil_1yrPreSamp increases slightly in this model indicating no mediation by pct_5mC**
+HR for Soil_1yrPreSamp increases slightly in this model indicating no mediation by pct_5mC
 
 Partial Model with just Soil
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**Sig association between higher Soil_5yrPreSamp and mortality in this model.**
+No association between higher Soil_5yrPreSamp and mortality in this model.
 
 Partial Model with just pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with Soil and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**HR for Soil_1yrPreSamp increases slightly in this model indicating no mediation by pct_5mC**
+HR for Soil_1yrPreSamp increases slightly in this model indicating no mediation by pct_5mC
 
 Complete Model with just Soil
 ```{r}
@@ -4944,7 +4934,7 @@ Complete Model with Soil and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-Soil HR increases, indicating pct_5mC not mediating any assoc
+No major difference in soil HR.
 
 ## Soil in 1yr Pre-Sampling Models
 Base model with just Soil
@@ -4952,14 +4942,14 @@ Base model with just Soil
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-**Sig association between higher Soil in 1yr pre-sampling and mortality in this model.**
+No association between higher Soil_1yrPreSamp and mortality in this model.
 
 Base model with just pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with Soil and pct_5mC
 ```{r}
@@ -4973,14 +4963,14 @@ Partial Model with just Soil
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-**Sig association between higher Soil_1yrPreSamp and mortality in this model.**
+No association between higher Soil_1yrPreSamp and mortality in this model.
 
 Partial Model with just pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with Soil and pct_5mC
 ```{r}
@@ -5023,14 +5013,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with Soil and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*HR for Soil_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC*
+HR for Soil_6moPreSamp increases slightly in this model indicating no mediation by pct_5mC
 
 Partial Model with just Soil
 ```{r}
@@ -5044,14 +5034,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with Soil and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*HR for Soil_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+HR for Soil_6moPreSamp increases slightly in this model indicating no mediation by pct_5mC
 
 Complete Model with just Soil
 ```{r}
@@ -5088,14 +5078,14 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with Soil and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*HR for Soil_6moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+No major difference in HR for Soil_3moPreSamp
 
 Partial Model with just Soil
 ```{r}
@@ -5109,14 +5099,14 @@ Partial Model with just pct_5mC
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with Soil and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*HR for Soil_3moPreSamp decreases slightly in this model indicating some mediation by pct_5mC**
+No major difference in HR for Soil_3moPreSamp
 
 Complete Model with just Soil
 ```{r}
@@ -5152,37 +5142,37 @@ Base model with just pct_5mC
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Base model with Soil and pct_5mC
 ```{r}
 coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + pct_5mC, data=dnam, id=ID)
 summary(coxPH_model1)
 ```
-HR for Soil_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC, but impact of soil on mort still not significant.
-**Assoc between pct_5mC and mort becomes significant.**
+No major difference in HR for Soil_1moPreSamp
+*Assoc between pct_5mC and mort becomes marginally significant.*
 
 Partial Model with just Soil
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-No sig association between higher Soil in 1mo pre-sampling and mortality in this model.
+*Marginal association between higher Soil in 1mo pre-sampling and mortality in this model.*
 
 Partial Model with just pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*Marginal association between higher %5mC and mortality in this model.*
+No assoc between higher %5mC and mortality in this model.
 
 Partial Model with Soil and pct_5mC
 ```{r}
 coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
 summary(coxPH_model2)
 ```
-*HR for Soil_1moPreSamp decreases slightly in this model indicating some mediation by pct_5mC, and higher soil marginally assoc with lower mort in this model.*
-**Higher pct_5mC becomes significantly assoc with incr mort in this model.**
+No major difference in HR for Soil_6moPreSamp
+*Higher pct_5mC becomes marginally assoc with incr mort in this model.*
 
 Complete Model with just Soil
 ```{r}
@@ -5203,7 +5193,7 @@ Complete Model with Soil and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-No sig diff in HR for Soil_1moPreSamp indicating minimal mediation by pct_5mC
+*Slight decrease in HR for Soil_1moPreSamp indicating small portion of mediation by pct_5mC*
 
 
 
