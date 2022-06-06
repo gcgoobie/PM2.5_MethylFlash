@@ -1035,9 +1035,62 @@ This takes us down to 733 observations.
 dnam <- dnam %>% select(ID, everything(.))
 ```
 
+
+# Make Dichotomized PM2.5
+## 5yrs Pre-Sampling
+Will use ATS-recommended 8ug/m^3 cutpoint to distinguish between low vs high exposures to PM2.5 over each time point
+```{r}
+dnam$PM5yrSamp_dich <- cut(dnam$PM_5yrPreSamp,
+                      breaks=c(0, 8, 100),
+                      labels=c("Low", "High"))
+summary(dnam$PM5yrSamp_dich)
+class(dnam$PM5yrSamp_dich)
+```
+
+## 1yr Pre-Sampling
+```{r}
+dnam$PM1yrSamp_dich <- cut(dnam$PM_1yrPreSamp,
+                      breaks=c(0, 8, 100),
+                      labels=c("Low", "High"))
+summary(dnam$PM1yrSamp_dich)
+class(dnam$PM1yrSamp_dich)
+```
+
+
+## 6mo Pre-Sampling
+```{r}
+dnam$PM6moSamp_dich <- cut(dnam$PM_6moPreSamp,
+                      breaks=c(0, 8, 100),
+                      labels=c("Low", "High"))
+summary(dnam$PM6moSamp_dich)
+class(dnam$PM6moSamp_dich)
+```
+
+
+## 3mo Pre-Sampling
+```{r}
+dnam$PM3moSamp_dich <- cut(dnam$PM_3moPreSamp,
+                      breaks=c(0, 8, 100),
+                      labels=c("Low", "High"))
+summary(dnam$PM3moSamp_dich)
+class(dnam$PM3moSamp_dich)
+```
+
+
+## 1mo Pre-Sampling
+```{r}
+dnam$PM1moSamp_dich <- cut(dnam$PM_1moPreSamp,
+                      breaks=c(0, 8, 100),
+                      labels=c("Low", "High"))
+summary(dnam$PM1moSamp_dich)
+class(dnam$PM1moSamp_dich)
+```
+
+
+
 # Export File with All PM2.5 and Constituent Time Frames Matched
 ```{r}
-write_xlsx(dnam, path="PFF_fILD_PM25andConstituentsMatched_forMethylFlash_2022_04_28.xlsx")
+write_xlsx(dnam, path="PFF_fILD_PM25andConstituentsMatched_forMethylFlash_2022_06_06.xlsx")
 ```
 
 # Releveling Factors
@@ -1724,58 +1777,65 @@ Scatterplot of continuous Soil 1mo Pre-Sampling vs %5mC
 
 
 ### Violin Plots
-Violin plot wrapping boxplot to visualize NO3 5yrs Pre-Sampling low vs high vs %5mC
+Violin plot wrapping boxplot to visualize Dichotomized PM2.5 5yrs Pre-Sampling vs %5mC
 ```{r}
-#dnamb <- dnam %>% filter(!is.na(NO35yrCensor_dich))
-#(dnamb %>% ggplot(aes(x=NO35yrCensor_dich, y=pct_5mC, fill=NO35yrCensor_dich))+
- #  geom_boxplot(width=0.2, color="black", alpha=1.0)+
-  # geom_violin(width=1.0, alpha=0.5)+
-  # labs(x="NO3 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NO3 5yrs Pre-Sampling Low vs High")+
-  # theme_light()+
-  # theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-  # scale_fill_brewer(type="seq", palette="YlOrRd")+
-  # ylim(0,0.25))
+dnamb <- dnam %>% filter(!is.na(PM5yrSamp_dich))
+(dnamb %>% ggplot(aes(x=PM5yrSamp_dich, y=pct_5mC, fill=PM5yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="PM2.5 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 5yrs Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.2))
 ```
 
-Violin plot wrapping boxplot to visualize NO3 5yrs pre-dx low vs high vs %5mC
+Violin plot wrapping boxplot to visualize Dichotomized PM2.5 1yr Pre-Sampling vs %5mC
 ```{r}
-#dnamb <- dnam %>% filter(!is.na(NO35yr_dich))
-#(dnamb %>% ggplot(aes(x=NO35yr_dich, y=pct_5mC, fill=NO35yr_dich))+
-#  geom_boxplot(width=0.2, color="black", alpha=1.0)+
-#   geom_violin(width=1.0, alpha=0.5)+
-#   labs(x="NO3 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NO3 1yr Pre-Sampling Low vs High")+
-#  theme_light()+
-#   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-#   scale_fill_brewer(type="seq", palette="YlOrRd")+
-#   ylim(0,0.25))
+dnamb <- dnam %>% filter(!is.na(PM1yrSamp_dich))
+(dnamb %>% ggplot(aes(x=PM1yrSamp_dich, y=pct_5mC, fill=PM1yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="PM2.5 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 1yr Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.2))
 ```
 
-Violin plot wrapping boxplot to visualize NH4 5yrs Pre-Sampling low vs high vs %5mC
+Violin plot wrapping boxplot to visualize Dichotomized PM2.5 6mo Pre-Sampling vs %5mC
 ```{r}
-#dnamb <- dnam %>% filter(!is.na(NH45yrCensor_dich))
-#(dnamb %>% ggplot(aes(x=NH45yrCensor_dich, y=pct_5mC, fill=NH45yrCensor_dich))+
-#   geom_boxplot(width=0.2, color="black", alpha=1.0)+
-#   geom_violin(width=1.0, alpha=0.5)+
-#   labs(x="NH4 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NH4 5yrs Pre-Sampling Low vs High")+
-#   theme_light()+
-#   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-#   scale_fill_brewer(type="seq", palette="YlOrRd")+
-#   ylim(0,0.25))
+dnamb <- dnam %>% filter(!is.na(PM6moSamp_dich))
+(dnamb %>% ggplot(aes(x=PM6moSamp_dich, y=pct_5mC, fill=PM6moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="PM2.5 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 6mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.2))
 ```
 
-Violin plot wrapping boxplot to visualize NH4 5yrs pre-dx low vs high vs %5mC
+Violin plot wrapping boxplot to visualize Dichotomized PM2.5 3mo Pre-Sampling vs %5mC
 ```{r}
-#dnamb <- dnam %>% filter(!is.na(NH45yr_dich))
-#(dnamb %>% ggplot(aes(x=NH45yr_dich, y=pct_5mC, fill=NH45yr_dich))+
-#   geom_boxplot(width=0.2, color="black", alpha=1.0)+
-#   geom_violin(width=1.0, alpha=0.5)+
-#   labs(x="NH4 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by NH4 1yr Pre-Sampling Low vs High")+
-#   theme_light()+
-#   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-#   scale_fill_brewer(type="seq", palette="YlOrRd")+
-#   ylim(0,0.25))
+dnamb <- dnam %>% filter(!is.na(PM3moSamp_dich))
+(dnamb %>% ggplot(aes(x=PM3moSamp_dich, y=pct_5mC, fill=PM3moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="PM2.5 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 3mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.2))
 ```
 
+Violin plot wrapping boxplot to visualize Dichotomized PM2.5 1mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(PM1moSamp_dich))
+(dnamb %>% ggplot(aes(x=PM1moSamp_dich, y=pct_5mC, fill=PM1moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="PM2.5 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 1mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.2))
+```
 
 
 # Linear Regression Analyses
@@ -1841,6 +1901,33 @@ confint(dnam_model3)
 No significant association between PM_5yrPreSamp and prop_5mC in this model.
 
 
+### Dichotomized PM2.5 in 5yrs Pre-Sampling
+Base Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~PM5yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between high PM2.5 and prop_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ PM5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM5yrSamp_dich and prop_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ PM5yrSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM5yrSamp_dich and prop_5mC in this model.
+
+
 ### Continuous PM2.5 1yr Pre-Sampling
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp, dnam)
@@ -1901,31 +1988,32 @@ confint(dnam_model3)
 ```
 No significant association between PM_1yrPreSamp and prop_5mC in this model.
 
-
-### Continuous PM2.5 5yr Pre-Sample
+### Dichotomized PM2.5 in 1yr Pre-Sampling
+Base Model
 ```{r}
-dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp, dnam)
+dnam_model1 <- betareg(prop_5mC ~PM1yrSamp_dich, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between PM_5yrPreSamp and prop_5mC in this model.
+No significant association between high PM2.5 and prop_5mC in this model.
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
-dnam_model2 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
+dnam_model2 <- betareg(prop_5mC ~ PM1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between PM_5yrPreSamp and prop_5mC in this model.
+No significant association between PM1yrSamp_dich and prop_5mC in this model.
 
 
 Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM1yrSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_5yrPreSamp and prop_5mC in this model.
+No significant association between PM1yrSamp_dich and prop_5mC in this model.
+
 
 
 
@@ -1955,6 +2043,33 @@ confint(dnam_model3)
 No significant association between PM_6moPreSamp and prop_5mC in this model.
 
 
+### Dichotomized PM2.5 in 6mo Pre-Sampling
+Base Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~PM6moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between high PM2.5 and prop_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ PM6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM6moSamp_dich and prop_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ PM6moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM6moSamp_dich and prop_5mC in this model.
+
+
 ### Continuous PM2.5 3mo Pre-Sample
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_3moPreSamp, dnam)
@@ -1979,6 +2094,32 @@ summary(dnam_model3)
 confint(dnam_model3)
 ```
 No significant association between PM_3moPreSamp and prop_5mC in this model.
+
+### Dichotomized PM2.5 in 3mo Pre-Sampling
+Base Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~PM3moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between high PM2.5 and prop_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ PM3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM3moSamp_dich and prop_5mC in this model.
+
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ PM3moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM3moSamp_dich and prop_5mC in this model.
 
 
 ### Continuous PM2.5 1mo Pre-Sample
@@ -2005,6 +2146,32 @@ summary(dnam_model3)
 confint(dnam_model3)
 ```
 No significant association between PM_1moPreSamp and prop_5mC in this model.
+
+### Dichotomized PM2.5 in 1mo Pre-Sampling
+Base Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~PM1moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between high PM2.5 and prop_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ PM1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between PM1moSamp_dich and prop_5mC in this model.
+
+Complete model with age_dx, sex, smokeHx, race, urbanicity
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ PM1moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between PM1moSamp_dich and prop_5mC in this model.
+
 
 
 ## SO4 Models
@@ -2650,6 +2817,26 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx +
 summary(coxPH_model3)
 ```
 No significant association between %5mC and mortality in this model.
+
+# Impact of PM2.5 on Mortality
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~PM5yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,10),
+            legend="right",
+           data=tel,
+           legend.title="PM2.5 5yrs \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High PM2.5 in 5yrs Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
 
 # Impact of DNAm on Baseline FVC
 Base Model
