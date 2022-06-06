@@ -1087,6 +1087,368 @@ class(dnam$PM1moSamp_dich)
 ```
 
 
+# Make Dichotomized SO4
+## 5yrs Pre-Sampling
+Will take the median of SO4_5yrsPreSamp in both PFF and Simmons cohort, and then the average of those two medians to get the dichotomized cutpoint for SO4. Unfortunately for SO4, the Simmons Center exposures are so much higher than PFF that this cutpoint does not enable any overlap, so will set an arbitrary cut point for SO4 of 1.5ug/m^3
+```{r}
+dnam$SO45yrSamp_dich <- cut(dnam$SO4_5yrPreSamp,
+                      breaks=c(0, 1.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SO45yrSamp_dich)
+class(dnam$SO45yrSamp_dich)
+```
+
+## 1yr Pre-Sampling
+```{r}
+dnam$SO41yrSamp_dich <- cut(dnam$SO4_1yrPreSamp,
+                      breaks=c(0, 1.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SO41yrSamp_dich)
+class(dnam$SO41yrSamp_dich)
+```
+
+
+## 6mo Pre-Sampling
+```{r}
+dnam$SO46moSamp_dich <- cut(dnam$SO4_6moPreSamp,
+                      breaks=c(0, 1.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SO46moSamp_dich)
+class(dnam$SO46moSamp_dich)
+```
+
+
+## 3mo Pre-Sampling
+```{r}
+dnam$SO43moSamp_dich <- cut(dnam$SO4_3moPreSamp,
+                      breaks=c(0, 1.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SO43moSamp_dich)
+class(dnam$SO43moSamp_dich)
+```
+
+
+## 1mo Pre-Sampling
+```{r}
+dnam$SO41moSamp_dich <- cut(dnam$SO4_1moPreSamp,
+                      breaks=c(0, 1.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SO41moSamp_dich)
+class(dnam$SO41moSamp_dich)
+```
+
+
+# Make Dichotomized NO3
+## 5yrs Pre-Sampling
+Will take the median of NO3_5yrsPreSamp in both PFF and Simmons cohort, and then the average of those two medians to get the dichotomized cutpoint for NO3
+```{r}
+dnam$NO35yrSamp_dich <- cut(dnam$NO3_5yrPreSamp,
+                      breaks=c(0, 0.96, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NO35yrSamp_dich)
+class(dnam$NO35yrSamp_dich)
+```
+
+## 1yr Pre-Sampling
+```{r}
+dnam$NO31yrSamp_dich <- cut(dnam$NO3_1yrPreSamp,
+                      breaks=c(0, 0.84, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NO31yrSamp_dich)
+class(dnam$NO31yrSamp_dich)
+```
+
+
+## 6mo Pre-Sampling
+```{r}
+dnam$NO36moSamp_dich <- cut(dnam$NO3_6moPreSamp,
+                      breaks=c(0, 0.83, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NO36moSamp_dich)
+class(dnam$NO36moSamp_dich)
+```
+
+
+## 3mo Pre-Sampling
+```{r}
+dnam$NO33moSamp_dich <- cut(dnam$NO3_3moPreSamp,
+                      breaks=c(0, 0.78, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NO33moSamp_dich)
+class(dnam$NO33moSamp_dich)
+```
+
+
+## 1mo Pre-Sampling
+```{r}
+dnam$NO31moSamp_dich <- cut(dnam$NO3_1moPreSamp,
+                      breaks=c(0, 0.7, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NO31moSamp_dich)
+class(dnam$NO31moSamp_dich)
+```
+
+
+
+# Make Dichotomized NH4
+## 5yrs Pre-Sampling
+Will take the median of NH4_5yrsPreSamp in both PFF and Simmons cohort, and then the average of those two medians to get the dichotomized cutpoint for NH4. Unfortunately for NH4, the Simmons Center exposures are so much higher than PFF that this cutpoint does not enable any overlap, so will set an arbitrary cut point for NH4 of 1.5ug/m^3
+```{r}
+dnam$NH45yrSamp_dich <- cut(dnam$NH4_5yrPreSamp,
+                      breaks=c(0, 0.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NH45yrSamp_dich)
+class(dnam$NH45yrSamp_dich)
+```
+
+## 1yr Pre-Sampling
+```{r}
+dnam$NH41yrSamp_dich <- cut(dnam$NH4_1yrPreSamp,
+                      breaks=c(0, 0.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NH41yrSamp_dich)
+class(dnam$NH41yrSamp_dich)
+```
+
+
+## 6mo Pre-Sampling
+```{r}
+dnam$NH46moSamp_dich <- cut(dnam$NH4_6moPreSamp,
+                      breaks=c(0, 0.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NH46moSamp_dich)
+class(dnam$NH46moSamp_dich)
+```
+
+
+## 3mo Pre-Sampling
+```{r}
+dnam$NH43moSamp_dich <- cut(dnam$NH4_3moPreSamp,
+                      breaks=c(0, 0.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NH43moSamp_dich)
+class(dnam$NH43moSamp_dich)
+```
+
+
+## 1mo Pre-Sampling
+```{r}
+dnam$NH41moSamp_dich <- cut(dnam$NH4_1moPreSamp,
+                      breaks=c(0, 0.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$NH41moSamp_dich)
+class(dnam$NH41moSamp_dich)
+```
+
+
+
+# Make Dichotomized BC
+## 5yrs Pre-Sampling
+Will take the median of BC_5yrsPreSamp in both PFF and Simmons cohort, and then the average of those two medians to get the dichotomized cutpoint for BC
+```{r}
+dnam$BC5yrSamp_dich <- cut(dnam$BC_5yrPreSamp,
+                      breaks=c(0, 0.73, 100),
+                      labels=c("Low", "High"))
+summary(dnam$BC5yrSamp_dich)
+class(dnam$BC5yrSamp_dich)
+```
+
+## 1yr Pre-Sampling
+```{r}
+dnam$BC1yrSamp_dich <- cut(dnam$BC_1yrPreSamp,
+                      breaks=c(0, 0.73, 100),
+                      labels=c("Low", "High"))
+summary(dnam$BC1yrSamp_dich)
+class(dnam$BC1yrSamp_dich)
+```
+
+
+## 6mo Pre-Sampling
+```{r}
+dnam$BC6moSamp_dich <- cut(dnam$BC_6moPreSamp,
+                      breaks=c(0, 0.73, 100),
+                      labels=c("Low", "High"))
+summary(dnam$BC6moSamp_dich)
+class(dnam$BC6moSamp_dich)
+```
+
+
+## 3mo Pre-Sampling
+```{r}
+dnam$BC3moSamp_dich <- cut(dnam$BC_3moPreSamp,
+                      breaks=c(0, 0.72, 100),
+                      labels=c("Low", "High"))
+summary(dnam$BC3moSamp_dich)
+class(dnam$BC3moSamp_dich)
+```
+
+
+## 1mo Pre-Sampling
+```{r}
+dnam$BC1moSamp_dich <- cut(dnam$BC_1moPreSamp,
+                      breaks=c(0, 0.73, 100),
+                      labels=c("Low", "High"))
+summary(dnam$BC1moSamp_dich)
+class(dnam$BC1moSamp_dich)
+```
+
+
+
+# Make Dichotomized OM
+## 5yrs Pre-Sampling
+Will take the median of OM_5yrsPreSamp in both PFF and Simmons cohort, and then the average of those two medians to get the dichotomized cutpoint for OM
+```{r}
+dnam$OM5yrSamp_dich <- cut(dnam$OM_5yrPreSamp,
+                      breaks=c(0, 3.01, 100),
+                      labels=c("Low", "High"))
+summary(dnam$OM5yrSamp_dich)
+class(dnam$OM5yrSamp_dich)
+```
+
+## 1yr Pre-Sampling
+```{r}
+dnam$OM1yrSamp_dich <- cut(dnam$OM_1yrPreSamp,
+                      breaks=c(0, 3.13, 100),
+                      labels=c("Low", "High"))
+summary(dnam$OM1yrSamp_dich)
+class(dnam$OM1yrSamp_dich)
+```
+
+
+## 6mo Pre-Sampling
+```{r}
+dnam$OM6moSamp_dich <- cut(dnam$OM_6moPreSamp,
+                      breaks=c(0, 3.12, 100),
+                      labels=c("Low", "High"))
+summary(dnam$OM6moSamp_dich)
+class(dnam$OM6moSamp_dich)
+```
+
+
+## 3mo Pre-Sampling
+```{r}
+dnam$OM3moSamp_dich <- cut(dnam$OM_3moPreSamp,
+                      breaks=c(0, 3.05, 100),
+                      labels=c("Low", "High"))
+summary(dnam$OM3moSamp_dich)
+class(dnam$OM3moSamp_dich)
+```
+
+
+## 1mo Pre-Sampling
+```{r}
+dnam$OM1moSamp_dich <- cut(dnam$OM_1moPreSamp,
+                      breaks=c(0, 3.0, 100),
+                      labels=c("Low", "High"))
+summary(dnam$OM1moSamp_dich)
+class(dnam$OM1moSamp_dich)
+```
+
+
+
+# Make Dichotomized SS
+## 5yrs Pre-Sampling
+Will take the median of SS_5yrsPreSamp in both PFF and Simmons cohort, and then the average of those two medians to get the dichotomized cutpoint for SS
+```{r}
+dnam$SS5yrSamp_dich <- cut(dnam$SS_5yrPreSamp,
+                      breaks=c(0, 0.22, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SS5yrSamp_dich)
+class(dnam$SS5yrSamp_dich)
+```
+
+## 1yr Pre-Sampling
+```{r}
+dnam$SS1yrSamp_dich <- cut(dnam$SS_1yrPreSamp,
+                      breaks=c(0, 0.21, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SS1yrSamp_dich)
+class(dnam$SS1yrSamp_dich)
+```
+
+
+## 6mo Pre-Sampling
+```{r}
+dnam$SS6moSamp_dich <- cut(dnam$SS_6moPreSamp,
+                      breaks=c(0, 0.2, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SS6moSamp_dich)
+class(dnam$SS6moSamp_dich)
+```
+
+
+## 3mo Pre-Sampling
+```{r}
+dnam$SS3moSamp_dich <- cut(dnam$SS_3moPreSamp,
+                      breaks=c(0, 0.2, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SS3moSamp_dich)
+class(dnam$SS3moSamp_dich)
+```
+
+
+## 1mo Pre-Sampling
+```{r}
+dnam$SS1moSamp_dich <- cut(dnam$SS_1moPreSamp,
+                      breaks=c(0, 0.2, 100),
+                      labels=c("Low", "High"))
+summary(dnam$SS1moSamp_dich)
+class(dnam$SS1moSamp_dich)
+```
+
+
+
+# Make Dichotomized Soil
+## 5yrs Pre-Sampling
+Will take the median of Soil_5yrsPreSamp in both PFF and Simmons cohort, and then the average of those two medians to get the dichotomized cutpoint for Soil
+```{r}
+dnam$Soil5yrSamp_dich <- cut(dnam$Soil_5yrPreSamp,
+                      breaks=c(0, 0.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$Soil5yrSamp_dich)
+class(dnam$Soil5yrSamp_dich)
+```
+
+## 1yr Pre-Sampling
+```{r}
+dnam$Soil1yrSamp_dich <- cut(dnam$Soil_1yrPreSamp,
+                      breaks=c(0, 0.5, 100),
+                      labels=c("Low", "High"))
+summary(dnam$Soil1yrSamp_dich)
+class(dnam$Soil1yrSamp_dich)
+```
+
+
+## 6mo Pre-Sampling
+```{r}
+dnam$Soil6moSamp_dich <- cut(dnam$Soil_6moPreSamp,
+                      breaks=c(0, 0.45, 100),
+                      labels=c("Low", "High"))
+summary(dnam$Soil6moSamp_dich)
+class(dnam$Soil6moSamp_dich)
+```
+
+
+## 3mo Pre-Sampling
+```{r}
+dnam$Soil3moSamp_dich <- cut(dnam$Soil_3moPreSamp,
+                      breaks=c(0, 0.45, 100),
+                      labels=c("Low", "High"))
+summary(dnam$Soil3moSamp_dich)
+class(dnam$Soil3moSamp_dich)
+```
+
+
+## 1mo Pre-Sampling
+```{r}
+dnam$Soil1moSamp_dich <- cut(dnam$Soil_1moPreSamp,
+                      breaks=c(0, 0.45, 100),
+                      labels=c("Low", "High"))
+summary(dnam$Soil1moSamp_dich)
+class(dnam$Soil1moSamp_dich)
+```
+
+
 
 # Export File with All PM2.5 and Constituent Time Frames Matched
 ```{r}
@@ -1776,7 +2138,8 @@ Scatterplot of continuous Soil 1mo Pre-Sampling vs %5mC
 
 
 
-### Violin Plots
+## Violin Plots
+### PM2.5
 Violin plot wrapping boxplot to visualize Dichotomized PM2.5 5yrs Pre-Sampling vs %5mC
 ```{r}
 dnamb <- dnam %>% filter(!is.na(PM5yrSamp_dich))
@@ -1786,7 +2149,7 @@ dnamb <- dnam %>% filter(!is.na(PM5yrSamp_dich))
     labs(x="PM2.5 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 5yrs Pre-Sampling")+
     theme_light()+
     theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-    ylim(0,0.2))
+    ylim(0,0.25))
 ```
 
 Violin plot wrapping boxplot to visualize Dichotomized PM2.5 1yr Pre-Sampling vs %5mC
@@ -1798,7 +2161,7 @@ dnamb <- dnam %>% filter(!is.na(PM1yrSamp_dich))
     labs(x="PM2.5 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 1yr Pre-Sampling")+
     theme_light()+
     theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-    ylim(0,0.2))
+    ylim(0,0.25))
 ```
 
 Violin plot wrapping boxplot to visualize Dichotomized PM2.5 6mo Pre-Sampling vs %5mC
@@ -1810,7 +2173,7 @@ dnamb <- dnam %>% filter(!is.na(PM6moSamp_dich))
     labs(x="PM2.5 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 6mo Pre-Sampling")+
     theme_light()+
     theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-    ylim(0,0.2))
+    ylim(0,0.25))
 ```
 
 Violin plot wrapping boxplot to visualize Dichotomized PM2.5 3mo Pre-Sampling vs %5mC
@@ -1822,7 +2185,7 @@ dnamb <- dnam %>% filter(!is.na(PM3moSamp_dich))
     labs(x="PM2.5 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 3mo Pre-Sampling")+
     theme_light()+
     theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-    ylim(0,0.2))
+    ylim(0,0.25))
 ```
 
 Violin plot wrapping boxplot to visualize Dichotomized PM2.5 1mo Pre-Sampling vs %5mC
@@ -1834,7 +2197,438 @@ dnamb <- dnam %>% filter(!is.na(PM1moSamp_dich))
     labs(x="PM2.5 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized PM2.5 1mo Pre-Sampling")+
     theme_light()+
     theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
-    ylim(0,0.2))
+    ylim(0,0.25))
+```
+
+### SO4
+Violin plot wrapping boxplot to visualize Dichotomized SO4 5yrs Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SO45yrSamp_dich))
+(dnamb %>% ggplot(aes(x=SO45yrSamp_dich, y=pct_5mC, fill=SO45yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SO4 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SO4 5yrs Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized SO4 1yr Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SO41yrSamp_dich))
+(dnamb %>% ggplot(aes(x=SO41yrSamp_dich, y=pct_5mC, fill=SO41yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SO4 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SO4 1yr Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+pct_5mC appears slightly higher in the high SO41yrSamp_dich exposure group.
+
+Violin plot wrapping boxplot to visualize Dichotomized SO4 6mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SO46moSamp_dich))
+(dnamb %>% ggplot(aes(x=SO46moSamp_dich, y=pct_5mC, fill=SO46moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SO4 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SO4 6mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized SO4 3mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SO43moSamp_dich))
+(dnamb %>% ggplot(aes(x=SO43moSamp_dich, y=pct_5mC, fill=SO43moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SO4 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SO4 3mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized SO4 1mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SO41moSamp_dich))
+(dnamb %>% ggplot(aes(x=SO41moSamp_dich, y=pct_5mC, fill=SO41moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SO4 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SO4 1mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+### NO3
+Violin plot wrapping boxplot to visualize Dichotomized NO3 5yrs Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NO35yrSamp_dich))
+(dnamb %>% ggplot(aes(x=NO35yrSamp_dich, y=pct_5mC, fill=NO35yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NO3 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NO3 5yrs Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized NO3 1yr Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NO31yrSamp_dich))
+(dnamb %>% ggplot(aes(x=NO31yrSamp_dich, y=pct_5mC, fill=NO31yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NO3 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NO3 1yr Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized NO3 6mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NO36moSamp_dich))
+(dnamb %>% ggplot(aes(x=NO36moSamp_dich, y=pct_5mC, fill=NO36moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NO3 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NO3 6mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized NO3 3mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NO33moSamp_dich))
+(dnamb %>% ggplot(aes(x=NO33moSamp_dich, y=pct_5mC, fill=NO33moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NO3 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NO3 3mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized NO3 1mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NO31moSamp_dich))
+(dnamb %>% ggplot(aes(x=NO31moSamp_dich, y=pct_5mC, fill=NO31moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NO3 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NO3 1mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+### NH4
+Violin plot wrapping boxplot to visualize Dichotomized NH4 5yrs Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NH45yrSamp_dich))
+(dnamb %>% ggplot(aes(x=NH45yrSamp_dich, y=pct_5mC, fill=NH45yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NH4 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NH4 5yrs Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+pct_5mC appears slightly higher in the high NH45yrSamp_dich exposure group.
+
+Violin plot wrapping boxplot to visualize Dichotomized NH4 1yr Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NH41yrSamp_dich))
+(dnamb %>% ggplot(aes(x=NH41yrSamp_dich, y=pct_5mC, fill=NH41yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NH4 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NH4 1yr Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+pct_5mC appears slightly higher in the high NH41yrSamp_dich exposure group.
+
+Violin plot wrapping boxplot to visualize Dichotomized NH4 6mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NH46moSamp_dich))
+(dnamb %>% ggplot(aes(x=NH46moSamp_dich, y=pct_5mC, fill=NH46moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NH4 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NH4 6mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized NH4 3mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NH43moSamp_dich))
+(dnamb %>% ggplot(aes(x=NH43moSamp_dich, y=pct_5mC, fill=NH43moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NH4 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NH4 3mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+pct_5mC appears slightly higher in the high NH41yrSamp_dich exposure group.
+
+Violin plot wrapping boxplot to visualize Dichotomized NH4 1mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(NH41moSamp_dich))
+(dnamb %>% ggplot(aes(x=NH41moSamp_dich, y=pct_5mC, fill=NH41moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="NH4 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized NH4 1mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+### BC
+Violin plot wrapping boxplot to visualize Dichotomized BC 5yrs Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(BC5yrSamp_dich))
+(dnamb %>% ggplot(aes(x=BC5yrSamp_dich, y=pct_5mC, fill=BC5yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="BC 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized BC 5yrs Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized BC 1yr Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(BC1yrSamp_dich))
+(dnamb %>% ggplot(aes(x=BC1yrSamp_dich, y=pct_5mC, fill=BC1yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="BC 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized BC 1yr Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized BC 6mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(BC6moSamp_dich))
+(dnamb %>% ggplot(aes(x=BC6moSamp_dich, y=pct_5mC, fill=BC6moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="BC 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized BC 6mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized BC 3mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(BC3moSamp_dich))
+(dnamb %>% ggplot(aes(x=BC3moSamp_dich, y=pct_5mC, fill=BC3moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="BC 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized BC 3mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized BC 1mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(BC1moSamp_dich))
+(dnamb %>% ggplot(aes(x=BC1moSamp_dich, y=pct_5mC, fill=BC1moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="BC 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized BC 1mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+### OM
+Violin plot wrapping boxplot to visualize Dichotomized OM 5yrs Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(OM5yrSamp_dich))
+(dnamb %>% ggplot(aes(x=OM5yrSamp_dich, y=pct_5mC, fill=OM5yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="OM 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized OM 5yrs Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized OM 1yr Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(OM1yrSamp_dich))
+(dnamb %>% ggplot(aes(x=OM1yrSamp_dich, y=pct_5mC, fill=OM1yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="OM 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized OM 1yr Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized OM 6mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(OM6moSamp_dich))
+(dnamb %>% ggplot(aes(x=OM6moSamp_dich, y=pct_5mC, fill=OM6moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="OM 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized OM 6mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized OM 3mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(OM3moSamp_dich))
+(dnamb %>% ggplot(aes(x=OM3moSamp_dich, y=pct_5mC, fill=OM3moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="OM 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized OM 3mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized OM 1mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(OM1moSamp_dich))
+(dnamb %>% ggplot(aes(x=OM1moSamp_dich, y=pct_5mC, fill=OM1moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="OM 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized OM 1mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+### SS
+Violin plot wrapping boxplot to visualize Dichotomized SS 5yrs Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SS5yrSamp_dich))
+(dnamb %>% ggplot(aes(x=SS5yrSamp_dich, y=pct_5mC, fill=SS5yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SS 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SS 5yrs Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized SS 1yr Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SS1yrSamp_dich))
+(dnamb %>% ggplot(aes(x=SS1yrSamp_dich, y=pct_5mC, fill=SS1yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SS 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SS 1yr Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized SS 6mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SS6moSamp_dich))
+(dnamb %>% ggplot(aes(x=SS6moSamp_dich, y=pct_5mC, fill=SS6moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SS 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SS 6mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized SS 3mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SS3moSamp_dich))
+(dnamb %>% ggplot(aes(x=SS3moSamp_dich, y=pct_5mC, fill=SS3moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SS 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SS 3mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized SS 1mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(SS1moSamp_dich))
+(dnamb %>% ggplot(aes(x=SS1moSamp_dich, y=pct_5mC, fill=SS1moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="SS 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized SS 1mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+### Soil
+Violin plot wrapping boxplot to visualize Dichotomized Soil 5yrs Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(Soil5yrSamp_dich))
+(dnamb %>% ggplot(aes(x=Soil5yrSamp_dich, y=pct_5mC, fill=Soil5yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Soil 5yrs Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized Soil 5yrs Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized Soil 1yr Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(Soil1yrSamp_dich))
+(dnamb %>% ggplot(aes(x=Soil1yrSamp_dich, y=pct_5mC, fill=Soil1yrSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Soil 1yr Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized Soil 1yr Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized Soil 6mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(Soil6moSamp_dich))
+(dnamb %>% ggplot(aes(x=Soil6moSamp_dich, y=pct_5mC, fill=Soil6moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Soil 6mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized Soil 6mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized Soil 3mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(Soil3moSamp_dich))
+(dnamb %>% ggplot(aes(x=Soil3moSamp_dich, y=pct_5mC, fill=Soil3moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Soil 3mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized Soil 3mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
+```
+
+Violin plot wrapping boxplot to visualize Dichotomized Soil 1mo Pre-Sampling vs %5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(Soil1moSamp_dich))
+(dnamb %>% ggplot(aes(x=Soil1moSamp_dich, y=pct_5mC, fill=Soil1moSamp_dich))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Soil 1mo Pre-Sampling Low vs High", y="% 5mC", title="% 5mC by Dichotomized Soil 1mo Pre-Sampling")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0,0.25))
 ```
 
 
@@ -2192,6 +2986,22 @@ confint(dnam_model2)
 ```
 No significant association between SO4_5yrPreSamp and prop_5mC in this model.
 
+### Dichotomized SO4 in 5yrs Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SO45yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO45yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SO45yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO45yrSamp_dich and prop_5mC in this model.
 
 ### Continuous SO4 in 1yrs Pre-Sampling
 Unadjusted model
@@ -2210,6 +3020,24 @@ confint(dnam_model2)
 ```
 No significant association between SO4_1yrPreSamp and prop_5mC in this model.
 
+### Dichotomized SO4 in 1yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SO41yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO41yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SO41yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO41yrSamp_dich and prop_5mC in this model.
+
+
 ### Continuous SO4 in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2226,6 +3054,23 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between SO4_6moPreSamp and prop_5mC in this model.
+
+### Dichotomized SO4 in 6mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SO46moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO46moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SO46moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO46moSamp_dich and prop_5mC in this model.
 
 ### Continuous SO4 in 3mo Pre-Sampling
 Unadjusted model
@@ -2244,6 +3089,24 @@ confint(dnam_model2)
 ```
 No significant association between SO4_3moPreSamp and prop_5mC in this model.
 
+### Dichotomized SO4 in 3mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SO43moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO43moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SO43moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO43moSamp_dich and prop_5mC in this model.
+
+
 ### Continuous SO4 in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2261,6 +3124,22 @@ confint(dnam_model2)
 ```
 No significant association between SO4_1moPreSamp and prop_5mC in this model.
 
+### Dichotomized SO4 in 1mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SO41moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SO41moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SO41moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SO41moSamp_dich and prop_5mC in this model.
 
 ## NO3 Models
 ### Continuous NO3 in 5yrs Pre-Sampling
@@ -2280,6 +3159,24 @@ confint(dnam_model2)
 ```
 *Nitrate is marginally associated with higher global DNAm in this base model.*
 
+### Dichotomized NO3 in 5yrs Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NO35yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+*Marginal association between high NO35yrSamp_dich and prop_5mC in this model.*
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NO35yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+*Marginal association between high NO35yrSamp_dich and prop_5mC in this model.*
+
+
 ### Continuous NO3 in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2298,6 +3195,24 @@ confint(dnam_model2)
 **Higher nitrate is associated with higher global DNAm in this model.**
 
 
+### Dichotomized NO3 in 1yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NO31yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+**Significant association between high NO31yrSamp_dich and prop_5mC in this model.**
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NO31yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+*Marginal association between NO31yrSamp_dich and prop_5mC in this model.*
+
+
 ### Continuous NO3 in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2314,6 +3229,23 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No assoc of nitrate with global DNAm in this model.
+
+### Dichotomized NO3 in 6mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NO36moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between NO36moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NO36moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between NO36moSamp_dich and prop_5mC in this model.
 
 
 ### Continuous NO3 in 3mo Pre-Sampling
@@ -2334,6 +3266,24 @@ confint(dnam_model2)
 No association between nitrate and global DNAm in this model.
 
 
+### Dichotomized NO3 in 3mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NO33moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between NO33moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NO33moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between NO33moSamp_dich and prop_5mC in this model.
+
+
 ### Continuous NO3 in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2350,6 +3300,23 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No association between nitrate and global DNAm in this model.
+
+### Dichotomized NO3 in 1mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NO31moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between NO31moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NO31moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between NO31moSamp_dich and prop_5mC in this model.
 
 
 ## NH4 Models
@@ -2370,6 +3337,23 @@ confint(dnam_model2)
 ```
 *Higher NH4 marginally associated with higher global DNAm in this model.*
 
+### Dichotomized NH4 in 5yrs Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NH45yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between NH45yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NH45yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between NH45yrSamp_dich and prop_5mC in this model.
+
 
 ### Continuous NH4 in 1yrs Pre-Sampling
 Unadjusted model
@@ -2388,6 +3372,24 @@ confint(dnam_model2)
 ```
 *Higher NH4 marginally associated with higher global DNAm in this model.*
 
+### Dichotomized NH4 in 1yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NH41yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between NH41yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NH41yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between NH41yrSamp_dich and prop_5mC in this model.
+
+
 ### Continuous NH4 in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2404,6 +3406,24 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 Higher NH4 not associated with global DNAm in this model.
+
+### Dichotomized NH4 in 6mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NH46moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between NH46moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NH46moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between NH46moSamp_dich and prop_5mC in this model.
+
 
 ### Continuous NH4 in 3mo Pre-Sampling
 Unadjusted model
@@ -2422,6 +3442,25 @@ confint(dnam_model2)
 ```
 Higher NH4 not associated with global DNAm in this model.
 
+
+### Dichotomized NH4 in 3mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NH43moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between NH43moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NH43moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between NH43moSamp_dich and prop_5mC in this model.
+
+
 ### Continuous NH4 in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2438,6 +3477,24 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 Higher NH4 not associated with global DNAm in this model.
+
+
+### Dichotomized NH4 in 1mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~NH41moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between NH41moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ NH41moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between NH41moSamp_dich and prop_5mC in this model.
 
 
 ## BC Models
@@ -2458,6 +3515,25 @@ confint(dnam_model2)
 ```
 No significant association between BC_5yrPreSamp and prop_5mC in this model.
 
+
+### Dichotomized BC in 5yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~BC5yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC5yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ BC5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC5yrSamp_dich and prop_5mC in this model.
+
+
 ### Continuous BC in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2474,6 +3550,24 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between BC_1yrPreSamp and prop_5mC in this model.
+
+### Dichotomized BC in 1yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~BC1yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC1yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ BC1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC1yrSamp_dich and prop_5mC in this model.
+
 
 ### Continuous BC in 6mo Pre-Sampling
 Unadjusted model
@@ -2493,6 +3587,24 @@ confint(dnam_model2)
 No significant association between BC_6moPreSamp and prop_5mC in this model.
 
 
+### Dichotomized BC in 6mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~BC6moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC6moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ BC6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC6moSamp_dich and prop_5mC in this model.
+
+
 ### Continuous BC in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2510,6 +3622,25 @@ confint(dnam_model2)
 ```
 No significant association between BC_3moPreSamp and prop_5mC in this model.
 
+
+### Dichotomized BC in 3mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~BC3moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC3moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ BC3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC3moSamp_dich and prop_5mC in this model.
+
+
 ### Continuous BC in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2526,6 +3657,24 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between BC_1moPreSamp and prop_5mC in this model.
+
+
+### Dichotomized BC in 1mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~BC1moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between BC1moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ BC1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between BC1moSamp_dich and prop_5mC in this model.
 
 
 ## OM Models
@@ -2546,6 +3695,23 @@ confint(dnam_model2)
 ```
 No significant association between OM_5yrPreSamp and prop_5mC in this model.
 
+### Dichotomized OM in 5yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~OM5yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM5yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ OM5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM5yrSamp_dich and prop_5mC in this model.
+
 
 ### Continuous OM in 1yrs Pre-Sampling
 Unadjusted model
@@ -2564,6 +3730,24 @@ confint(dnam_model2)
 ```
 No significant association between OM_1yrPreSamp and prop_5mC in this model.
 
+### Dichotomized OM in 1yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~OM1yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM1yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ OM1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM1yrSamp_dich and prop_5mC in this model.
+
+
 ### Continuous OM in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2580,6 +3764,25 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between OM_6moPreSamp and prop_5mC in this model.
+
+
+### Dichotomized OM in 6mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~OM6moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM6moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ OM6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM6moSamp_dich and prop_5mC in this model.
+
 
 ### Continuous OM in 3mo Pre-Sampling
 Unadjusted model
@@ -2598,6 +3801,25 @@ confint(dnam_model2)
 ```
 No significant association between OM_3moPreSamp and prop_5mC in this model.
 
+
+### Dichotomized OM in 3mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~OM3moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM3moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ OM3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM3moSamp_dich and prop_5mC in this model.
+
+
 ### Continuous OM in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2614,6 +3836,24 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between OM_1moPreSamp and prop_5mC in this model.
+
+
+### Dichotomized OM in 1mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~OM1moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between OM1moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ OM1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between OM1moSamp_dich and prop_5mC in this model.
 
 
 ## SS Models
@@ -2634,6 +3874,23 @@ confint(dnam_model2)
 ```
 No significant association between SS_5yrPreSamp and prop_5mC in this model.
 
+### Dichotomized SS in 5yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SS5yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS5yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SS5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS5yrSamp_dich and prop_5mC in this model.
+
 
 ### Continuous SS in 1yrs Pre-Sampling
 Unadjusted model
@@ -2653,6 +3910,24 @@ confint(dnam_model2)
 No significant association between SS_1yrPreSamp and prop_5mC in this model.
 
 
+### Dichotomized SS in 1yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SS1yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS1yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SS1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS1yrSamp_dich and prop_5mC in this model.
+
+
 ### Continuous SS in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2670,6 +3945,25 @@ confint(dnam_model2)
 ```
 No significant association between SS_6moPreSamp and prop_5mC in this model.
 
+
+### Dichotomized SS in 6mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SS6moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+*Marginal association between high SS6moSamp_dich and increased prop_5mC in this model.*
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SS6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+*Marginal association between high SS6moSamp_dich and increased prop_5mC in this model.*
+
+
 ### Continuous SS in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2686,6 +3980,23 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between SS_3moPreSamp and prop_5mC in this model.
+
+### Dichotomized SS in 3mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SS3moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS3moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SS3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS3moSamp_dich and prop_5mC in this model.
 
 
 ### Continuous SS in 1mo Pre-Sampling
@@ -2706,6 +4017,23 @@ confint(dnam_model2)
 No significant association between SS_1moPreSamp and prop_5mC in this model.
 
 
+### Dichotomized SS in 1mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~SS1moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between SS1moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ SS1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between SS1moSamp_dich and prop_5mC in this model.
+
 
 ## Soil Models
 ### Continuous Soil in 5yrs Pre-Sampling
@@ -2725,6 +4053,24 @@ confint(dnam_model2)
 ```
 No significant association between Soil_5yrPreSamp and prop_5mC in this model.
 
+### Dichotomized Soil in 5yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~Soil5yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil5yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ Soil5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil5yrSamp_dich and prop_5mC in this model.
+
+
 ### Continuous Soil in 1yrs Pre-Sampling
 Unadjusted model
 ```{r}
@@ -2741,6 +4087,24 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between Soil_1yrPreSamp and prop_5mC in this model.
+
+
+### Dichotomized Soil in 1yr Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~Soil1yrSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil1yrSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ Soil1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil1yrSamp_dich and prop_5mC in this model.
 
 ### Continuous Soil in 6mo Pre-Sampling
 Unadjusted model
@@ -2759,6 +4123,22 @@ confint(dnam_model2)
 ```
 No significant association between Soil_6moPreSamp and prop_5mC in this model.
 
+### Dichotomized Soil in 6mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~Soil6moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil6moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ Soil6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil6moSamp_dich and prop_5mC in this model.
 
 ### Continuous Soil in 3mo Pre-Sampling
 Unadjusted model
@@ -2777,6 +4157,22 @@ confint(dnam_model2)
 ```
 No significant association between Soil_3moPreSamp and prop_5mC in this model.
 
+### Dichotomized Soil in 3mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~Soil3moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil3moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ Soil3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil3moSamp_dich and prop_5mC in this model.
 
 ### Continuous Soil in 1mo Pre-Sampling
 Unadjusted model
@@ -2795,6 +4191,22 @@ confint(dnam_model2)
 ```
 No significant association between Soil_1moPreSamp and prop_5mC in this model.
 
+### Dichotomized Soil in 1mo Pre-Sampling
+Unadjusted Model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~Soil1moSamp_dich, data=dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+No significant association between Soil1moSamp_dich and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+dnam_model2 <- betareg(prop_5mC ~ Soil1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
+summary(dnam_model2)
+confint(dnam_model2)
+```
+No significant association between Soil1moSamp_dich and prop_5mC in this model.
 
 # Impact of DNAm on Mortality
 Base model
@@ -2819,14 +4231,15 @@ summary(coxPH_model3)
 No significant association between %5mC and mortality in this model.
 
 # Impact of PM2.5 on Mortality
+## 5yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
 surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~PM5yrSamp_dich, data=dnam)
 (ggsurvplot(surv1, 
             censor=TRUE,
             pval=TRUE,
-            xlim=c(0,10),
+            xlim=c(0,5),
             legend="right",
-           data=tel,
+           data=dnam,
            legend.title="PM2.5 5yrs \nPre-Sampling",
            legend.labs=c("Low", "High"),
            risk.table=F,
@@ -2836,6 +4249,2494 @@ surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~PM5yrSamp_dich, data=dna
            ggtheme = theme_grey()
            ))
 ```
+
+Base model with just PM2.5
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM2.5 in 5yrs pre-sampling and mortality in this model.
+
+Base model with PM2.5 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM2.5 in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with just PM2.5
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM2.5 in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM2.5 in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM2.5 in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM2.5 in 5yrs pre-sampling and mortality in this model.
+
+
+## 1yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~PM1yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="PM2.5 1yr \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High PM2.5 in 1yr Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just PM2.5
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM_1yrPreSamp and mortality in this model.
+
+Base model with PM2.5 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM_1yrPreSamp and mortality in this model.
+
+Partial Model with just PM2.5
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM_1yrPreSamp and mortality in this model.
+
+Partial Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM_1yrPreSamp and mortality in this model.
+
+Complete Model with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM_1yrPreSamp and mortality in this model.
+
+Complete Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM_1yrPreSamp and mortality in this model.
+
+
+
+
+## 6mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~PM6moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="PM2.5 6mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High PM2.5 in 6mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just PM2.5
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM_6moPreSamp and mortality in this model.
+
+Base model with PM2.5 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM_6moPreSamp and mortality in this model.
+
+Partial Model with just PM2.5
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM_6moPreSamp and mortality in this model.
+
+Partial Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM_6moPreSamp and mortality in this model.
+
+Complete Model with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM_6moPreSamp and mortality in this model.
+
+Complete Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM_6moPreSamp and mortality in this model.
+
+
+## 3mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~PM3moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="PM2.5 3mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High PM2.5 in 3mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just PM2.5
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM_3moPreSamp and mortality in this model.
+
+Base model with PM2.5 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM_3moPreSamp and mortality in this model.
+
+Partial Model with just PM2.5
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM_3moPreSamp and mortality in this model.
+
+Partial Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM_3moPreSamp and mortality in this model.
+
+Complete Model with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM_3moPreSamp and mortality in this model.
+
+Complete Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM_3moPreSamp and mortality in this model.
+
+
+## 1mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~PM1moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="PM2.5 1mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High PM2.5 in 1mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just PM2.5
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM_1moPreSamp and mortality in this model.
+
+Base model with PM2.5 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between PM_1moPreSamp and mortality in this model.
+
+Partial Model with just PM2.5
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM_1moPreSamp and mortality in this model.
+
+Partial Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between PM_1moPreSamp and mortality in this model.
+
+Complete Model with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM_1moPreSamp and mortality in this model.
+
+Complete Model with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between PM_1moPreSamp and mortality in this model.
+
+# Impact of SO4 on Mortality
+## 5yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SO45yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SO4 5yrs \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SO4 in 5yrs Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just SO4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4 in 5yrs pre-sampling and mortality in this model.
+
+Base model with SO4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4 in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with just SO4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4 in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with SO4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4 in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with just SO4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased SO4 in 5yrs pre-sampling and lower mortality in this model.**
+
+Complete Model with SO4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased SO4 in 5yrs pre-sampling and lower mortality in this model.**
+
+
+## 1yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SO41yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SO4 1yr \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SO4 in 1yr Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just SO4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4_1yrPreSamp and mortality in this model.
+
+Base model with SO4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4_1yrPreSamp and mortality in this model.
+
+Partial Model with just SO4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4_1yrPreSamp and mortality in this model.
+
+Partial Model with SO4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4_1yrPreSamp and mortality in this model.
+
+Complete Model with just SO4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SO4_1yrPreSamp and mortality in this model.
+
+Complete Model with SO4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SO4_1yrPreSamp and mortality in this model.
+
+
+## 6mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SO46moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SO4 6mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SO4 in 6mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just SO4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4_6moPreSamp and mortality in this model.
+
+Base model with SO4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4_6moPreSamp and mortality in this model.
+
+Partial Model with just SO4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4_6moPreSamp and mortality in this model.
+
+Partial Model with SO4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4_6moPreSamp and mortality in this model.
+
+Complete Model with just SO4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SO4_6moPreSamp and mortality in this model.
+
+Complete Model with SO4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SO4_6moPreSamp and mortality in this model.
+
+
+## 3mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SO43moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SO4 3mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SO4 in 3mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just SO4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_3moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4_3moPreSamp and mortality in this model.
+
+Base model with SO4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_3moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4_3moPreSamp and mortality in this model.
+
+Partial Model with just SO4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_3moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4_3moPreSamp and mortality in this model.
+
+Partial Model with SO4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4_3moPreSamp and mortality in this model.
+
+Complete Model with just SO4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SO4_3moPreSamp and mortality in this model.
+
+Complete Model with SO4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SO4_3moPreSamp and mortality in this model.
+
+
+## 1mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SO41moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SO4 1mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SO4 in 1mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just SO4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4_1moPreSamp and mortality in this model.
+
+Base model with SO4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SO4_1moPreSamp and mortality in this model.
+
+Partial Model with just SO4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4_1moPreSamp and mortality in this model.
+
+Partial Model with SO4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SO4_1moPreSamp and mortality in this model.
+
+Complete Model with just SO4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SO4_1moPreSamp and mortality in this model.
+
+Complete Model with SO4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SO4_1moPreSamp and mortality in this model.
+
+# Impact of NO3 on Mortality
+## 5yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NO35yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NO3 5yrs \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NO3 in 5yrs Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just NO3
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
+
+Base model with NO3 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with just NO3
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with NO3 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with just NO3
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with NO3 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
+
+
+## 1yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NO31yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NO3 1yr \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NO3 in 1yr Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just NO3
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NO3_1yrPreSamp and mortality in this model.
+
+Base model with NO3 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NO3_1yrPreSamp and mortality in this model.
+
+Partial Model with just NO3
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NO3_1yrPreSamp and mortality in this model.
+
+Partial Model with NO3 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NO3_1yrPreSamp and mortality in this model.
+
+Complete Model with just NO3
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_1yrPreSamp and mortality in this model.
+
+Complete Model with NO3 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_1yrPreSamp and mortality in this model.
+
+
+## 6mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NO36moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NO3 6mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NO3 in 6mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just NO3
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NO3_6moPreSamp and mortality in this model.
+
+Base model with NO3 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NO3_6moPreSamp and mortality in this model.
+
+Partial Model with just NO3
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NO3_6moPreSamp and mortality in this model.
+
+Partial Model with NO3 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NO3_6moPreSamp and mortality in this model.
+
+Complete Model with just NO3
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_6moPreSamp and mortality in this model.
+
+Complete Model with NO3 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_6moPreSamp and mortality in this model.
+
+
+## 3mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NO33moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NO3 3mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NO3 in 3mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just NO3
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**Significant assoc between NO3_3moPreSamp and increased mortality in this model.**
+
+Base model with NO3 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**Significant assoc between NO3_3moPreSamp and increased mortality in this model.**
+No major mediation by pct_5mC apparent here.
+
+Partial Model with just NO3
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between NO3_3moPreSamp and increased mortality in this model.*
+
+Partial Model with NO3 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between NO3_3moPreSamp and increased mortality in this model.*
+HR actually increases very slightly with addition of pct_5mC indicating no mediation
+
+Complete Model with just NO3
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+*Marginal assoc between NO3_3moPreSamp and increased mortality in this model.*
+
+Complete Model with NO3 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+*Marginal assoc between NO3_3moPreSamp and increased mortality in this model.*
+Minimal difference in HR after pct_5mC added suggesting minimal mediation
+
+## 1mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NO31moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NO3 1mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NO3 in 1mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just NO3
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NO3_1moPreSamp and mortality in this model.
+
+Base model with NO3 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NO3_1moPreSamp and mortality in this model.
+
+Partial Model with just NO3
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NO3_1moPreSamp and mortality in this model.
+
+Partial Model with NO3 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NO3_1moPreSamp and mortality in this model.
+
+Complete Model with just NO3
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_1moPreSamp and mortality in this model.
+
+Complete Model with NO3 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_1moPreSamp and mortality in this model.
+
+# Impact of NH4 on Mortality
+## 5yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NH45yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NH4 5yrs \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NH4 in 5yrs Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just NH4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4 in 5yrs pre-sampling and mortality in this model.
+
+Base model with NH4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4 in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with just NH4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4 in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with NH4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4 in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with just NH4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between higher NH4_5yrPreSamp and lower mortality in this model.**
+
+Complete Model with NH4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between higher NH4_5yrPreSamp and lower mortality in this model.**
+
+
+## 1yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NH41yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NH4 1yr \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NH4 in 1yr Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just NH4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
+Base model with NH4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
+Partial Model with just NH4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
+Partial Model with NH4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
+Complete Model with just NH4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
+Complete Model with NH4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
+
+## 6mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NH46moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NH4 6mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NH4 in 6mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just NH4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4_6moPreSamp and mortality in this model.
+
+Base model with NH4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4_6moPreSamp and mortality in this model.
+
+Partial Model with just NH4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4_6moPreSamp and mortality in this model.
+
+Partial Model with NH4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4_6moPreSamp and mortality in this model.
+
+Complete Model with just NH4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_6moPreSamp and mortality in this model.
+
+Complete Model with NH4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_6moPreSamp and mortality in this model.
+
+
+## 3mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NH43moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NH4 3mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NH4 in 3mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just NH4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4_3moPreSamp and mortality in this model.
+
+Base model with NH4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4_3moPreSamp and mortality in this model.
+
+Partial Model with just NH4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4_3moPreSamp and mortality in this model.
+
+Partial Model with NH4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4_3moPreSamp and mortality in this model.
+
+Complete Model with just NH4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_3moPreSamp and mortality in this model.
+
+Complete Model with NH4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_3moPreSamp and mortality in this model.
+
+
+## 1mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NH41moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="NH4 1mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High NH4 in 1mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just NH4
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4_1moPreSamp and mortality in this model.
+
+Base model with NH4 and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between NH4_1moPreSamp and mortality in this model.
+
+Partial Model with just NH4
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4_1moPreSamp and mortality in this model.
+
+Partial Model with NH4 and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between NH4_1moPreSamp and mortality in this model.
+
+Complete Model with just NH4
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_1moPreSamp and mortality in this model.
+
+Complete Model with NH4 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_1moPreSamp and mortality in this model.
+
+# Impact of BC on Mortality
+## 5yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~BC5yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="BC 5yrs \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High BC in 5yrs Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just BC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
+
+Base model with BC and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with just BC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with BC and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with just BC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with BC and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
+
+
+## 1yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~BC1yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="BC 1yr \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High BC in 1yr Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just BC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC_1yrPreSamp and mortality in this model.
+
+Base model with BC and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC_1yrPreSamp and mortality in this model.
+
+Partial Model with just BC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC_1yrPreSamp and mortality in this model.
+
+Partial Model with BC and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC_1yrPreSamp and mortality in this model.
+
+Complete Model with just BC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_1yrPreSamp and mortality in this model.
+
+Complete Model with BC and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_1yrPreSamp and mortality in this model.
+
+
+## 6mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~BC6moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="BC 6mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High BC in 6mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just BC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC_6moPreSamp and mortality in this model.
+
+Base model with BC and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC_6moPreSamp and mortality in this model.
+
+Partial Model with just BC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC_6moPreSamp and mortality in this model.
+
+Partial Model with BC and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC_6moPreSamp and mortality in this model.
+
+Complete Model with just BC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_6moPreSamp and mortality in this model.
+
+Complete Model with BC and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_6moPreSamp and mortality in this model.
+
+
+## 3mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~BC3moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="BC 3mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High BC in 3mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just BC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC_3moPreSamp and mortality in this model.
+
+Base model with BC and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC_3moPreSamp and mortality in this model.
+
+Partial Model with just BC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC_3moPreSamp and mortality in this model.
+
+Partial Model with BC and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC_3moPreSamp and mortality in this model.
+
+Complete Model with just BC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_3moPreSamp and mortality in this model.
+
+Complete Model with BC and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_3moPreSamp and mortality in this model.
+
+
+## 1mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~BC1moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="BC 1mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High BC in 1mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just BC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC_1moPreSamp and mortality in this model.
+
+Base model with BC and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between BC_1moPreSamp and mortality in this model.
+
+Partial Model with just BC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC_1moPreSamp and mortality in this model.
+
+Partial Model with BC and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between BC_1moPreSamp and mortality in this model.
+
+Complete Model with just BC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_1moPreSamp and mortality in this model.
+
+Complete Model with BC and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_1moPreSamp and mortality in this model.
+
+# Impact of OM on Mortality
+## 5yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~OM5yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="OM 5yrs \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High OM in 5yrs Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just OM
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
+
+Base model with OM and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with just OM
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with OM and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with just OM
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with OM and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
+
+
+## 1yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~OM1yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="OM 1yr \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High OM in 1yr Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just OM
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between OM_1yrPreSamp and mortality in this model.
+
+Base model with OM and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between OM_1yrPreSamp and mortality in this model.
+
+Partial Model with just OM
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between OM_1yrPreSamp and mortality in this model.
+
+Partial Model with OM and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between OM_1yrPreSamp and mortality in this model.
+
+Complete Model with just OM
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_1yrPreSamp and mortality in this model.
+
+Complete Model with OM and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_1yrPreSamp and mortality in this model.
+
+
+## 6mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~OM6moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="OM 6mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High OM in 6mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just OM
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between OM_6moPreSamp and mortality in this model.
+
+Base model with OM and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between OM_6moPreSamp and mortality in this model.
+
+Partial Model with just OM
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between OM_6moPreSamp and mortality in this model.
+
+Partial Model with OM and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between OM_6moPreSamp and mortality in this model.
+
+Complete Model with just OM
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_6moPreSamp and mortality in this model.
+
+Complete Model with OM and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_6moPreSamp and mortality in this model.
+
+
+## 3mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~OM3moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="OM 3mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High OM in 3mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just OM
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+*Marginal assoc between higher OM_3moPreSamp and mortality in this model.*
+
+Base model with OM and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+*Marginal assoc between higher OM_3moPreSamp and mortality in this model.*
+No evidence of pct_5mC mediation
+
+Partial Model with just OM
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between higher OM_3moPreSamp and mortality in this model.*
+
+Partial Model with OM and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between higher OM_3moPreSamp and mortality in this model.*
+
+Complete Model with just OM
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_3moPreSamp and mortality in this model.
+
+Complete Model with OM and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_3moPreSamp and mortality in this model.
+
+
+## 1mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~OM1moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="OM 1mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High OM in 1mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just OM
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+*Marginal assoc between higher OM_1moPreSamp and mortality in this model.*
+
+Base model with OM and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+*Marginal assoc between higher OM_1moPreSamp and mortality in this model.*
+No evidence of mediation by pct_5mC
+
+Partial Model with just OM
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between higher OM_1moPreSamp and mortality in this model.*
+
+Partial Model with OM and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between higher OM_1moPreSamp and mortality in this model.*
+
+Complete Model with just OM
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_1moPreSamp and mortality in this model.
+
+Complete Model with OM and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_1moPreSamp and mortality in this model.
+
+# Impact of SS on Mortality
+## 5yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SS5yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SS 5yrs \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SS in 5yrs Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just SS
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
+
+Base model with SS and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with just SS
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
+
+Partial Model with SS and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with just SS
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
+
+Complete Model with SS and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
+
+
+## 1yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SS1yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SS 1yr \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SS in 1yr Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just SS
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS_1yrPreSamp and mortality in this model.
+
+Base model with SS and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS_1yrPreSamp and mortality in this model.
+
+Partial Model with just SS
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS_1yrPreSamp and mortality in this model.
+
+Partial Model with SS and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS_1yrPreSamp and mortality in this model.
+
+Complete Model with just SS
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_1yrPreSamp and mortality in this model.
+
+Complete Model with SS and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_1yrPreSamp and mortality in this model.
+
+
+## 6mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SS6moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SS 6mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SS in 6mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just SS
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS_6moPreSamp and mortality in this model.
+
+Base model with SS and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS_6moPreSamp and mortality in this model.
+
+Partial Model with just SS
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS_6moPreSamp and mortality in this model.
+
+Partial Model with SS and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS_6moPreSamp and mortality in this model.
+
+Complete Model with just SS
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_6moPreSamp and mortality in this model.
+
+Complete Model with SS and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_6moPreSamp and mortality in this model.
+
+
+## 3mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SS3moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SS 3mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SS in 3mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just SS
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_3moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS_3moPreSamp and mortality in this model.
+
+Base model with SS and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_3moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS_3moPreSamp and mortality in this model.
+
+Partial Model with just SS
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_3moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS_3moPreSamp and mortality in this model.
+
+Partial Model with SS and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS_3moPreSamp and mortality in this model.
+
+Complete Model with just SS
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_3moPreSamp and mortality in this model.
+
+Complete Model with SS and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_3moPreSamp and mortality in this model.
+
+
+## 1mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~SS1moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="SS 1mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High SS in 1mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just SS
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS_1moPreSamp and mortality in this model.
+
+Base model with SS and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between SS_1moPreSamp and mortality in this model.
+
+Partial Model with just SS
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS_1moPreSamp and mortality in this model.
+
+Partial Model with SS and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between SS_1moPreSamp and mortality in this model.
+
+Complete Model with just SS
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_1moPreSamp and mortality in this model.
+
+Complete Model with SS and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_1moPreSamp and mortality in this model.
+
+# Impact of Soil on Mortality
+## 5yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~Soil5yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="Soil 5yrs \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High Soil in 5yrs Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just Soil
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**Significant assoc between increased Soil in 5yrs pre-sampling and increased mortality in this model.**
+
+Base model with Soil and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**Significant assoc between increased Soil in 5yrs pre-sampling and increased mortality in this model.**
+**HR reduced when pct_5mC added to model, indicating some partial mediation.**
+
+Partial Model with just Soil
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between increased Soil in 5yrs pre-sampling and increased mortality in this model.*
+
+Partial Model with Soil and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between increased Soil in 5yrs pre-sampling and increased mortality in this model.*
+**HR decreased when pct_5mC added to model, indicating some mediation by pct_5mC**
+
+Complete Model with just Soil
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased Soil in 5yrs pre-sampling and increased mortality in this model.**
+
+Complete Model with Soil and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased Soil in 5yrs pre-sampling and increased mortality in this model.**
+HR actually increases when pct_5mC added, indicating this is not mediating
+
+## 1yr Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~Soil1yrSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="Soil 1yr \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High Soil in 1yr Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just Soil
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+*Marginal assoc between increased Soil_1yrPreSamp and increased mortality in this model.*
+
+Base model with Soil and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+*Marginal assoc between increased Soil_1yrPreSamp and increased mortality in this model.*
+*Slight decrease HR when pct_5mC added indicating some mediation effect of pct_5mC*
+
+Partial Model with just Soil
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between increased Soil_1yrPreSamp and increased mortality in this model.*
+
+Partial Model with Soil and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+*Marginal assoc between increased Soil_1yrPreSamp and increased mortality in this model.*
+
+Complete Model with just Soil
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased Soil_1yrPreSamp and increased mortality in this model.**
+
+Complete Model with Soil and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased Soil_1yrPreSamp and increased mortality in this model.**
+HR actually increases when pct_5mC added to model, indicating not mediating
+
+## 6mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~Soil6moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="Soil 6mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High Soil in 6mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just Soil
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**Significant assoc between increased Soil_6moPreSamp and increased mortality in this model.**
+
+Base model with Soil and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+**Significant assoc between increased Soil_6moPreSamp and increased mortality in this model.**
+**HR decerases when pct_5mC added to model indicating partial mediation.**
+
+Partial Model with just Soil
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+**Significant assoc between increased Soil_6moPreSamp and increased mortality in this model.**
+
+Partial Model with Soil and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+**Significant assoc between increased Soil_6moPreSamp and increased mortality in this model.**
+*HR decreases slightly when pct_5mC added to model indicating some mediation.*
+
+Complete Model with just Soil
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased Soil_6moPreSamp and increased mortality in this model.**
+
+Complete Model with Soil and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased Soil_6moPreSamp and increased mortality in this model.**
+HR actually increased after adding pct_5mC indicating it was not mediating in this model.
+
+
+## 3mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~Soil3moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="Soil 3mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High Soil in 3mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+
+Base model with just Soil
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between Soil_3moPreSamp and mortality in this model.
+
+Base model with Soil and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between Soil_3moPreSamp and mortality in this model.
+
+Partial Model with just Soil
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between Soil_3moPreSamp and mortality in this model.
+
+Partial Model with Soil and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between Soil_3moPreSamp and mortality in this model.
+
+Complete Model with just Soil
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between Soil_3moPreSamp and mortality in this model.**
+
+Complete Model with Soil and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between Soil_3moPreSamp and mortality in this model.**
+No evidence of pct_5mC mediating.
+
+## 1mo Pre-Sampling
+```{r, fig.height=5, fig.width=7}
+surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~Soil1moSamp_dich, data=dnam)
+(ggsurvplot(surv1, 
+            censor=TRUE,
+            pval=TRUE,
+            xlim=c(0,5),
+            legend="right",
+           data=dnam,
+           legend.title="Soil 1mo \nPre-Sampling",
+           legend.labs=c("Low", "High"),
+           risk.table=F,
+           title="Time to Death or Transplant by Low vs High Soil in 1mo Pre-Sampling",
+           xlab="Time from Diagnosis (years)",
+           ylab="Survival Probability (Death or Lung Transplant)",
+           ggtheme = theme_grey()
+           ))
+```
+
+Base model with just Soil
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between Soil_1moPreSamp and mortality in this model.
+
+Base model with Soil and pct_5mC
+```{r}
+coxPH_model1 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + pct_5mC, data=dnam, id=ID)
+summary(coxPH_model1)
+```
+No significant assoc between Soil_1moPreSamp and mortality in this model.
+
+Partial Model with just Soil
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between Soil_1moPreSamp and mortality in this model.
+
+Partial Model with Soil and pct_5mC
+```{r}
+coxPH_model2 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + pct_5mC + age_dx + sex + smokeHx, data=dnam, id=ID)
+summary(coxPH_model2)
+```
+No significant assoc between Soil_1moPreSamp and mortality in this model.
+
+Complete Model with just Soil
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_1moPreSamp and mortality in this model.
+
+Complete Model with Soil and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_1moPreSamp and mortality in this model.
 
 
 # Impact of DNAm on Baseline FVC
