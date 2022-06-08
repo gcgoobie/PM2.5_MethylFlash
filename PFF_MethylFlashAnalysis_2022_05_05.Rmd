@@ -1495,11 +1495,36 @@ dnam <- dnam %>% mutate(time_sample=(sample_date-consent_date)/365.25)
 dnam$time_sample <- as.numeric(dnam$time_sample)
 ```
 
-# Proportion %5mC
+## Proportion %5mC
 Will need to use the actual proportion of 5mC for beta regression analyses where values must be between 0 and 1
 ```{r}
 dnam <- dnam %>% mutate(prop_5mC=pct_5mC/100)
 ```
+
+## PFF Site
+```{r}
+dnam <- dnam %>% mutate(site=stringr::str_extract(SSID, "^.{2}"))
+dnam$site <- as.factor(dnam$site)
+str(dnam$site)
+str(dnam$state)
+```
+
+## Region of the U.S.
+```{r}
+dnam$site <- as.factor(dnam$state)
+dnam <- dnam %>% mutate(region=case_when(state %in% c("CA", "CO", "ID", "MT", "OR", "UT", "WA") ~ "West",
+                                         state %in% c("TX", "AZ", "NV", "NM") ~ "Southwest",
+                                         state %in% c("IL", "IA", "IN", "KS", "MI", "MN", "MO", "ND", "NE", "OH", "SD", "WI") ~ "Midwest",
+                                         state %in% c("CN", "CT", "DC", "DE", "MA", "MD", "ME", "NH", "NJ", "NY", "PA", "RI", "VT") ~ "Northeast",
+                                         state %in% c("AL", "AR", "FL", "GA", "KY", "LA", "MS", "NC", "SC", "TN", "VA", "WV") ~ "Southeast"))
+                          
+                          
+                          #if_else(state==c("CA" , "CO" , "ID" , "MT" , "OR" , "UT" , "WA"), "West", 
+                           #            if_else(state==c("TX" , "AZ" , "NV" , "NM"), "Southwest",
+                            #                   if_else(state==c("IL" , "IA" , "IN" , "KS" , "MI" , "MN" , "MO" , "ND" , "NE" , "OH" , "SD" , "WI"), "Midwest",
+                             #                         if_else(state==c("CN" , "DC" , "DE" , "MA" , "MD" , "ME" , "NH" , "NJ" , "NY" , "PA" , "RI" , "VT"), "Northeast", "Southeast")))))
+```
+
 
 
 # Exploratory Data Analysis
