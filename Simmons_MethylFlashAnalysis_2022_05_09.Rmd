@@ -1494,10 +1494,19 @@ dnam <- dnam %>% mutate(time_sample=(sample_date-consent_date)/365.25)
 dnam$time_sample <- as.numeric(dnam$time_sample)
 ```
 
-# Proportion %5mC
+## Proportion %5mC
 Will need to use the actual proportion of 5mC for beta regression analyses where values must be between 0 and 1
 ```{r}
 dnam <- dnam %>% mutate(prop_5mC=pct_5mC/100)
+```
+
+## Region of the U.S.
+```{r}
+dnam$State <- as.factor(dnam$State)
+dnam <- dnam %>% mutate(region=case_when(State %in% c("CA", "CO") ~ "West",
+                                         State %in% c("IL", "MI", "OH") ~ "Midwest",
+                                         State %in% c("MA", "MD", "ME", "NY", "PA") ~ "Northeast",
+                                         State %in% c("FL", "GA", "KY", "NC", "SC", "VA", "WV") ~ "Southeast"))
 ```
 
 
@@ -2670,6 +2679,112 @@ dnamb <- dnam %>% filter(!is.na(Soil1moSamp_dich))
     ylim(0,0.5))
 ```
 
+# Violin Plots of DNAm and PM2.5/Constituents by Region
+## 5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=pct_5mC, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="% 5mC", title="% 5mC by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0.05,0.25))
+```
+Higher %5mC  in Midwest
+
+
+## PM2.5
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=PM_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="PM2.5 in 5yrs Pre-Sampling", title="PM2.5 in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+## SO4
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=SO4_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="SO4 in 5yrs Pre-Sampling", title="SO4 in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+## NO3
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=NO3_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="NO3 in 5yrs Pre-Sampling", title="NO3 in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+## NH4
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=NH4_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="NH4 in 5yrs Pre-Sampling", title="NH4 in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+
+## BC
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=BC_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="BC in 5yrs Pre-Sampling", title="BC in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+
+## OM
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=OM_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="OM in 5yrs Pre-Sampling", title="OM in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+
+## SS
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=SS_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="SS in 5yrs Pre-Sampling", title="SS in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+
+## Soil
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=Soil_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="Soil in 5yrs Pre-Sampling", title="Soil in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
 
 
 # Linear Regression Analyses

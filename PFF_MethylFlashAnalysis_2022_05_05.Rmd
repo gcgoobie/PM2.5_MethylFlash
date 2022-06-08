@@ -1511,7 +1511,7 @@ str(dnam$state)
 
 ## Region of the U.S.
 ```{r}
-dnam$site <- as.factor(dnam$state)
+dnam$state <- as.factor(dnam$state)
 dnam <- dnam %>% mutate(region=case_when(state %in% c("CA", "CO", "ID", "MT", "OR", "UT", "WA") ~ "West",
                                          state %in% c("TX", "AZ", "NV", "NM") ~ "Southwest",
                                          state %in% c("IL", "IA", "IN", "KS", "MI", "MN", "MO", "ND", "NE", "OH", "SD", "WI") ~ "Midwest",
@@ -2157,7 +2157,7 @@ Scatterplot of continuous Soil 1mo Pre-Sampling vs %5mC
 
 
 
-## Violin Plots
+## Violin Plots of Dichotomized PM2.5 and Constituents
 ### PM2.5
 Violin plot wrapping boxplot to visualize Dichotomized PM2.5 5yrs Pre-Sampling vs %5mC
 ```{r}
@@ -2650,6 +2650,122 @@ dnamb <- dnam %>% filter(!is.na(Soil1moSamp_dich))
     ylim(0,0.25))
 ```
 
+# Violin Plots of DNAm and PM2.5/Constituents by Region/Site
+## 5mC
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=pct_5mC, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="% 5mC", title="% 5mC by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0.05,0.25))
+```
+Fairly similar %5mC by region
+
+```{r, height=8, width=20}
+dnamb <- dnam %>% filter(!is.na(site))
+(dnamb %>% ggplot(aes(x=site, y=pct_5mC, fill=site))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="PFF Site", y="% 5mC", title="% 5mC by PFF Site")+
+    theme_light()+
+    theme(plot.title = element_text(hjust = 0.5))+
+    ylim(0.05,0.25))
+```
+
+## PM2.5
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=PM_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="PM2.5 in 5yrs Pre-Sampling", title="PM2.5 in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+## SO4
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=SO4_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="SO4 in 5yrs Pre-Sampling", title="SO4 in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+## NO3
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=NO3_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="NO3 in 5yrs Pre-Sampling", title="NO3 in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+## NH4
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=NH4_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="NH4 in 5yrs Pre-Sampling", title="NH4 in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+
+## BC
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=BC_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="BC in 5yrs Pre-Sampling", title="BC in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+
+## OM
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=OM_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="OM in 5yrs Pre-Sampling", title="OM in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+
+## SS
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=SS_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="SS in 5yrs Pre-Sampling", title="SS in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
+
+
+## Soil
+```{r}
+dnamb <- dnam %>% filter(!is.na(region))
+(dnamb %>% ggplot(aes(x=region, y=Soil_5yrPreSamp, fill=region))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Region of U.S.", y="Soil in 5yrs Pre-Sampling", title="Soil in 5yrs Pre-Sampling by Region")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+```
 
 # Linear Regression Analyses
 ## PM2.5 Models
@@ -2695,6 +2811,13 @@ summary(dnam_model1)
 confint(dnam_model1)
 ```
 
+Impact of site on model
+```{r}
+dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + site, dnam)
+summary(dnam_model1)
+confint(dnam_model1)
+```
+Including site as a covariate brings pct_5mC close to significance.
 
 Partial model with age_dx, sex, smokeHx
 ```{r}
@@ -2705,9 +2828,9 @@ confint(dnam_model2)
 No significant association between PM_5yrPreSamp and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model including site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -2732,9 +2855,9 @@ confint(dnam_model2)
 No significant association between PM5yrSamp_dich and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model with age_dx, sex, smokeHx, site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM5yrSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM5yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -2793,13 +2916,14 @@ confint(dnam_model2)
 No significant association between PM_1yrPreSamp and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model including site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
-No significant association between PM_1yrPreSamp and prop_5mC in this model.
+No significant association between PM_1yrPreSamp and prop_5mC in this model, but including site as a covariate brings the model close to significance.
+
 
 ### Dichotomized PM2.5 in 1yr Pre-Sampling
 Base Model
@@ -2819,9 +2943,9 @@ confint(dnam_model2)
 No significant association between PM1yrSamp_dich and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model with site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM1yrSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM1yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -2847,9 +2971,9 @@ confint(dnam_model2)
 No significant association between PM_6moPreSamp and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model with site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -2874,9 +2998,9 @@ confint(dnam_model2)
 No significant association between PM6moSamp_dich and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model with site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM6moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM6moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -2900,9 +3024,9 @@ confint(dnam_model2)
 No significant association between PM_3moPreSamp and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model with site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -2926,9 +3050,9 @@ confint(dnam_model2)
 No significant association between PM3moSamp_dich and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model with site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM3moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM3moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -2952,9 +3076,9 @@ confint(dnam_model2)
 No significant association between PM_1moPreSamp and prop_5mC in this model.
 
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model with site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -2977,9 +3101,9 @@ confint(dnam_model2)
 ```
 No significant association between PM1moSamp_dich and prop_5mC in this model.
 
-Complete model with age_dx, sex, smokeHx, race, urbanicity
+Complete model with site
 ```{r}
-dnam_model3 <- betareg(prop_5mC ~ PM1moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
+dnam_model3 <- betareg(prop_5mC ~ PM1moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
 summary(dnam_model3)
 confint(dnam_model3)
 ```
@@ -3005,6 +3129,14 @@ confint(dnam_model2)
 ```
 No significant association between SO4_5yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO4_5yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No sig assoc between SO4 and prop_5mC in this model.
+
 ### Dichotomized SO4 in 5yrs Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3021,6 +3153,15 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between SO45yrSamp_dich and prop_5mC in this model.
+
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO45yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No sig assoc between SO4 and prop_5mC in this model.
 
 ### Continuous SO4 in 1yrs Pre-Sampling
 Unadjusted model
@@ -3039,6 +3180,14 @@ confint(dnam_model2)
 ```
 No significant association between SO4_1yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO4_1yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+**Sig assoc between higher SO4 and incr prop_5mC in this model.**
+
 ### Dichotomized SO4 in 1yr Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3055,6 +3204,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between SO41yrSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO41yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No sig assoc between SO4 and prop_5mC in this model.
 
 
 ### Continuous SO4 in 6mo Pre-Sampling
@@ -3074,6 +3231,13 @@ confint(dnam_model2)
 ```
 No significant association between SO4_6moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO4_6moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+
 ### Dichotomized SO4 in 6mo Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3090,6 +3254,13 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between SO46moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO46moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
 
 ### Continuous SO4 in 3mo Pre-Sampling
 Unadjusted model
@@ -3108,6 +3279,13 @@ confint(dnam_model2)
 ```
 No significant association between SO4_3moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO4_3moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+
 ### Dichotomized SO4 in 3mo Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3124,6 +3302,13 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between SO43moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO43moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
 
 
 ### Continuous SO4 in 1mo Pre-Sampling
@@ -3143,6 +3328,13 @@ confint(dnam_model2)
 ```
 No significant association between SO4_1moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO4_1moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+
 ### Dichotomized SO4 in 1mo Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3160,6 +3352,13 @@ confint(dnam_model2)
 ```
 No significant association between SO41moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SO41moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+
 ## NO3 Models
 ### Continuous NO3 in 5yrs Pre-Sampling
 Unadjusted model
@@ -3176,7 +3375,15 @@ dnam_model2 <- betareg(prop_5mC ~ NO3_5yrPreSamp + sex + age_dx + smokeHx, data=
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-*Nitrate is marginally associated with higher global DNAm in this base model.*
+*Nitrate is marginally associated with higher global DNAm in this model.*
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO3_5yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+*Nitrate is marginally associated with higher global DNAm in this model.*
 
 ### Dichotomized NO3 in 5yrs Pre-Sampling
 Unadjusted Model
@@ -3195,6 +3402,14 @@ confint(dnam_model2)
 ```
 *Marginal association between high NO35yrSamp_dich and prop_5mC in this model.*
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO35yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Nitrate is not associated with higher global DNAm in this model.
+
 
 ### Continuous NO3 in 1yrs Pre-Sampling
 Unadjusted model
@@ -3210,6 +3425,14 @@ Adjusted model with age_dx, sex, smokeHx
 dnam_model2 <- betareg(prop_5mC ~ NO3_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
+```
+**Higher nitrate is associated with higher global DNAm in this model.**
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO3_1yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
 ```
 **Higher nitrate is associated with higher global DNAm in this model.**
 
@@ -3231,6 +3454,14 @@ confint(dnam_model2)
 ```
 *Marginal association between NO31yrSamp_dich and prop_5mC in this model.*
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO31yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher nitrate is not associated with global DNAm in this model.
+
 
 ### Continuous NO3 in 6mo Pre-Sampling
 Unadjusted model
@@ -3246,6 +3477,14 @@ Adjusted model with age_dx, sex, smokeHx
 dnam_model2 <- betareg(prop_5mC ~ NO3_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
+```
+No assoc of nitrate with global DNAm in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO3_6moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
 ```
 No assoc of nitrate with global DNAm in this model.
 
@@ -3266,6 +3505,14 @@ confint(dnam_model2)
 ```
 No significant association between NO36moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO36moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No assoc of nitrate with global DNAm in this model.
+
 
 ### Continuous NO3 in 3mo Pre-Sampling
 Unadjusted model
@@ -3283,6 +3530,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No association between nitrate and global DNAm in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO3_3moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No assoc of nitrate with global DNAm in this model.
 
 
 ### Dichotomized NO3 in 3mo Pre-Sampling
@@ -3302,6 +3557,14 @@ confint(dnam_model2)
 ```
 No significant association between NO33moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO33moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No assoc of nitrate with global DNAm in this model.
+
 
 ### Continuous NO3 in 1mo Pre-Sampling
 Unadjusted model
@@ -3320,6 +3583,14 @@ confint(dnam_model2)
 ```
 No association between nitrate and global DNAm in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO3_1moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No assoc of nitrate with global DNAm in this model.
+
 ### Dichotomized NO3 in 1mo Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3336,6 +3607,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between NO31moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NO31moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No assoc of nitrate with global DNAm in this model.
 
 
 ## NH4 Models
@@ -3356,6 +3635,14 @@ confint(dnam_model2)
 ```
 *Higher NH4 marginally associated with higher global DNAm in this model.*
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH4_5yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+*Higher NH4 marginally associated with higher global DNAm in this model.*
+
 ### Dichotomized NH4 in 5yrs Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3363,7 +3650,7 @@ dnam_model1 <- betareg(prop_5mC ~NH45yrSamp_dich, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between NH45yrSamp_dich and prop_5mC in this model.
+**Significant association between high NH45yrSamp_dich and increased prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -3371,7 +3658,15 @@ dnam_model2 <- betareg(prop_5mC ~ NH45yrSamp_dich + sex + age_dx + smokeHx, data
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between NH45yrSamp_dich and prop_5mC in this model.
+**Significant association between high NH45yrSamp_dich and increased prop_5mC in this model.**
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH45yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+**Significant association between high NH45yrSamp_dich and increased prop_5mC in this model.**
 
 
 ### Continuous NH4 in 1yrs Pre-Sampling
@@ -3391,6 +3686,14 @@ confint(dnam_model2)
 ```
 *Higher NH4 marginally associated with higher global DNAm in this model.*
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH4_1yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+**Higher NH4 associated with higher global DNAm in this model.**
+
 ### Dichotomized NH4 in 1yr Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3398,7 +3701,7 @@ dnam_model1 <- betareg(prop_5mC ~NH41yrSamp_dich, data=dnam)
 summary(dnam_model1)
 confint(dnam_model1)
 ```
-No significant association between NH41yrSamp_dich and prop_5mC in this model.
+**Significant association between high NH41yrSamp_dich and increased prop_5mC in this model.**
 
 Adjusted model with age_dx, sex, smokeHx
 ```{r}
@@ -3406,7 +3709,15 @@ dnam_model2 <- betareg(prop_5mC ~ NH41yrSamp_dich + sex + age_dx + smokeHx, data
 summary(dnam_model2)
 confint(dnam_model2)
 ```
-No significant association between NH41yrSamp_dich and prop_5mC in this model.
+**Significant association between high NH41yrSamp_dich and increased prop_5mC in this model.**
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH41yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+**Significant association between high NH41yrSamp_dich and increased prop_5mC in this model.**
 
 
 ### Continuous NH4 in 6mo Pre-Sampling
@@ -3423,6 +3734,14 @@ Adjusted model with age_dx, sex, smokeHx
 dnam_model2 <- betareg(prop_5mC ~ NH4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH4_6moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
 ```
 Higher NH4 not associated with global DNAm in this model.
 
@@ -3443,6 +3762,14 @@ confint(dnam_model2)
 ```
 No significant association between NH46moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH46moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher NH4 not associated with global DNAm in this model.
+
 
 ### Continuous NH4 in 3mo Pre-Sampling
 Unadjusted model
@@ -3458,6 +3785,14 @@ Adjusted model with age_dx, sex, smokeHx
 dnam_model2 <- betareg(prop_5mC ~ NH4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH4_3moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
 ```
 Higher NH4 not associated with global DNAm in this model.
 
@@ -3479,6 +3814,14 @@ confint(dnam_model2)
 ```
 No significant association between NH43moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH43moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher NH4 not associated with global DNAm in this model.
+
 
 ### Continuous NH4 in 1mo Pre-Sampling
 Unadjusted model
@@ -3494,6 +3837,14 @@ Adjusted model with age_dx, sex, smokeHx
 dnam_model2 <- betareg(prop_5mC ~ NH4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
 confint(dnam_model2)
+```
+Higher NH4 not associated with global DNAm in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH4_1moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
 ```
 Higher NH4 not associated with global DNAm in this model.
 
@@ -3515,6 +3866,14 @@ confint(dnam_model2)
 ```
 No significant association between NH41moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ NH41moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher NH4 not associated with global DNAm in this model.
+
 
 ## BC Models
 ### Continuous BC in 5yrs Pre-Sampling
@@ -3534,6 +3893,14 @@ confint(dnam_model2)
 ```
 No significant association between BC_5yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC_5yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
+
 
 ### Dichotomized BC in 5yr Pre-Sampling
 Unadjusted Model
@@ -3551,6 +3918,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between BC5yrSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC5yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
 
 
 ### Continuous BC in 1yrs Pre-Sampling
@@ -3570,6 +3945,14 @@ confint(dnam_model2)
 ```
 No significant association between BC_1yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC_1yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
+
 ### Dichotomized BC in 1yr Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3586,6 +3969,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between BC1yrSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC1yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
 
 
 ### Continuous BC in 6mo Pre-Sampling
@@ -3605,6 +3996,14 @@ confint(dnam_model2)
 ```
 No significant association between BC_6moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC_6moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
+
 
 ### Dichotomized BC in 6mo Pre-Sampling
 Unadjusted Model
@@ -3622,6 +4021,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between BC6moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC6moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
 
 
 ### Continuous BC in 3mo Pre-Sampling
@@ -3641,6 +4048,14 @@ confint(dnam_model2)
 ```
 No significant association between BC_3moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC_3moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
+
 
 ### Dichotomized BC in 3mo Pre-Sampling
 Unadjusted Model
@@ -3658,6 +4073,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between BC3moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC3moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
 
 
 ### Continuous BC in 1mo Pre-Sampling
@@ -3677,6 +4100,14 @@ confint(dnam_model2)
 ```
 No significant association between BC_1moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC_1moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
+
 
 ### Dichotomized BC in 1mo Pre-Sampling
 Unadjusted Model
@@ -3694,6 +4125,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between BC1moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ BC1moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher BC not associated with global DNAm in this model.
 
 
 ## OM Models
@@ -3714,6 +4153,14 @@ confint(dnam_model2)
 ```
 No significant association between OM_5yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM_5yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
+
 ### Dichotomized OM in 5yr Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3730,6 +4177,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between OM5yrSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM5yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
 
 
 ### Continuous OM in 1yrs Pre-Sampling
@@ -3749,6 +4204,14 @@ confint(dnam_model2)
 ```
 No significant association between OM_1yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM_1yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
+
 ### Dichotomized OM in 1yr Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3765,6 +4228,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between OM1yrSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM1yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
 
 
 ### Continuous OM in 6mo Pre-Sampling
@@ -3784,6 +4255,14 @@ confint(dnam_model2)
 ```
 No significant association between OM_6moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM_6moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
+
 
 ### Dichotomized OM in 6mo Pre-Sampling
 Unadjusted Model
@@ -3801,6 +4280,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between OM6moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM6moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
 
 
 ### Continuous OM in 3mo Pre-Sampling
@@ -3820,6 +4307,14 @@ confint(dnam_model2)
 ```
 No significant association between OM_3moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM_3moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
+
 
 ### Dichotomized OM in 3mo Pre-Sampling
 Unadjusted Model
@@ -3837,6 +4332,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between OM3moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM3moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
 
 
 ### Continuous OM in 1mo Pre-Sampling
@@ -3856,6 +4359,14 @@ confint(dnam_model2)
 ```
 No significant association between OM_1moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM_1moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
+
 
 ### Dichotomized OM in 1mo Pre-Sampling
 Unadjusted Model
@@ -3873,6 +4384,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between OM1moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ OM1moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
 
 
 ## SS Models
@@ -3893,6 +4412,14 @@ confint(dnam_model2)
 ```
 No significant association between SS_5yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS_5yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher OM not associated with global DNAm in this model.
+
 ### Dichotomized SS in 5yr Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -3909,6 +4436,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between SS5yrSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS5yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher SS not associated with global DNAm in this model.
 
 
 ### Continuous SS in 1yrs Pre-Sampling
@@ -3928,6 +4463,14 @@ confint(dnam_model2)
 ```
 No significant association between SS_1yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS_1yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Higher SS not associated with global DNAm in this model.
+
 
 ### Dichotomized SS in 1yr Pre-Sampling
 Unadjusted Model
@@ -3946,6 +4489,13 @@ confint(dnam_model2)
 ```
 No significant association between SS1yrSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS1yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+*Marginal assoc between higher SS and increased prop_5mC in this model.*
 
 ### Continuous SS in 6mo Pre-Sampling
 Unadjusted model
@@ -3964,6 +4514,13 @@ confint(dnam_model2)
 ```
 No significant association between SS_6moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS_6moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+**Sig assoc between higher SS and increased prop_5mC in this model.**
 
 ### Dichotomized SS in 6mo Pre-Sampling
 Unadjusted Model
@@ -3981,6 +4538,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 *Marginal association between high SS6moSamp_dich and increased prop_5mC in this model.*
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS6moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+**Sig association between high SS6moSamp_dich and increased prop_5mC in this model.**
 
 
 ### Continuous SS in 3mo Pre-Sampling
@@ -4000,6 +4565,14 @@ confint(dnam_model2)
 ```
 No significant association between SS_3moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS_3moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between SS and prop_5mC in this model.
+
 ### Dichotomized SS in 3mo Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -4016,6 +4589,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between SS3moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS3moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between SS and prop_5mC in this model.
 
 
 ### Continuous SS in 1mo Pre-Sampling
@@ -4035,6 +4616,14 @@ confint(dnam_model2)
 ```
 No significant association between SS_1moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS_1moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between SS and prop_5mC in this model.
+
 
 ### Dichotomized SS in 1mo Pre-Sampling
 Unadjusted Model
@@ -4053,6 +4642,13 @@ confint(dnam_model2)
 ```
 No significant association between SS1moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ SS1moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+Model failed to run.
 
 ## Soil Models
 ### Continuous Soil in 5yrs Pre-Sampling
@@ -4072,6 +4668,14 @@ confint(dnam_model2)
 ```
 No significant association between Soil_5yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil_5yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
+
 ### Dichotomized Soil in 5yr Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -4088,6 +4692,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between Soil5yrSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil5yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
 
 
 ### Continuous Soil in 1yrs Pre-Sampling
@@ -4107,6 +4719,14 @@ confint(dnam_model2)
 ```
 No significant association between Soil_1yrPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil_1yrPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
+
 
 ### Dichotomized Soil in 1yr Pre-Sampling
 Unadjusted Model
@@ -4125,6 +4745,14 @@ confint(dnam_model2)
 ```
 No significant association between Soil1yrSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil1yrSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
+
 ### Continuous Soil in 6mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -4141,6 +4769,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between Soil_6moPreSamp and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil_6moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
 
 ### Dichotomized Soil in 6mo Pre-Sampling
 Unadjusted Model
@@ -4159,6 +4795,14 @@ confint(dnam_model2)
 ```
 No significant association between Soil6moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil6moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
+
 ### Continuous Soil in 3mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -4175,6 +4819,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between Soil_3moPreSamp and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil_3moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
 
 ### Dichotomized Soil in 3mo Pre-Sampling
 Unadjusted Model
@@ -4193,6 +4845,14 @@ confint(dnam_model2)
 ```
 No significant association between Soil3moSamp_dich and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil3moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+*Marginal association between increased Soil and increased prop_5mC in this model.*
+
 ### Continuous Soil in 1mo Pre-Sampling
 Unadjusted model
 ```{r}
@@ -4210,6 +4870,14 @@ confint(dnam_model2)
 ```
 No significant association between Soil_1moPreSamp and prop_5mC in this model.
 
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil_1moPreSamp + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
+
 ### Dichotomized Soil in 1mo Pre-Sampling
 Unadjusted Model
 ```{r}
@@ -4226,6 +4894,14 @@ summary(dnam_model2)
 confint(dnam_model2)
 ```
 No significant association between Soil1moSamp_dich and prop_5mC in this model.
+
+Complete model with site
+```{r}
+dnam_model3 <- betareg(prop_5mC ~ Soil1moSamp_dich + sex + age_dx + smokeHx + site, data=dnam)
+summary(dnam_model3)
+confint(dnam_model3)
+```
+No significant association between Soil and prop_5mC in this model.
 
 # Impact of DNAm on Mortality
 Base model
@@ -4248,6 +4924,14 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx +
 summary(coxPH_model3)
 ```
 No significant association between %5mC and mortality in this model.
+
+
+Complete Model with site
+```{r}
+coxPH_model4 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model4)
+```
+Model failed to converge, but no significant association between %5mC and mortality in this model.
 
 # Impact of PM2.5 on Mortality
 ## 5yr Pre-Sampling
@@ -4311,6 +4995,20 @@ summary(coxPH_model3)
 ```
 No significant assoc between PM2.5 in 5yrs pre-sampling and mortality in this model.
 
+Complete Model + site with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+*Model failed to converge, but marginal assoc between incr PM_5yrPreSamp and increased mortality in this model.*
+
+Complete Model + site with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+*Model failed to converge, but marginal assoc between incr PM_5yrPreSamp and increased mortality in this model with slight decrease HR with addition of pct_5mC indicating some degree of mediation.*
+
 
 ## 1yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -4373,6 +5071,20 @@ summary(coxPH_model3)
 ```
 No significant assoc between PM_1yrPreSamp and mortality in this model.
 
+Complete Model + site with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Model failed to converge, but significant assoc between incr PM_1yrPreSamp and incr mortality in this model.**
+
+
+Complete Model + site with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Model failed to converge, but significant assoc between incr PM_1yrPreSamp and incr mortality in this model with HR decreasing slightly wiht addition of pct_5mC indicating some mediation.**
 
 
 
@@ -4438,6 +5150,21 @@ summary(coxPH_model3)
 ```
 No significant assoc between PM_6moPreSamp and mortality in this model.
 
+Complete Model + site with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Model failed to converge, but significant assoc between incr PM_6moPreSamp and incr mortality in this model.**
+
+
+Complete Model + site with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Model failed to converge, but significant assoc between incr PM_6moPreSamp and incr mortality in this model with HR decreasing slightly with addition of pct_5mC indicating some degree of mediation.**
+
 
 ## 3mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -4501,6 +5228,21 @@ summary(coxPH_model3)
 ```
 No significant assoc between PM_3moPreSamp and mortality in this model.
 
+Complete Model + site with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Model failed to converge, but significant assoc between incr PM_3moPreSamp and incr mortality in this model.**
+
+
+Complete Model + site with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Model failed to converge, but significant assoc between incr PM_3moPreSamp and incr mortality in this model,** but HR increases with pct_5mC indicating no mediation
+
 
 ## 1mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -4563,6 +5305,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between PM_1moPreSamp and mortality in this model.
 
+Complete Model + site with just PM2.5
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Model failed to converge, but significant assoc between incr PM_1moPreSamp and incr mortality in this model.**
+
+
+Complete Model + site with PM2.5 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ PM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Model failed to converge, but significant assoc between incr PM_1moPreSamp and incr mortality in this model,** but HR increased with addition of pct_5mC indicating no mediation
+
+
 # Impact of SO4 on Mortality
 ## 5yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -4623,7 +5381,21 @@ Complete Model with SO4 and pct_5mC
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
-**Significant assoc between increased SO4 in 5yrs pre-sampling and lower mortality in this model.**
+**Significant assoc between increased SO4 in 5yrs pre-sampling and lower mortality in this model with HR lower with addition of pct_5mC indicating some mediation.**
+
+Complete Model + site with just SO4_5yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_5yrPreSamp and increased mortality in this model.**
+
+Complete Model + site with SO4_5yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_5yrPreSamp and increased mortality in this model with HR decreasing with addition of pct_5mC indicating some mediation.**
 
 
 ## 1yr Pre-Sampling
@@ -4686,6 +5458,21 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + p
 summary(coxPH_model3)
 ```
 No significant assoc between SO4_1yrPreSamp and mortality in this model.
+
+Complete Model + site with just SO4_1yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_1yrPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with SO4_1yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_1yrPreSamp and increased mortality in this model, with HR decreasing with addition of pct_5mC indicating some mediaiton.**
 
 
 ## 6mo Pre-Sampling
@@ -4750,6 +5537,21 @@ summary(coxPH_model3)
 ```
 No significant assoc between SO4_6moPreSamp and mortality in this model.
 
+Complete Model + site with just SO4_6moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_6moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with SO4_6moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_6moPreSamp and increased mortality in this model, with HR decreasing with addition of pct_5mC indicating some mediaiton.**
+
 
 ## 3mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -4813,6 +5615,21 @@ summary(coxPH_model3)
 ```
 No significant assoc between SO4_3moPreSamp and mortality in this model.
 
+Complete Model + site with just SO4_3moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_3moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with SO4_3moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_3moPreSamp and increased mortality in this model, with HR decreasing with addition of pct_5mC indicating some mediaiton.**
+
 
 ## 1mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -4875,6 +5692,21 @@ summary(coxPH_model3)
 ```
 No significant assoc between SO4_1moPreSamp and mortality in this model.
 
+Complete Model + site with just SO4_1moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_1moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with SO4_1moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SO4_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between SO4_1moPreSamp and increased mortality in this model, with HR decreasing with addition of pct_5mC indicating some mediaiton.**
+
 # Impact of NO3 on Mortality
 ## 5yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -4933,6 +5765,21 @@ No significant assoc between NO3 in 5yrs pre-sampling and mortality in this mode
 Complete Model with NO3 and pct_5mC
 ```{r}
 coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
+
+Complete Model + site with just NO3
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
+
+
+Complete Model + site with NO3 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
 summary(coxPH_model3)
 ```
 No significant assoc between NO3 in 5yrs pre-sampling and mortality in this model.
@@ -4999,6 +5846,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between NO3_1yrPreSamp and mortality in this model.
 
+Complete Model + site with just NO3
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_1yrPreSamp and mortality in this model.
+
+
+Complete Model + site with NO3 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_1yrPreSamp and mortality in this model.
+
+
 
 ## 6mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -5061,6 +5924,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + p
 summary(coxPH_model3)
 ```
 No significant assoc between NO3_6moPreSamp and mortality in this model.
+
+Complete Model + site with just NO3
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_6moPreSamp and mortality in this model.
+
+
+Complete Model + site with NO3 and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_6moPreSamp and mortality in this model.
+
 
 
 ## 3mo Pre-Sampling
@@ -5128,6 +6007,22 @@ summary(coxPH_model3)
 *Marginal assoc between NO3_3moPreSamp and increased mortality in this model.*
 Minimal difference in HR after pct_5mC added suggesting minimal mediation
 
+Complete Model + site with just NO3_3moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between NO3_3moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with NO3_3moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Sig assoc between NO3_3moPreSamp and increased mortality in this model,** but no substantial change to HR when pct_5mC added indicating no mediation
+
+
 ## 1mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
 surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~NO31moSamp_dich, data=dnam)
@@ -5188,6 +6083,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp + p
 summary(coxPH_model3)
 ```
 No significant assoc between NO3_1moPreSamp and mortality in this model.
+
+Complete Model + site with just NO3_1moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_1moPreSamp and mortality in this model.
+
+
+Complete Model + site with NO3_1moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NO3_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NO3_1moPreSamp and mortality in this model.
+
 
 # Impact of NH4 on Mortality
 ## 5yr Pre-Sampling
@@ -5251,6 +6162,21 @@ summary(coxPH_model3)
 ```
 **Significant assoc between higher NH4_5yrPreSamp and lower mortality in this model.**
 
+Complete Model + site with just NH4_5yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No sig assoc between NH4_5yrPreSamp and mort in this model.
+
+Complete Model + site with NH4_5yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No sig assoc between NH4_5yrPreSamp and mort in this model.
+
+
 
 ## 1yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -5312,6 +6238,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + p
 summary(coxPH_model3)
 ```
 No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
+Complete Model + site with just NH4_1yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
+
+Complete Model + site with NH4_1yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_1yrPreSamp and mortality in this model.
+
 
 
 ## 6mo Pre-Sampling
@@ -5376,6 +6318,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between NH4_6moPreSamp and mortality in this model.
 
+Complete Model + site with just NH4_6moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_6moPreSamp and mortality in this model.
+
+
+Complete Model + site with NH4_6moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_6moPreSamp and mortality in this model.
+
+
 
 ## 3mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -5439,6 +6397,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between NH4_3moPreSamp and mortality in this model.
 
+Complete Model + site with just NH4_3moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased NH4_3moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with NH4_3moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased NH4_3moPreSamp and increased mortality in this model,** but HR increases when pct_5mC added to model indicating it is not mediating
+
+
 
 ## 1mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -5500,6 +6474,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + p
 summary(coxPH_model3)
 ```
 No significant assoc between NH4_1moPreSamp and mortality in this model.
+
+Complete Model + site with just NH4_1moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_1moPreSamp and mortality in this model.
+
+
+Complete Model + site with NH4_1moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ NH4_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between NH4_1moPreSamp and mortality in this model.
+
 
 # Impact of BC on Mortality
 ## 5yr Pre-Sampling
@@ -5563,6 +6553,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
 
+Complete Model + site with just BC_5yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
+
+
+Complete Model + site with BC_5yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC in 5yrs pre-sampling and mortality in this model.
+
+
 
 ## 1yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -5624,6 +6630,21 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp + pc
 summary(coxPH_model3)
 ```
 No significant assoc between BC_1yrPreSamp and mortality in this model.
+
+Complete Model + site with just BC_1yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased BC_1yrPreSamp and increased mortality in this model.**
+
+Complete Model + site with BC_1yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased BC_1yrPreSamp and increased mortality in this model, with HR decreasing when pct_5mC added to model indicating some mediation.**
+
 
 
 ## 6mo Pre-Sampling
@@ -5688,6 +6709,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between BC_6moPreSamp and mortality in this model.
 
+Complete Model + site with just BC_6moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_6moPreSamp and mortality in this model.
+
+
+Complete Model + site with BC_6moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between BC_6moPreSamp and mortality in this model.
+
+
 
 ## 3mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -5751,6 +6788,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between BC_3moPreSamp and mortality in this model.
 
+Complete Model + site with just BC_3moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased BC_3moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with BC_3moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased BC_3moPreSamp and increased mortality in this model, with HR decreased when pct_5mC added to model indicating some mediation.**
+
+
 
 ## 1mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -5812,6 +6865,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + pc
 summary(coxPH_model3)
 ```
 No significant assoc between BC_1moPreSamp and mortality in this model.
+
+Complete Model + site with just BC_1moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased BC_1moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with BC_1moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ BC_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased BC_1moPreSamp and increased mortality in this model, with HR decreased slightly when pct_5mC added to model indicating some mediation.**
+
 
 # Impact of OM on Mortality
 ## 5yr Pre-Sampling
@@ -5875,6 +6944,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
 
+Complete Model + site with just OM_5yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
+
+
+Complete Model + site with OM_5yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM in 5yrs pre-sampling and mortality in this model.
+
+
 
 ## 1yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -5936,6 +7021,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + pc
 summary(coxPH_model3)
 ```
 No significant assoc between OM_1yrPreSamp and mortality in this model.
+
+Complete Model + site with just OM_1yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased OM_1yrPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with OM_1yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased OM_1yrPreSamp and increased mortality in this model.** No difference in HR when pct_5mC added indicating no mediation.
+
 
 
 ## 6mo Pre-Sampling
@@ -5999,6 +7100,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp + pc
 summary(coxPH_model3)
 ```
 No significant assoc between OM_6moPreSamp and mortality in this model.
+
+Complete Model + site with just OM_6moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_6moPreSamp and mortality in this model.
+
+
+Complete Model + site with OM_6moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between OM_6moPreSamp and mortality in this model.
+
 
 
 ## 3mo Pre-Sampling
@@ -6064,6 +7181,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between OM_3moPreSamp and mortality in this model.
 
+Complete Model + site with just OM_3moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased OM_3moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with OM_3moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased OM_3moPreSamp and increased mortality in this model,** but HR increases slightly with addition of pct_5mC to model indicating no mediation.
+
+
 
 ## 1mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -6127,6 +7260,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between OM_1moPreSamp and mortality in this model.
 
+Complete Model + site with just OM_1moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased OM_1moPreSamp and increased mortality in this model.**
+
+
+Complete Model + site with OM_1moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ OM_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+**Significant assoc between increased OM_1moPreSamp and increased mortality in this model,** but HR increases slightly with addition of pct_5mC indicating no mediaiton.
+
+
 # Impact of SS on Mortality
 ## 5yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -6189,6 +7338,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
 
+Complete Model + site with just SS_5yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
+
+
+Complete Model + site with SS_5yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS in 5yrs pre-sampling and mortality in this model.
+
+
 
 ## 1yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -6250,6 +7415,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + pc
 summary(coxPH_model3)
 ```
 No significant assoc between SS_1yrPreSamp and mortality in this model.
+
+Complete Model + site with just SS_1yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_1yrPreSamp and mortality in this model.
+
+
+Complete Model + site with SS_1yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_1yrPreSamp and mortality in this model.
+
 
 
 ## 6mo Pre-Sampling
@@ -6314,6 +7495,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between SS_6moPreSamp and mortality in this model.
 
+Complete Model + site with just SS_6moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_6moPreSamp and mortality in this model.
+
+
+Complete Model + site with SS_6moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_6moPreSamp and mortality in this model.
+
+
 
 ## 3mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -6377,6 +7574,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between SS_3moPreSamp and mortality in this model.
 
+Complete Model + site with just SS_3moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_3moPreSamp and mortality in this model.
+
+
+Complete Model + site with SS_3moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_3moPreSamp and mortality in this model.
+
+
 
 ## 1mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -6438,6 +7651,22 @@ coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + pc
 summary(coxPH_model3)
 ```
 No significant assoc between SS_1moPreSamp and mortality in this model.
+
+Complete Model + site with just SS_1moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_1moPreSamp and mortality in this model.
+
+
+Complete Model + site with SS_1moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ SS_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between SS_1moPreSamp and mortality in this model.
+
 
 # Impact of Soil on Mortality
 ## 5yr Pre-Sampling
@@ -6504,6 +7733,22 @@ summary(coxPH_model3)
 **Significant assoc between increased Soil in 5yrs pre-sampling and increased mortality in this model.**
 HR actually increases when pct_5mC added, indicating this is not mediating
 
+Complete Model + site with just Soil_5yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_5yrPreSamp and mortality in this model.
+
+
+Complete Model + site with Soil_5yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_5yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_5yrPreSamp and mortality in this model.
+
+
 ## 1yr Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
 surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~Soil1yrSamp_dich, data=dnam)
@@ -6566,6 +7811,22 @@ summary(coxPH_model3)
 ```
 **Significant assoc between increased Soil_1yrPreSamp and increased mortality in this model.**
 HR actually increases when pct_5mC added to model, indicating not mediating
+
+Complete Model + site with just Soil_1yrPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_1yrPreSamp and mortality in this model.
+
+
+Complete Model + site with Soil_1yrPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1yrPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_1yrPreSamp and mortality in this model.
+
 
 ## 6mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -6632,6 +7893,22 @@ summary(coxPH_model3)
 **Significant assoc between increased Soil_6moPreSamp and increased mortality in this model.**
 HR actually increased after adding pct_5mC indicating it was not mediating in this model.
 
+Complete Model + site with just Soil_6moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+*Marginal assoc between increased Soil_6moPreSamp and increased mortality in this model.*
+
+
+Complete Model + site with Soil_6moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_6moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+*Marginal assoc between increased Soil_6moPreSamp and increased mortality in this model,* but HR increases slightly with addition of pct_5mC indicating no mediation
+
+
 
 ## 3mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
@@ -6696,6 +7973,22 @@ summary(coxPH_model3)
 **Significant assoc between Soil_3moPreSamp and mortality in this model.**
 No evidence of pct_5mC mediating.
 
+Complete Model + site with just Soil_3moPreSamp
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_3moPreSamp and mortality in this model.
+
+
+Complete Model + site with Soil_3moPreSamp and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_3moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_3moPreSamp and mortality in this model.
+
+
 ## 1mo Pre-Sampling
 ```{r, fig.height=5, fig.width=7}
 surv1 <- survfit(Surv(time_DeathTxCensor, deadORtx==1) ~Soil1moSamp_dich, data=dnam)
@@ -6757,6 +8050,22 @@ summary(coxPH_model3)
 ```
 No significant assoc between Soil_1moPreSamp and mortality in this model.
 
+Complete Model + site with just Soil
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_1moPreSamp and mortality in this model.
+
+
+Complete Model + site with Soil and pct_5mC
+```{r}
+coxPH_model3 <- coxph(Surv(time_DeathTxCensor, deadORtx==1) ~ Soil_1moPreSamp + pct_5mC + age_dx + sex + smokeHx + dich_Race + fvc_pct + dlco_pct + site, data=dnam, id=ID)
+summary(coxPH_model3)
+```
+No significant assoc between Soil_1moPreSamp and mortality in this model.
+
+
 
 # Impact of DNAm on Baseline FVC
 Base Model
@@ -6783,6 +8092,14 @@ confint(FVC_model3)
 ```
 No significant association between %5mC and baseline FVC.
 
+Complete model with site
+```{r}
+FVC_model4 <- lm(fvc_pct ~ pct_5mC + sex + age_dx + dich_Race + smokeHx + site, data=dnam)
+summary(FVC_model4)
+confint(FVC_model4)
+```
+No significant association between %5mC and baseline FVC.
+
 
 # Impact of DNAm on Baseline DLCO
 Base Model
@@ -6806,6 +8123,15 @@ Complete Model
 DLCO_model3 <- lm(dlco_pct ~ pct_5mC + sex + age_dx + dich_Race + smokeHx, data=dnam)
 summary(DLCO_model3)
 confint(DLCO_model3)
+```
+No significant association between %5mC and baseline DLCO.
+
+
+Complete model with site
+```{r}
+DLCO_model4 <- lm(dlco_pct ~ pct_5mC + sex + age_dx + dich_Race + smokeHx + site, data=dnam)
+summary(DLCO_model4)
+confint(DLCO_model4)
 ```
 No significant association between %5mC and baseline DLCO.
 
