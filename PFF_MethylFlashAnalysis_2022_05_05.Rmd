@@ -1517,12 +1517,6 @@ dnam <- dnam %>% mutate(region=case_when(state %in% c("CA", "CO", "ID", "MT", "O
                                          state %in% c("IL", "IA", "IN", "KS", "MI", "MN", "MO", "ND", "NE", "OH", "SD", "WI") ~ "Midwest",
                                          state %in% c("CN", "CT", "DC", "DE", "MA", "MD", "ME", "NH", "NJ", "NY", "PA", "RI", "VT") ~ "Northeast",
                                          state %in% c("AL", "AR", "FL", "GA", "KY", "LA", "MS", "NC", "SC", "TN", "VA", "WV") ~ "Southeast"))
-                          
-                          
-                          #if_else(state==c("CA" , "CO" , "ID" , "MT" , "OR" , "UT" , "WA"), "West", 
-                           #            if_else(state==c("TX" , "AZ" , "NV" , "NM"), "Southwest",
-                            #                   if_else(state==c("IL" , "IA" , "IN" , "KS" , "MI" , "MN" , "MO" , "ND" , "NE" , "OH" , "SD" , "WI"), "Midwest",
-                             #                         if_else(state==c("CN" , "DC" , "DE" , "MA" , "MD" , "ME" , "NH" , "NJ" , "NY" , "PA" , "RI" , "VT"), "Northeast", "Southeast")))))
 ```
 
 
