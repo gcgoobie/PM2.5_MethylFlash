@@ -51,6 +51,7 @@ library(rstpm2)
 library(pspline)
 library(usethis)
 library(betareg)
+library(mediation)
 ```
 
 # Importing Datasets
@@ -1026,7 +1027,7 @@ This takes us down to 317 observations.
 
 ## Reorder columns
 ```{r}
-dnam <- dnam %>% select(ID, everything(.))
+dnam <- dnam %>% dplyr::select(ID, everything(.))
 ```
 
 ## Remove extreme outliers
@@ -1610,6 +1611,12 @@ n_prop_tbl(dnam$dx_group)
 n_prop_tbl(dnam$State)
 ```
 
+## Region Breakdown
+```{r}
+n_prop_tbl(dnam$region)
+```
+
+
 ## Metropolitan Breakdown
 ```{r}
 n_prop_tbl(dnam$metro)
@@ -1656,6 +1663,13 @@ sd(dnam$time_sample, na.rm=T)
 ```
 This indicates that the majority of samples are taken very close to the time of consent, which is our reference for the _5yrPreDx periods for exposure matching, although there are a few where samples were taken far before or far after the consent_date.
 
+## pct_5mC
+```{r}
+shapiro.test(dnam$pct_5mC)
+summary(dnam$pct_5mC)
+sd(dnam$pct_5mC, na.rm=T)
+```
+
 # Visual Exploratory Data Analysis
 ## Histograms
 Histogram of %5mC
@@ -1681,13 +1695,13 @@ Right-skewed distribution.
 ### PM2.5 Scatterplots
 Scatterplot of continuous PM2.5 5yrs Pre-Sampling vs %5mC
 ```{r}
-(dnam %>% ggplot(aes(x=PM_5yrPreSamp, y=pct_5mC, color=sex))+
+(dnam %>% ggplot(aes(x=PM_5yrPreSamp, y=pct_5mC))+
    geom_point()+
    labs(x="PM2.5 in 5yrs Pre-Sampling", y="% 5mC", title="%5mC by PM2.5 5yrs Pre-Sampling")+
    geom_smooth(method="lm", se = FALSE) +
    theme(plot.title = element_text(hjust = 0.5))+     scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
-   xlim(0,20)+
-   ylim(0, 1.5))
+   xlim(5,17)+
+   ylim(0, 1))
 ```
 
 Scatterplot of continuous PM2.5 1yr Pre-Sampling vs %5mC
@@ -2793,7 +2807,9 @@ dnamb <- dnam %>% filter(!is.na(region))
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
+plot(dnam_model1)
 ```
 **Higher PM_5yrPreSamp assoc with increased prop_5mC in this model.**
 
@@ -2801,7 +2817,8 @@ Impact of sex on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Higher PM_5yrPreSamp assoc with increased prop_5mC in this model.**
 
@@ -2809,7 +2826,8 @@ Impact of age_dx on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + age_dx, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Higher PM_5yrPreSamp assoc with increased prop_5mC in this model.**
 
@@ -2817,7 +2835,8 @@ Impact of smokeHx on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + smokeHx, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 *Higher PM_5yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2825,7 +2844,8 @@ Impact of race on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + dich_Race, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Higher PM_5yrPreSamp assoc with increased prop_5mC in this model.**
 
@@ -2833,7 +2853,8 @@ Impact of urbanicity on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_5yrPreSamp + metro, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 *Higher PM_5yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2842,7 +2863,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 *Higher PM_5yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2851,7 +2873,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM_5yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 *Higher PM_5yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2861,7 +2884,8 @@ Base Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~PM5yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between high PM2.5 and prop_5mC in this model.
 
@@ -2869,7 +2893,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between PM5yrSamp_dich and prop_5mC in this model.
 
@@ -2878,7 +2903,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM5yrSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 No significant association between PM5yrSamp_dich and prop_5mC in this model.
 
@@ -2887,7 +2913,8 @@ No significant association between PM5yrSamp_dich and prop_5mC in this model.
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Higher PM_1yrPreSamp assoc with increased prop_5mC in this model.**
 
@@ -2895,7 +2922,8 @@ Impact of sex on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 *Higher PM_1yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2903,7 +2931,8 @@ Impact of age_dx on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + age_dx, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Higher PM_1yrPreSamp assoc with increased prop_5mC in this model.**
 
@@ -2911,7 +2940,8 @@ Impact of smokeHx on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + smokeHx, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 *Higher PM_1yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2919,7 +2949,8 @@ Impact of race on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + dich_Race, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Higher PM_1yrPreSamp assoc with increased prop_5mC in this model.**
 
@@ -2927,7 +2958,8 @@ Impact of urbanicity on model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp + metro, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 *Higher PM_1yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2936,7 +2968,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 *Higher PM_1yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2945,7 +2978,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 *Higher PM_1yrPreSamp marginally assoc with increased prop_5mC in this model.*
 
@@ -2954,7 +2988,8 @@ Base Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~PM1yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between high PM2.5 and prop_5mC in this model.
 
@@ -2962,7 +2997,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between PM1yrSamp_dich and prop_5mC in this model.
 
@@ -2971,7 +3007,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM1yrSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 No significant association between PM1yrSamp_dich and prop_5mC in this model.
 
@@ -2982,7 +3019,8 @@ No significant association between PM1yrSamp_dich and prop_5mC in this model.
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_6moPreSamp, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between PM_6moPreSamp and prop_5mC in this model.
 
@@ -2990,7 +3028,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between PM_6moPreSamp and prop_5mC in this model.
 
@@ -2999,7 +3038,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM_6moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 No significant association between PM_6moPreSamp and prop_5mC in this model.
 
@@ -3009,7 +3049,8 @@ Base Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~PM6moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between high PM2.5 and prop_5mC in this model.
 
@@ -3017,7 +3058,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between PM6moSamp_dich and prop_5mC in this model.
 
@@ -3026,7 +3068,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM6moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 No significant association between PM6moSamp_dich and prop_5mC in this model.
 
@@ -3035,7 +3078,8 @@ No significant association between PM6moSamp_dich and prop_5mC in this model.
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_3moPreSamp, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between PM_3moPreSamp and increased prop_5mC in this model.**
 
@@ -3043,7 +3087,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between PM_3moPreSamp and increased prop_5mC in this model.**
 
@@ -3052,7 +3097,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 *Marginal association between PM_3moPreSamp and increased prop_5mC in this model.*
 
@@ -3061,7 +3107,8 @@ Base Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~PM3moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between high PM2.5 and prop_5mC in this model.
 
@@ -3069,7 +3116,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between PM3moSamp_dich and prop_5mC in this model.
 
@@ -3078,7 +3126,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM3moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 No significant association between PM3moSamp_dich and prop_5mC in this model.
 
@@ -3087,7 +3136,8 @@ No significant association between PM3moSamp_dich and prop_5mC in this model.
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ PM_1moPreSamp, dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between PM_1moPreSamp and increased prop_5mC in this model.**
 
@@ -3095,7 +3145,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between PM_1moPreSamp and increased prop_5mC in this model.**
 
@@ -3104,7 +3155,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM_1moPreSamp + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 **Significant association between PM_1moPreSamp and increased prop_5mC in this model.**
 
@@ -3113,7 +3165,8 @@ Base Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~PM1moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between high PM2.5 and prop_5mC in this model.
 
@@ -3121,7 +3174,8 @@ Partial model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ PM1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between PM1moSamp_dich and prop_5mC in this model.
 
@@ -3129,7 +3183,8 @@ Complete model with age_dx, sex, smokeHx, race, urbanicity
 ```{r}
 dnam_model3 <- betareg(prop_5mC ~ PM1moSamp_dich + sex + age_dx + smokeHx + dich_Race + metro, data=dnam)
 summary(dnam_model3)
-confint(dnam_model3)
+confint(dnam_model3)  
+nobs(dnam_model3)
 ```
 No significant association between PM1moSamp_dich and prop_5mC in this model.
 
@@ -3141,7 +3196,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SO4_5yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between SO4_5yrPreSamp and increased prop_5mC in this model.**
 
@@ -3149,7 +3205,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO4_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between SO4_5yrPreSamp and increased prop_5mC in this model.**
 
@@ -3158,7 +3215,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SO45yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SO45yrSamp_dich and prop_5mC in this model.
 
@@ -3166,7 +3224,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO45yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SO45yrSamp_dich and prop_5mC in this model.
 
@@ -3175,7 +3234,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SO4_1yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between SO4_1yrPreSamp and increased prop_5mC in this model.**
 
@@ -3183,7 +3243,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO4_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between SO4_1yrPreSamp and increased prop_5mC in this model.**
 
@@ -3192,7 +3253,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SO41yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SO41yrSamp_dich and prop_5mC in this model.
 
@@ -3200,7 +3262,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO41yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SO41yrSamp_dich and prop_5mC in this model.
 
@@ -3210,7 +3273,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SO4_6moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between SO4_6moPreSamp and increased prop_5mC in this model.**
 
@@ -3218,7 +3282,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between SO4_6moPreSamp and increased prop_5mC in this model.**
 
@@ -3227,7 +3292,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SO46moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SO46moSamp_dich and prop_5mC in this model.
 
@@ -3235,7 +3301,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO46moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SO46moSamp_dich and prop_5mC in this model.
 
@@ -3244,7 +3311,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SO4_3moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between SO4_3moPreSamp and increased prop_5mC in this model.**
 
@@ -3252,7 +3320,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between SO4_3moPreSamp and increased prop_5mC in this model.**
 
@@ -3261,7 +3330,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SO43moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SO43moSamp_dich and prop_5mC in this model.
 
@@ -3269,7 +3339,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO43moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SO43moSamp_dich and prop_5mC in this model.
 
@@ -3279,7 +3350,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SO4_1moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between SO4_1moPreSamp and increased prop_5mC in this model.**
 
@@ -3287,7 +3359,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between SO4_1moPreSamp and increased prop_5mC in this model.**
 
@@ -3296,7 +3369,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SO41moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SO41moSamp_dich and prop_5mC in this model.
 
@@ -3304,7 +3378,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SO41moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SO41moSamp_dich and prop_5mC in this model.
 
@@ -3314,7 +3389,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NO3_5yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO3_5yrPreSamp and prop_5mC in this model.
 
@@ -3322,7 +3398,8 @@ Adjuted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO3_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO3_5yrPreSamp and prop_5mC in this model.
 
@@ -3331,7 +3408,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NO35yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO35yrSamp_dichHigh and prop_5mC in this model.
 
@@ -3339,7 +3417,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO35yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO35yrSamp_dichHigh and prop_5mC in this model.
 
@@ -3349,7 +3428,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NO3_1yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO3_1yrPreSamp and prop_5mC in this model.
 
@@ -3357,7 +3437,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO3_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO3_1yrPreSamp and prop_5mC in this model.
 
@@ -3367,7 +3448,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NO31yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No association between high NO31yrSamp_dich and prop_5mC in this model.
 
@@ -3375,7 +3457,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO31yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No association between NO31yrSamp_dich and prop_5mC in this model.
 
@@ -3385,7 +3468,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NO3_6moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO3_6moPreSamp and prop_5mC in this model.
 
@@ -3393,7 +3477,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO3_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO3_6moPreSamp and prop_5mC in this model.
 
@@ -3402,7 +3487,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NO36moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO36moSamp_dich and prop_5mC in this model.
 
@@ -3410,7 +3496,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO36moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO36moSamp_dich and prop_5mC in this model.
 
@@ -3420,7 +3507,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NO3_3moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO3_3moPreSamp and prop_5mC in this model.
 
@@ -3428,7 +3516,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO3_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO3_3moPreSamp and prop_5mC in this model.
 
@@ -3438,7 +3527,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NO33moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO33moSamp_dich and prop_5mC in this model.
 
@@ -3446,7 +3536,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO33moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO33moSamp_dich and prop_5mC in this model.
 
@@ -3456,7 +3547,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NO3_1moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO3_1moPreSamp and prop_5mC in this model.
 
@@ -3464,7 +3556,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO3_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO3_1moPreSamp and prop_5mC in this model.
 
@@ -3473,7 +3566,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NO31moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NO31moSamp_dich and prop_5mC in this model.
 
@@ -3481,7 +3575,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NO31moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NO31moSamp_dich and prop_5mC in this model.
 
@@ -3492,7 +3587,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NH4_5yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between NH4_5yrPreSamp and higher prop_5mC in this model.**
 
@@ -3500,7 +3596,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH4_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between NH4_5yrPreSamp and higher prop_5mC in this model.**
 
@@ -3509,7 +3606,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NH45yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NH45yrSamp_dich and prop_5mC in this model.
 
@@ -3517,7 +3615,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH45yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NH45yrSamp_dich and prop_5mC in this model.
 
@@ -3527,7 +3626,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NH4_1yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between NH4_1yrPreSamp and higher prop_5mC in this model.**
 
@@ -3535,7 +3635,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH4_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between NH4_1yrPreSamp and higher prop_5mC in this model.**
 
@@ -3544,7 +3645,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NH41yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NH41yrSamp_dich and prop_5mC in this model.
 
@@ -3552,7 +3654,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH41yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NH41yrSamp_dich and prop_5mC in this model.
 
@@ -3562,7 +3665,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NH4_6moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between NH4_6moPreSamp and higher prop_5mC in this model.**
 
@@ -3570,7 +3674,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH4_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between NH4_6moPreSamp and higher prop_5mC in this model.**
 
@@ -3579,7 +3684,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NH46moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NH46moSamp_dich and prop_5mC in this model.
 
@@ -3587,7 +3693,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH46moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NH46moSamp_dich and prop_5mC in this model.
 
@@ -3597,7 +3704,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NH4_3moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between NH4_3moPreSamp and higher prop_5mC in this model.**
 
@@ -3605,7 +3713,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH4_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between NH4_3moPreSamp and higher prop_5mC in this model.**
 
@@ -3615,7 +3724,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NH43moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NH43moSamp_dich and prop_5mC in this model.
 
@@ -3623,7 +3733,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH43moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NH43moSamp_dich and prop_5mC in this model.
 
@@ -3633,7 +3744,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ NH4_1moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between NH4_1moPreSamp and higher prop_5mC in this model.**
 
@@ -3641,7 +3753,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH4_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between NH4_1moPreSamp and higher prop_5mC in this model.**
 
@@ -3651,7 +3764,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~NH41moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between NH41moSamp_dich and prop_5mC in this model.
 
@@ -3659,7 +3773,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ NH41moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between NH41moSamp_dich and prop_5mC in this model.
 
@@ -3670,7 +3785,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ BC_5yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 *Marginal association between BC_5yrPreSamp and higher prop_5mC in this model.*
 
@@ -3678,7 +3794,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between BC_5yrPreSamp and prop_5mC in this model.
 
@@ -3688,7 +3805,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~BC5yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between BC5yrSamp_dich and prop_5mC in this model.
 
@@ -3696,7 +3814,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between BC5yrSamp_dich and prop_5mC in this model.
 
@@ -3706,7 +3825,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ BC_1yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between BC_1yrPreSamp and higher prop_5mC in this model.**
 
@@ -3714,7 +3834,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between BC_1yrPreSamp and higher prop_5mC in this model.**
 
@@ -3723,7 +3844,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~BC1yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between BC1yrSamp_dichHigh and higher prop_5mC in this model.**
 
@@ -3731,7 +3853,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between BC1yrSamp_dichHigh and higher prop_5mC in this model.**
 
@@ -3741,7 +3864,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ BC_6moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between BC_6moPreSamp and higher prop_5mC in this model.**
 
@@ -3749,7 +3873,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 *Marginal association between BC_6moPreSamp and higher prop_5mC in this model.*
 
@@ -3759,7 +3884,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~BC6moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between BC6moSamp_dichHigh and higher prop_5mC in this model.**
 
@@ -3767,7 +3893,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 *Marginal association between BC6moSamp_dichHigh and higher prop_5mC in this model.*
 
@@ -3777,7 +3904,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ BC_3moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between BC_3moPreSamp and higher prop_5mC in this model.**
 
@@ -3785,7 +3913,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between BC_3moPreSamp and higher prop_5mC in this model.**
 
@@ -3795,7 +3924,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~BC3moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between BC3moSamp_dichHigh and higher prop_5mC in this model.**
 
@@ -3803,7 +3933,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between BC3moSamp_dichHigh and higher prop_5mC in this model.**
 
@@ -3813,7 +3944,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ BC_1moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between BC_1moPreSamp and higher prop_5mC in this model.**
 
@@ -3821,7 +3953,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 **Significant association between BC_1moPreSamp and higher prop_5mC in this model.**
 
@@ -3831,7 +3964,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~BC1moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between BC1moSamp_dichHigh and higher prop_5mC in this model.**
 
@@ -3839,7 +3973,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ BC1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 *Marginal association between BC1moSamp_dichHigh and higher prop_5mC in this model.*
 
@@ -3850,7 +3985,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ OM_5yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM_5yrPreSamp and prop_5mC in this model.
 
@@ -3858,7 +3994,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM_5yrPreSamp and prop_5mC in this model.
 
@@ -3867,7 +4004,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~OM5yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 **Significant association between OM5yrSamp_dichHigh and higher prop_5mC in this model.**
 
@@ -3875,7 +4013,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 *Marginal association between OM5yrSamp_dichHigh and higher prop_5mC in this model.*
 
@@ -3885,7 +4024,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ OM_1yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM_1yrPreSamp and prop_5mC in this model.
 
@@ -3893,7 +4033,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM_1yrPreSamp and prop_5mC in this model.
 
@@ -3902,7 +4043,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~OM1yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM1yrSamp_dich and prop_5mC in this model.
 
@@ -3910,7 +4052,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM1yrSamp_dich and prop_5mC in this model.
 
@@ -3920,7 +4063,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ OM_6moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM_6moPreSamp and prop_5mC in this model.
 
@@ -3928,7 +4072,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM_6moPreSamp and prop_5mC in this model.
 
@@ -3938,7 +4083,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~OM6moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM6moSamp_dich and prop_5mC in this model.
 
@@ -3946,7 +4092,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM6moSamp_dich and prop_5mC in this model.
 
@@ -3956,7 +4103,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ OM_3moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM_3moPreSamp and prop_5mC in this model.
 
@@ -3964,7 +4112,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM_3moPreSamp and prop_5mC in this model.
 
@@ -3974,7 +4123,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~OM3moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM3moSamp_dich and prop_5mC in this model.
 
@@ -3982,7 +4132,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM3moSamp_dich and prop_5mC in this model.
 
@@ -3992,7 +4143,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ OM_1moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM_1moPreSamp and prop_5mC in this model.
 
@@ -4000,7 +4152,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM_1moPreSamp and prop_5mC in this model.
 
@@ -4010,7 +4163,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~OM1moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between OM1moSamp_dich and prop_5mC in this model.
 
@@ -4018,7 +4172,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ OM1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between OM1moSamp_dich and prop_5mC in this model.
 
@@ -4029,7 +4184,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SS_5yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 *Marginal association between SS_5yrPreSamp and higher prop_5mC in this model.*
 
@@ -4037,7 +4193,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS_5yrPreSamp and prop_5mC in this model.
 
@@ -4046,7 +4203,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SS5yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 *Marginal association between SS5yrSamp_dichHigh and higher prop_5mC in this model.*
 
@@ -4054,7 +4212,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS5yrSamp_dich and prop_5mC in this model.
 
@@ -4064,7 +4223,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SS_1yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SS_1yrPreSamp and prop_5mC in this model.
 
@@ -4072,7 +4232,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS_1yrPreSamp and prop_5mC in this model.
 
@@ -4082,7 +4243,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SS1yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SS1yrSamp_dich and prop_5mC in this model.
 
@@ -4090,7 +4252,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS1yrSamp_dich and prop_5mC in this model.
 
@@ -4100,7 +4263,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SS_6moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SS_6moPreSamp and prop_5mC in this model.
 
@@ -4108,7 +4272,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS_6moPreSamp and prop_5mC in this model.
 
@@ -4118,7 +4283,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SS6moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No association between high SS6moSamp_dich and prop_5mC in this model.
 
@@ -4126,7 +4292,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No association between high SS6moSamp_dich and prop_5mC in this model.
 
@@ -4136,7 +4303,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SS_3moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SS_3moPreSamp and prop_5mC in this model.
 
@@ -4144,7 +4312,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS_3moPreSamp and prop_5mC in this model.
 
@@ -4153,7 +4322,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SS3moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SS3moSamp_dich and prop_5mC in this model.
 
@@ -4161,7 +4331,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS3moSamp_dich and prop_5mC in this model.
 
@@ -4171,7 +4342,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ SS_1moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SS_1moPreSamp and prop_5mC in this model.
 
@@ -4179,7 +4351,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS_1moPreSamp and prop_5mC in this model.
 
@@ -4189,7 +4362,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~SS1moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between SS1moSamp_dich and prop_5mC in this model.
 
@@ -4197,7 +4371,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ SS1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between SS1moSamp_dich and prop_5mC in this model.
 
@@ -4208,7 +4383,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ Soil_5yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil_5yrPreSamp and prop_5mC in this model.
 
@@ -4216,7 +4392,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil_5yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil_5yrPreSamp and prop_5mC in this model.
 
@@ -4225,7 +4402,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~Soil5yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil5yrSamp_dich and prop_5mC in this model.
 
@@ -4233,7 +4411,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil5yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil5yrSamp_dich and prop_5mC in this model.
 
@@ -4243,7 +4422,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ Soil_1yrPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil_1yrPreSamp and prop_5mC in this model.
 
@@ -4251,7 +4431,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil_1yrPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil_1yrPreSamp and prop_5mC in this model.
 
@@ -4261,7 +4442,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~Soil1yrSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil1yrSamp_dich and prop_5mC in this model.
 
@@ -4269,7 +4451,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil1yrSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil1yrSamp_dich and prop_5mC in this model.
 
@@ -4278,7 +4461,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ Soil_6moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil_6moPreSamp and prop_5mC in this model.
 
@@ -4286,7 +4470,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil_6moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil_6moPreSamp and prop_5mC in this model.
 
@@ -4295,7 +4480,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~Soil6moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil6moSamp_dich and prop_5mC in this model.
 
@@ -4303,7 +4489,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil6moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil6moSamp_dich and prop_5mC in this model.
 
@@ -4312,7 +4499,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ Soil_3moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil_3moPreSamp and prop_5mC in this model.
 
@@ -4320,7 +4508,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil_3moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil_3moPreSamp and prop_5mC in this model.
 
@@ -4329,7 +4518,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~Soil3moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil3moSamp_dich and prop_5mC in this model.
 
@@ -4337,7 +4527,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil3moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil3moSamp_dich and prop_5mC in this model.
 
@@ -4346,7 +4537,8 @@ Unadjusted model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~ Soil_1moPreSamp, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil_1moPreSamp and prop_5mC in this model.
 
@@ -4354,7 +4546,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil_1moPreSamp + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil_1moPreSamp and prop_5mC in this model.
 
@@ -4363,7 +4556,8 @@ Unadjusted Model
 ```{r}
 dnam_model1 <- betareg(prop_5mC ~Soil1moSamp_dich, data=dnam)
 summary(dnam_model1)
-confint(dnam_model1)
+confint(dnam_model1)  
+nobs(dnam_model1)
 ```
 No significant association between Soil1moSamp_dich and prop_5mC in this model.
 
@@ -4371,7 +4565,8 @@ Adjusted model with age_dx, sex, smokeHx
 ```{r}
 dnam_model2 <- betareg(prop_5mC ~ Soil1moSamp_dich + sex + age_dx + smokeHx, data=dnam)
 summary(dnam_model2)
-confint(dnam_model2)
+confint(dnam_model2)  
+nobs(dnam_model2)
 ```
 No significant association between Soil1moSamp_dich and prop_5mC in this model.
 

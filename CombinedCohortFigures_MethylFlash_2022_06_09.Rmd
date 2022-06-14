@@ -1,0 +1,248 @@
+---
+title: "MethylFlash Combined Cohorts Figure Development"
+author: "Gillian Goobie"
+date: "2022/06/09"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+  bookdown::html_document2:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE, warning=FALSE, echo=F}
+library(tidyverse)
+library(readxl)
+library(here)
+library(writexl)
+library(knitr)
+library(lintr)
+library(tidync)
+library(maps)
+library(ncmeta)
+library(devtools)
+library(RNetCDF)
+library(ncdf4)
+library(survival)
+library(survminer)
+library(lubridate)
+library(cmprsk)
+library(riskRegression)
+library(prodlim)
+library(RColorBrewer)
+library(prodlim)
+library(lme4)
+library(performance)
+library(psycho)
+library(report)
+library(rms)
+library(splines)
+library(Greg)
+library(rstpm2)
+library(pspline)
+library(smoothHR)
+library(raster)
+library(forestplot)
+```
+
+# Forest Plots
+## PM2.5 and Constituent Associations with Global DNAm Percent
+### Pollutants in 5yrs Pre-Sampling (Adjusted Models)
+```{r}
+dnam_1yr <- structure(list(mean=c(NA, NA, 0.03, 0.03, NA, 0.07, 0.18, NA, -0.01, 0.12, NA, 0.17, 0.31, NA, 0.36, 0.21, NA, 0.03, 0.03, NA, 0.45, 0.06, NA, -0.21, -0.007),
+                      lower=c(NA, NA, -0.003, -0.009, NA, 0.02, -0.07, NA, -0.23, -0.01, NA, 0.01, -0.06, NA, -0.11, -0.09, NA, -0.07, -0.03, NA, -0.13, -0.12, NA, -0.83, -0.30),
+                      upper=c(NA, NA,  0.06, 0.07, NA, 0.13, 0.43, NA, 0.21, 0.26, NA, 0.33, 0.68, NA, 0.84, 0.52, NA, 0.13, 0.09, NA, 1.04, 0.24, NA, 0.40, 0.28)),
+                 .Names=c("mean","lower","upper"),
+                 row.names=c(NA, -11L),
+                 class="data.frame")
+
+tabletext <- cbind(c("  Pollutant", "PM2.5", "  Simmons", "  PFF", "Sulfate", "  Simmons", "  PFF", "Nitrate", "  Simmons", "  PFF", "Ammonium", "  Simmons", "  PFF", "Black Carbon", "  Simmons", "  PFF", "Organic Matter", "  Simmons", "  PFF", "Sea Salt", "  Simmons", "  PFF", "Soil", "  Simmons", "  PFF"),
+                   c("Beta (95% CI)", "", "0.03 (-0.003 to 0.06)", "0.03 (-0.009 to 0.07)", "", "0.07 (0.02 to 0.13)", "0.18 (-0.07 to 0.43)", "", "-0.01 (-0.23 to 0.21)", "0.12 (-0.01 to 0.26)", "", "0.17 (0.01 to 0.33)", "0.31 (-0.06 to 0.68)", "", "0.36 (-0.11 to 0.84)", "0.21 (-0.09 to 0.52)", "", "0.03 (-0.07 to 0.13)", "0.03 (-0.03 to 0.09)", "", "0.45 (-0.13 to 1.04)", "0.06 (-0.12 to 0.24)", "", "-0.21 (-0.83 to 0.40)", "-0.007 (-0.30 to 0.28)"),
+                   c("P-value", "", "0.08", "0.13", "", "0.01", "0.15", "", "0.92", "0.08", "", "0.04", "0.099", "", "0.13", "0.17", "", "0.52", "0.32", "", "0.13", "0.53", "", "0.49", "0.96"))
+
+
+dnam_1yr %>% forestplot(labeltext = tabletext, 
+             is.summary = c(rep(TRUE, 2), rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2)),
+             clip = c(-8, 2), 
+             col = fpColors(box = "royalblue",
+                            line = "darkblue",
+                           summary = "royalblue"))
+```
+
+### Pollutants in 1yrs Pre-Sampling (Adjusted Models)
+```{r}
+dnam_1yr <- structure(list(mean=c(NA, NA, 0.03, 0.03, NA, 0.07, 0.37, NA, 0.006, 0.18, NA, 0.19, 0.54, NA, 0.36, 0.05, NA, 0.03, 0.02, NA, 0.31, 0.06, NA, -0.15, 0.10),
+                      lower=c(NA, NA, -0.004, -0.007, NA, 0.02, 0.08, NA, -0.22, 0.02, NA, 0.05, 0.07, NA, 0.03, -0.26, NA, -0.06, -0.04, NA, -0.21, -0.09, NA, -0.67, -0.16),
+                      upper=c(NA, NA,  0.06, 0.06, NA, 0.13, 0.65, NA, 0.23, 0.33, NA, 0.32, 1.00, NA, 0.69, 0.35, NA, 0.12, 0.08, NA, 0.82, 0.20, NA, 0.37, 0.35)),
+                 .Names=c("mean","lower","upper"),
+                 row.names=c(NA, -11L),
+                 class="data.frame")
+
+tabletext <- cbind(c("  Pollutant", "PM2.5", "  Simmons", "  PFF", "Sulfate", "  Simmons", "  PFF", "Nitrate", "  Simmons", "  PFF", "Ammonium", "  Simmons", "  PFF", "Black Carbon", "  Simmons", "  PFF", "Organic Matter", "  Simmons", "  PFF", "Sea Salt", "  Simmons", "  PFF", "Soil", "  Simmons", "  PFF"),
+                   c("Beta (95% CI)", "", "0.03 (-0.004 to 0.06)", "0.03 (-0.007 to 0.06)", "", "0.07 (0.02 to 0.13)", "0.37 (0.08 to 0.65)", "", "0.006 (-0.22 to 0.23)", "0.18 (0.02 to 0.33)", "", "0.19 (0.05 to 0.32)", "0.54 (0.07 to 1.00)", "", "0.36 (0.03 to 0.69)", "0.05 (-0.26 to 0.35)", "", "0.03 (-0.06 to 0.12)", "0.02 (-0.04 to 0.08)", "", "0.31 (-0.21 to 0.82)", "0.06 (-0.09 to 0.20)", "", "-0.15 (-0.67 to 0.37)", "0.10 (-0.16 to 0.35)"),
+                   c("P-value", "", "0.09", "0.12", "", "0.008", "0.01", "", "0.96", "0.02", "", "0.009", "0.02", "", "0.03", "0.76", "", "0.52", "0.51", "", "0.24", "0.43", "", "0.58", "0.46"))
+
+
+dnam_1yr %>% forestplot(labeltext = tabletext, 
+             is.summary = c(rep(TRUE, 2), rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2)),
+             clip = c(-8, 2), 
+             col = fpColors(box = "royalblue",
+                            line = "darkblue",
+                           summary = "royalblue"))
+```
+
+### Pollutants in 3mo Pre-Sampling (Adjusted Models)
+```{r}
+dnam_1yr <- structure(list(mean=c(NA, NA, 0.02, 0.008, NA, 0.06, 0.08, NA, 0.01, 0.02, NA, 0.19, 0.08, NA, 0.29, 0.12, NA, 0.05, 0.01, NA, -0.03, 0.09, NA, -0.03, 0.05),
+                      lower=c(NA, NA, 0.0003, -0.02, NA, 0.02, -0.14, NA, -0.10, -0.05, NA, 0.07, -0.18, NA, 0.03, -0.12, NA, -0.04, -0.03, NA, -0.47, -0.03, NA, -0.36, -0.08),
+                      upper=c(NA, NA,  0.05, 0.03, NA, 0.09, 0.30, NA, 0.13, 0.09, NA, 0.32, 0.33, NA, 0.55, 0.36, NA, 0.13, 0.06, NA, 0.42, 0.22, NA, 0.30, 0.18)),
+                 .Names=c("mean","lower","upper"),
+                 row.names=c(NA, -11L),
+                 class="data.frame")
+
+tabletext <- cbind(c("  Pollutant", "PM2.5", "  Simmons", "  PFF", "Sulfate", "  Simmons", "  PFF", "Nitrate", "  Simmons", "  PFF", "Ammonium", "  Simmons", "  PFF", "Black Carbon", "  Simmons", "  PFF", "Organic Matter", "  Simmons", "  PFF", "Sea Salt", "  Simmons", "  PFF", "Soil", "  Simmons", "  PFF"),
+                   c("Beta (95% CI)", "", "0.02 (0.0003 to 0.05)", "0.008 (-0.02 to 0.03)", "", "0.06 (0.02 to 0.09)", "0.08 (-0.14 to 0.30)", "", "0.01 (-0.10 to 0.13)", "0.02 (-0.05 to 0.09)", "", "0.19 (0.07 to 0.32)", "0.08 (-0.18 to 0.33)", "", "0.29 (0.03 to 0.5)", "0.12 (-0.12 to 0.36)", "", "0.05 (-0.04 to 0.13)", "0.01 (-0.03 to 0.06)", "", "-0.03 (-0.47 to 0.42)", "0.09 (-0.03 to 0.22)", "", "-0.03 (-0.36 to 0.30)", "0.05 (-0.08 to 0.18)"),
+                   c("P-value", "", "0.047", "0.54", "", "0.004", "0.48", "", "0.80", "0.61", "", "0.002", "0.55", "", "0.03", "0.31", "", "0.28", "0.54", "", "0.91", "0.13", "", "0.86", "0.44"))
+
+
+dnam_1yr %>% forestplot(labeltext = tabletext, 
+             is.summary = c(rep(TRUE, 2), rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2), TRUE, rep(FALSE, 2)),
+             clip = c(-8, 2), 
+             col = fpColors(box = "royalblue",
+                            line = "darkblue",
+                           summary = "royalblue"))
+```
+
+# Importing Datasets
+Here I am importing the file which contains monthly SS level estimates by satellite at nearest lon/lat to CAREPF patient residential addresses. These are linked to the patient ID.
+```{r}
+outfile1 <- here("MethylFlash_AdditionalAnalyses_2022_06_09.xlsx")
+constit <- read_excel(outfile1, sheet="PM25Breakdown_1yrPreSamp")
+pct_5mC <- read_excel(outfile1, sheet="pct5mC_BySite")
+```
+
+# Stacked Bar Charts
+## PM2.5 Total Mass
+```{r}
+str(constit)
+constit$site <- as.factor(constit$site)
+constit$site <- fct_relevel(constit$site, c("Simmons", "UCLA", "UCincinnati", "Northwestern", "UPenn", "Piedmont", "Penn State", "ULouisville", "UChicago", "Temple", "UAlabama", "UTexas SW Dallas", "MUSC", "UMaryland", "UMichigan", "Ohio State", "Stanford", "Tulane", "UTexas San Antonio", "Washington University", "Vanderbilt", "UTexas Houston", "St. Joseph's Phoenix", "UMiami", "Duke", "Cornell", "UCSF", "Inova Fairfax", "Columbia",  "Stony Brook", "UMinnesota", "UKansas", "Mayo Clinic", "Yale", "URochester", "UUtah", "UVirginia", "National Jewish", "Mass General", "UArizona"))
+
+constit$constituent <- as.factor(constit$constituent)
+constit$constituent <- fct_relevel(constit$constituent, c("Other", "Soil", "SS", "OM", "BC", "NH4", "NO3", "SO4"))
+str(constit)
+```
+
+```{r, width=10, height=10}
+constit_b <- constit %>% filter(!constituent=="PM2.5")
+(ggplot(constit_b, aes(fill=constituent, y=median, x=site))+
+  geom_bar(position="stack", stat="identity")+
+   labs(x="Cohort", y="Quantity of Each PM2.5 Constituent (ug/m^3)")+
+   scale_fill_manual(values=c("SO4"="coral1", "NO3"="steelblue", "NH4"="yellow", "BC"="black", "OM"="green4", "SS"="slategray1", "Soil"="tan4", "Other"="wheat3"))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
+```
+
+## Pct 5mC
+Upload Simmons Cohort Data
+```{r}
+outfile2 <- here("Simmons_Results/Simmons_MethylFlash_ExptID_752-1091_2022_06_03.xlsx")
+Simm <- read_excel(outfile2, sheet="CalculatedValues")
+Simm <- Simm %>% dplyr::select(WH_demID, pct_5mC)
+Simm <-  Simm %>%  mutate(site="Simmons")
+Simm <- Simm %>% rename("ID"="WH_demID")
+str(Simm)
+```
+
+Upload PFF Cohort Data
+```{r}
+outfile3 <- here("PFF_Results/PFF_MethylFlash_ExptID_1-751_Combined_2022_05_05.xlsx")
+PFF <- read_excel(outfile3, sheet="CalculatedValues")
+PFF <- PFF %>% dplyr::select(SSID, pct_5mC)
+```
+
+```{r}
+PFF <- PFF %>% mutate(sitecode=stringr::str_extract(SSID, "^.{3}"))
+PFF$sitecode <- as.factor(PFF$sitecode)
+str(PFF$sitecode)
+PFF <- PFF %>% mutate(site=case_when(sitecode=="02R" ~ "UCSF",
+                      sitecode=="03R" ~ "National Jewish",
+                      sitecode=="04R" ~ "UChicago",
+                      sitecode=="05R" ~ "ULouisville",
+                      sitecode=="06R" ~ "Vanderbilt",
+                      sitecode=="07R" ~ "UMichigan",
+                      sitecode=="09R" ~ "Yale",
+                      sitecode=="10R" ~ "UMiami",
+                      sitecode=="11R" ~ "UAlabama",
+                      sitecode=="12R" ~ "Mayo Clinic",
+                      sitecode=="13R" ~ "Inova Fairfax",
+                      sitecode=="14R" ~ "UPenn",
+                      sitecode=="15R" ~ "MUSC",
+                      sitecode=="16R" ~ "Columbia",
+                      sitecode=="17R" ~ "Washington University",
+                      sitecode=="18R" ~ "Tulane",
+                      sitecode=="19R" ~ "UArizona",
+                      sitecode=="20R" ~ "UKansas",
+                      sitecode=="21R" ~ "Piedmont",
+                      sitecode=="22R" ~ "Temple",
+                      sitecode=="23R" ~ "UTexas SW Dallas",
+                      sitecode=="24R" ~ "UMinnesota",
+                      sitecode=="25R" ~ "Stanford",
+                      sitecode=="26R" ~ "UTexas Houston",
+                      sitecode=="28R" ~ "UCincinnati",
+                      sitecode=="29R" ~ "Stony Brook",
+                      sitecode=="30R" ~ "Northwestern",
+                      sitecode=="31R" ~ "UVirginia",
+                      sitecode=="32R" ~ "St. Joseph's Phoenix",
+                      sitecode=="33R" ~ "UTexas San Antonio",
+                      sitecode=="34R" ~ "URochester",
+                      sitecode=="35R" ~ "Mass General",
+                      sitecode=="36R" ~ "Ohio State",
+                      sitecode=="37R" ~ "Penn State",
+                      sitecode=="38R" ~ "Duke",
+                      sitecode=="39R" ~ "UUtah",
+                      sitecode=="40R" ~ "UCLA",
+                      sitecode=="41R" ~ "Cornell",
+                      sitecode=="42R" ~ "UMaryland"))
+#get rid of rows where site is NA, which are all 08R/UPitt site
+PFF <- PFF %>% filter(!is.na(site))
+```
+
+
+```{r}
+PFF <- PFF %>% rename("ID"="SSID")
+PFF <- PFF %>% dplyr::select(!sitecode)
+str(PFF)
+```
+
+```{r}
+dnam <- rbind(Simm, PFF)
+```
+
+Reorder sites for figure
+```{r}
+dnam$site <- fct_relevel(dnam$site, c("Simmons", "UPenn", "UUtah", "UTexas San Antonio", "Northwestern", "UVirginia", "UMichigan", "Columbia", "Mayo Clinic", "UTexas Houston", "URochester", "St. Joseph's Phoenix", "UChicago", "Cornell", "Mass General", "UMaryland", "Duke", "National Jewish", "Piedmont", "UKansas", "Stanford", "Inova Fairfax", "Stony Brook", "UAlabama", "ULouisville", "Washington University", "UMiami", "MUSC", "Temple",  "UCSF", "UMinnesota", "Ohio State", "UTexas SW Dallas", "UCincinnati", "Yale", "Tulane", "Penn State", "UArizona", "Vanderbilt", "UCLA"))
+```
+
+
+```{r, height=15, width=20}
+(dnam %>% ggplot(aes(x=site, y=pct_5mC, fill=site))+
+    geom_boxplot(width=0.2, color="black", alpha=1.0)+
+    geom_violin(width=1.0, alpha=0.5)+
+    labs(x="Study Site", y="% 5mC", title="% 5mC by Study Site")+
+    theme_light()+
+    theme(legend.position = "none", plot.title = element_text(hjust = 0.5))+
+    ylim(0.05,0.3)+
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
+```
+
+
+
