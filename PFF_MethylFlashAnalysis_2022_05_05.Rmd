@@ -1520,6 +1520,14 @@ dnam <- dnam %>% mutate(region=case_when(state %in% c("CA", "CO", "ID", "MT", "O
 ```
 
 
+# Extracting Excel File
+```{r}
+colnames(dnam)
+
+PM_data <- dnam %>% dplyr::select(ID, pct_5mC, prop_5mC, PM_5yrPreSamp, PM_1yrPreSamp, PM_6moPreSamp, PM_3moPreSamp, PM_1moPreSamp, SO4_5yrPreSamp, SO4_1yrPreSamp, SO4_6moPreSamp, SO4_3moPreSamp, SO4_1moPreSamp, NO3_5yrPreSamp, NO3_1yrPreSamp, NO3_6moPreSamp, NO3_3moPreSamp, NO3_1moPreSamp, NH4_5yrPreSamp, NH4_1yrPreSamp, NH4_6moPreSamp, NH4_3moPreSamp, NH4_1moPreSamp, BC_5yrPreSamp, BC_1yrPreSamp, BC_6moPreSamp, BC_3moPreSamp, BC_1moPreSamp, OM_5yrPreSamp, OM_1yrPreSamp, OM_6moPreSamp, OM_3moPreSamp, OM_1moPreSamp, SS_5yrPreSamp, SS_1yrPreSamp, SS_6moPreSamp, SS_3moPreSamp, SS_1moPreSamp, Soil_5yrPreSamp, Soil_1yrPreSamp, Soil_6moPreSamp, Soil_3moPreSamp, Soil_1moPreSamp)
+
+write_xlsx(PM_data, "PFF_PM25andConstituentMatching_MethylFlash_2022_07_14.xlsx")
+```
 
 # Exploratory Data Analysis
 This is a function that allows me to make tables which summarize the count and percentages of each level of factor variables

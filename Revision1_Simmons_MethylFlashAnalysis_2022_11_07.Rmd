@@ -1,7 +1,7 @@
 ---
-title: "Simmons - MethylFlash Global DNAm Analysis"
+title: "Revision 1 Simmons - MethylFlash Global DNAm Analysis"
 author: "Gillian Goobie"
-date: "2022/05/09"
+date: "2022/11/07"
 output: 
   bookdown::html_document2:
     toc: yes

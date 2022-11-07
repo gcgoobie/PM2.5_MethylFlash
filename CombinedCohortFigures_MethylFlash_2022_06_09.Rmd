@@ -52,6 +52,7 @@ library(pspline)
 library(smoothHR)
 library(raster)
 library(forestplot)
+library(GGally)
 ```
 
 # Forest Plots
@@ -243,6 +244,562 @@ dnam$site <- fct_relevel(dnam$site, c("Simmons", "UPenn", "UUtah", "UTexas San A
     ylim(0.05,0.3)+
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)))
 ```
+
+# Scatterplot Matrix
+Upload Simmons and PFF PM2.5 matching data
+```{r}
+outfile4a <- here("Simmons_PM25andConstituentMatching_MethylFlash_2022_07_14.xlsx")
+PM_Simm <- read_excel(outfile4a, na="")
+# Create cohort column
+PM_Simm <- PM_Simm %>% mutate(cohort="Simmons")
+
+outfile4b <- here("PFF_PM25andConstituentMatching_MethylFlash_2022_07_14.xlsx")
+PM_PFF <- read_excel(outfile4b, na="")
+# Create cohort column
+PM_PFF <- PM_PFF %>% mutate(cohort="PFF")
+```
+
+Combine the files
+```{r}
+PM <- rbind(PM_Simm, PM_PFF)
+```
+
+## Scatterplot Matrix
+```{r, fig.height=7, fig.width=10}
+colnames(PM)
+GGally::ggpairs(PM, columns=c(2, 5, 10, 15, 20, 25, 30, 35, 40), aes(color=PM$cohort))
+```
+
+
+
+
+Scatterplot of continuous PM2.5 1yr Pre-Sampling vs %5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=pct_5mC, y=PM_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="% 5mC", y="PM2.5 in 1yr Pre-Sampling", title="%5mC by PM2.5 1yr Pre-Sampling")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0,1)+
+   ylim(5, 17))
+```
+
+Scatterplot of continuous SO4 1yr Pre-Sampling vs %5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SO4_1yrPreSamp, y=pct_5mC, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SO4 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by SO4 1yr Pre-Sampling")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 6.5)+
+   ylim(0, 1))
+```
+
+Scatterplot of continuous NO3 1yr Pre-Sampling vs %5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NO3_1yrPreSamp, y=pct_5mC, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NO3 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by NO3 1yr Pre-Sampling")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 3.5)+
+   ylim(0, 1))
+```
+
+Scatterplot of continuous NH4 1yr Pre-Sampling vs %5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NH4_1yrPreSamp, y=pct_5mC, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NH4 in 1yr Pre-Sampling", y="% 5mC", title="%5mC by NH4 1yr Pre-Sampling")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 2.75)+
+   ylim(0, 1))
+```
+
+Scatterplot of continuous BC 1yr Pre-Sampling vs %5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=BC_1yrPreSamp, y=pct_5mC, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="BC in 1yr Pre-Sampling", y="% 5mC", title="%5mC by BC 1yr Pre-Sampling")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 1.75)+
+   ylim(0, 1))
+```
+
+Scatterplot of continuous OM 1yr Pre-Sampling vs %5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=OM_1yrPreSamp, y=pct_5mC, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="OM in 1yr Pre-Sampling", y="% 5mC", title="%5mC by OM 1yr Pre-Sampling")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 8)+
+   ylim(0, 1))
+```
+
+Scatterplot of continuous SS 1yr Pre-Sampling vs %5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SS_1yrPreSamp, y=pct_5mC, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SS in 1yr Pre-Sampling", y="% 5mC", title="%5mC by SS 1yr Pre-Sampling")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 3.5)+
+   ylim(0, 1))
+```
+
+Scatterplot of continuous Soil 1yr Pre-Sampling vs %5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=Soil_1yrPreSamp, y=pct_5mC, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="Soil in 1yr Pre-Sampling", y="% 5mC", title="%5mC by Soil 1yr Pre-Sampling")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 2.5)+
+   ylim(0, 1))
+```
+
+Scatterplot of continuous PM_1yrPreSamp vs SO4_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=PM_1yrPreSamp, y=SO4_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="SO4 in the 1year Pre-Sampling", title="PM2.5 and SO4 Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(2.5, 17)+
+   ylim(0, 6.5))
+```
+
+Scatterplot of continuous PM_1yrPreSamp vs NO3_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=PM_1yrPreSamp, y=NO3_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="NO3 in the 1year Pre-Sampling", title="PM2.5 and NO3 Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(2.5, 17)+
+   ylim(0, 4))
+```
+
+Scatterplot of continuous PM_1yrPreSamp vs NH4_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=PM_1yrPreSamp, y=NH4_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="NH4 in the 1year Pre-Sampling", title="PM2.5 and NH4 Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(2.5, 17)+
+   ylim(0, 2.5))
+```
+
+Scatterplot of continuous PM_1yrPreSamp vs BC_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=PM_1yrPreSamp, y=BC_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="BC in the 1year Pre-Sampling", title="PM2.5 and BC Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(2.5, 17)+
+   ylim(0, 1.75))
+```
+
+Scatterplot of continuous PM_1yrPreSamp vs OM_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=PM_1yrPreSamp, y=OM_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="OM in the 1year Pre-Sampling", title="PM2.5 and OM Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(2.5, 17)+
+   ylim(0, 7))
+```
+
+Scatterplot of continuous PM_1yrPreSamp vs SS_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=PM_1yrPreSamp, y=SS_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="SS in the 1year Pre-Sampling", title="PM2.5 and SS Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(2.5, 17)+
+   ylim(0, 3.5))
+```
+
+Scatterplot of continuous PM_1yrPreSamp vs Soil_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=PM_1yrPreSamp, y=Soil_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="Soil in the 1year Pre-Sampling", title="PM2.5 and Soil Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(2.5, 17)+
+   ylim(0, 2.5))
+```
+
+Scatterplot of continuous SO4_1yrPreSamp vs NO3_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SO4_1yrPreSamp, y=NO3_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SO4 in 1yr Pre-Sampling", y="NO3 in the 1year Pre-Sampling", title="SO4 and NO3 Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 6.5)+
+   ylim(0, 4))
+```
+
+Scatterplot of continuous SO4_1yrPreSamp vs NH4_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SO4_1yrPreSamp, y=NH4_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SO4 in 1yr Pre-Sampling", y="NH4 in the 1year Pre-Sampling", title="SO4 and NH4 Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 6.5)+
+   ylim(0, 2.5))
+```
+
+Scatterplot of continuous SO4_1yrPreSamp vs BC_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SO4_1yrPreSamp, y=BC_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SO4 in 1yr Pre-Sampling", y="BC in the 1year Pre-Sampling", title="SO4 and BC Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 6.5)+
+   ylim(0, 1.75))
+```
+
+Scatterplot of continuous SO4_1yrPreSamp vs OM_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SO4_1yrPreSamp, y=OM_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SO4 in 1yr Pre-Sampling", y="OM in the 1year Pre-Sampling", title="SO4 and OM Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 6.5)+
+   ylim(0, 7))
+```
+
+Scatterplot of continuous SO4_1yrPreSamp vs SS_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SO4_1yrPreSamp, y=SS_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SO4 in 1yr Pre-Sampling", y="SS in the 1year Pre-Sampling", title="SO4 and SS Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 6.5)+
+   ylim(0, 3.5))
+```
+
+Scatterplot of continuous SO4_1yrPreSamp vs Soil_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SO4_1yrPreSamp, y=Soil_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SO4 in 1yr Pre-Sampling", y="Soil in the 1year Pre-Sampling", title="SO4 and Soil Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 6.5)+
+   ylim(0, 2.5))
+```
+
+Scatterplot of continuous NO3_1yrPreSamp vs NH4_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NO3_1yrPreSamp, y=NH4_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NO3 in 1yr Pre-Sampling", y="NH4 in the 1year Pre-Sampling", title="NO3 and NH4 Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 4)+
+   ylim(0, 2.5))
+```
+
+Scatterplot of continuous NO3_1yrPreSamp vs BC_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NO3_1yrPreSamp, y=BC_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NO3 in 1yr Pre-Sampling", y="BC in the 1year Pre-Sampling", title="NO3 and BC Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 4)+
+   ylim(0, 1.75))
+```
+
+Scatterplot of continuous NO3_1yrPreSamp vs OM_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NO3_1yrPreSamp, y=OM_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NO3 in 1yr Pre-Sampling", y="OM in the 1year Pre-Sampling", title="NO3 and OM Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 4)+
+   ylim(0, 7))
+```
+
+Scatterplot of continuous NO3_1yrPreSamp vs SS_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NO3_1yrPreSamp, y=SS_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NO3 in 1yr Pre-Sampling", y="SS in the 1year Pre-Sampling", title="NO3 and SS Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 4)+
+   ylim(0, 3.5))
+```
+
+Scatterplot of continuous NO3_1yrPreSamp vs Soil_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NO3_1yrPreSamp, y=Soil_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NO3 in 1yr Pre-Sampling", y="Soil in the 1year Pre-Sampling", title="NO3 and Soil Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 4)+
+   ylim(0, 2.5))
+```
+
+Scatterplot of continuous NH4_1yrPreSamp vs BC_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NH4_1yrPreSamp, y=BC_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NH4 in 1yr Pre-Sampling", y="BC in the 1year Pre-Sampling", title="NH4 and BC Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 2.5)+
+   ylim(0, 1.75))
+```
+
+Scatterplot of continuous NH4_1yrPreSamp vs OM_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NH4_1yrPreSamp, y=OM_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NH4 in 1yr Pre-Sampling", y="OM in the 1year Pre-Sampling", title="NH4 and OM Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 2.5)+
+   ylim(0, 7))
+```
+
+Scatterplot of continuous NH4_1yrPreSamp vs SS_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NH4_1yrPreSamp, y=SS_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NH4 in 1yr Pre-Sampling", y="SS in the 1year Pre-Sampling", title="NH4 and SS Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 2.5)+
+   ylim(0, 3.5))
+```
+
+Scatterplot of continuous NH4_1yrPreSamp vs Soil_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NH4_1yrPreSamp, y=Soil_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="NH4 in 1yr Pre-Sampling", y="Soil in the 1year Pre-Sampling", title="NH4 and Soil Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 2.5)+
+   ylim(0, 2.5))
+```
+
+
+
+Scatterplot of continuous BC_1yrPreSamp vs OM_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=BC_1yrPreSamp, y=OM_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="BC in 1yr Pre-Sampling", y="OM in the 1year Pre-Sampling", title="BC and OM Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 1.75)+
+   ylim(0, 7))
+```
+
+Scatterplot of continuous BC_1yrPreSamp vs SS_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=BC_1yrPreSamp, y=SS_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="BC in 1yr Pre-Sampling", y="SS in the 1year Pre-Sampling", title="BC and SS Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 1.75)+
+   ylim(0, 3.5))
+```
+
+Scatterplot of continuous BC_1yrPreSamp vs Soil_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=BC_1yrPreSamp, y=Soil_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="BC in 1yr Pre-Sampling", y="Soil in the 1year Pre-Sampling", title="BC and Soil Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 1.75)+
+   ylim(0, 2.5))
+```
+
+
+Scatterplot of continuous OM_1yrPreSamp vs SS_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=OM_1yrPreSamp, y=SS_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="OM in 1yr Pre-Sampling", y="SS in the 1year Pre-Sampling", title="OM and SS Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 7)+
+   ylim(0, 3.5))
+```
+
+Scatterplot of continuous OM_1yrPreSamp vs Soil_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=OM_1yrPreSamp, y=Soil_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="OM in 1yr Pre-Sampling", y="Soil in the 1year Pre-Sampling", title="OM and Soil Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 7)+
+   ylim(0, 2.5))
+```
+
+Scatterplot of continuous SS_1yrPreSamp vs Soil_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SS_1yrPreSamp, y=Soil_1yrPreSamp, color=cohort))+
+   geom_point(alpha=0.7)+
+   labs(x="SS in 1yr Pre-Sampling", y="Soil in the 1year Pre-Sampling", title="SS and Soil Constituent Correlation")+
+   theme(plot.title = element_text(hjust = 0.5))+     
+   geom_smooth(method="lm", se = FALSE) +
+   scale_fill_manual(values=c("dodgerblue1", "firebrick1"))+
+   xlim(0, 3.5)+
+   ylim(0, 2.5))
+```
+
+
+### Density Plots
+Density plot of pct_5mC
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=pct_5mC, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="% 5mC", y="Density of Patients with this %5mC Level", title="%5mC Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(0, 1))
+```
+
+Density plot of PM_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=PM_1yrPreSamp, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="PM2.5 in 1yr Pre-Sampling", y="Density of Patients with this PM2.5 Level", title="PM2.5 Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(2.5, 17))
+```
+
+Density plot of SO4_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SO4_1yrPreSamp, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="SO4 in 1yr Pre-Sampling", y="Density of Patients with this SO4 Level", title="SO4 Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(0, 6.5))
+```
+
+Density plot of NO3_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NO3_1yrPreSamp, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="NO3 in 1yr Pre-Sampling", y="Density of Patients with this NO3 Level", title="NO3 Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(0, 4))
+```
+
+Density plot of NH4_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=NH4_1yrPreSamp, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="NH4 in 1yr Pre-Sampling", y="Density of Patients with this NH4 Level", title="NH4 Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(0, 2.5))
+```
+
+Density plot of BC_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=BC_1yrPreSamp, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="BC in 1yr Pre-Sampling", y="Density of Patients with this BC Level", title="BC Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(0, 1.75))
+```
+
+Density plot of OM_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=OM_1yrPreSamp, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="OM in 1yr Pre-Sampling", y="Density of Patients with this OM Level", title="OM Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(0, 7))
+```
+
+Density plot of SS_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=SS_1yrPreSamp, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="SS in 1yr Pre-Sampling", y="Density of Patients with this SS Level", title="SS Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(0, 3.5))
+```
+
+Density plot of Soil_1yrPreSamp
+```{r, height=5, width=5}
+(PM %>% ggplot(aes(x=Soil_1yrPreSamp, color=cohort))+
+   geom_density(alpha=0.7, aes(fill=cohort))+
+   labs(x="Soil in 1yr Pre-Sampling", y="Density of Patients with this Soil Level", title="Soil Density Plot")+
+   theme(plot.title = element_text(hjust = 0.5))+
+   scale_fill_manual(values=c("salmon", "cyan2"))+
+   xlim(0, 2.5))
+```
+
 
 
 
