@@ -16,7 +16,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, error=TRUE)
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo=F}
@@ -51,6 +51,7 @@ library(rstpm2)
 library(pspline)
 library(usethis)
 library(betareg)
+library(mediation)
 ```
 
 # Importing Datasets
@@ -3329,7 +3330,7 @@ The two models used in these analyses will be:
 Only performing these analyses on the models where association of pollutant with prop_5mC is significant and where association of pollutant with mortality is significant.
 
 ## SO4 in 1yr pre-sampling
-### Fully-Adjusted model
+### Fully-Adjusted original model
 Unadjusted linear model for assoc of SO4_1yrPreSamp with prop_5mC
 ```{r}
 dnam_model1 <- lm(prop_5mC ~ SO4_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + site + fvc_pct + dlco_pct, dnam)
@@ -3349,6 +3350,15 @@ surv_model1 <- survreg(Surv(time_DeathTxCensor_survreg, deadORtx==1) ~ SO4_1yrPr
 summary(surv_model1)
 ```
 
+```{r}
+set.seed(1000)
+med1 <- mediate(dnam_model1, surv_model1, treat="SO4_1yrPreSamp", mediator="prop_5mC")
+summary(med1)
+```
+This mediation model will not run. The error reported is "Error in if (xhat == 0) out <- 1 else { : missing value where TRUE/FALSE needed".
+
+
+### Getting rid of sites that don't converge
 Model above fails to converge because of small numbers at a few of the sites, so will run on new dataframe and get rid of the patients at sites which did not converge in the above model (sites 14, 17, 26, 29, 42)
 ```{r}
 dnamb <- dnam %>% filter(!is.na(SO4_1yrPreSamp))
@@ -3374,10 +3384,57 @@ summary(surv_model2)
 
 ```{r}
 set.seed(1000)
-med1 <- mediate(dnam_model2, surv_model2, treat="SO4_1yrPreSamp", mediator="prop_5mC")
-summary(med1)
+med2 <- mediate(dnam_model2, surv_model2, treat="SO4_1yrPreSamp", mediator="prop_5mC")
+summary(med2)
 ```
 Despite all these modifications, the PFF models fail to work using this approach. The error reported is "Error in if (xhat == 0) out <- 1 else { : missing value where TRUE/FALSE needed"
+
+
+### Region rather than site
+Will attempt to change site to region as this might be the issue we are running into with too many degrees of freedom.
+```{r}
+dnam_model3 <- lm(prop_5mC ~ SO4_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + region + fvc_pct + dlco_pct, dnam)
+summary(dnam_model3)
+confint(dnam_model3)  
+```
+In this model, we lose our significance with the SO4_1yrPreSamp-prop_5mC association and the direction of effect is opposite from what we saw previously, so region is probably not a good surrogate for site.
+
+```{r}
+surv_model3 <- survreg(Surv(time_DeathTxCensor_survreg, deadORtx==1) ~ SO4_1yrPreSamp + prop_5mC + age_dx + sex + smokeHx + dich_Race + region + fvc_pct + dlco_pct, data=dnam)
+summary(surv_model3)
+```
+The SO4_1yrPreSamp-mortality association is marginal here.
+
+```{r}
+set.seed(1000)
+med3 <- mediate(dnam_model3, surv_model3, treat="SO4_1yrPreSamp", mediator="prop_5mC")
+summary(med3)
+```
+The model converges, but there is no evidence of mediaiton in this model, and in fact it goes in the opposite direction from what is expected.
+
+### State rather than site
+Will attempt to change site to state.
+```{r}
+dnam_model4 <- lm(prop_5mC ~ SO4_1yrPreSamp + age_dx + sex + smokeHx + dich_Race + state + fvc_pct + dlco_pct, dnam)
+summary(dnam_model4)
+confint(dnam_model4)  
+```
+In this model, we lose our significance with the SO4_1yrPreSamp-prop_5mC association and the direction of effect is opposite from what we saw previously, so region is probably not a good surrogate for site.
+
+```{r}
+surv_model4 <- survreg(Surv(time_DeathTxCensor_survreg, deadORtx==1) ~ SO4_1yrPreSamp + prop_5mC + age_dx + sex + smokeHx + dich_Race + state + fvc_pct + dlco_pct, data=dnam)
+summary(surv_model4)
+```
+The SO4_1yrPreSamp-mortality association is not significant here.
+
+```{r}
+set.seed(1000)
+med4 <- mediate(dnam_model4, surv_model4, treat="SO4_1yrPreSamp", mediator="prop_5mC")
+summary(med4)
+```
+Here we run into the same error as before when we were using site, and we don't satisfy the criteria to perform the mediation analysis anyways as the SO4_1yrPreSamp-mortality association is not significant in the above model as it is in the model including site. The error reported is "Error in if (xhat == 0) out <- 1 else { : missing value where TRUE/FALSE needed"
+
+
 
 # Example comparison of Outputs for SO4-prop_5mC association
 ## Beta Regression
