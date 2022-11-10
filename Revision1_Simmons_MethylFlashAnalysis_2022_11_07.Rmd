@@ -3583,3 +3583,327 @@ summary(med1)
 ```
 
 
+# Sensitivity Analysis with Non-Smokers - Linear Regression
+```{r}
+nonsmoke <- dnam %>% filter(smokeHx=="Never") 
+```
+
+
+## PM2.5 Models
+### Continuous PM2.5 1yr Pre-Sampling
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ PM_1yrPreSamp, nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+Higher PM_1yrPreSamp trends towards increased prop_5mC in this model, but no longer significant with smaller sample size.
+
+Partial model with age_dx, sex
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ PM_1yrPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+*Higher PM_1yrPreSamp marginally assoc with increased prop_5mC in this model.*
+
+
+### Continuous PM2.5 3mo Pre-Sample
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ PM_3moPreSamp, nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+Trends towards increased PM_3moPreSamp being assoc with increased prop_5mC in this model.
+
+Partial model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ PM_3moPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+*Marginal association between PM_3moPreSamp and increased prop_5mC in this model.*
+
+## SO4 Models
+### Continuous SO4 in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ SO4_1yrPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+**Significant association between SO4_1yrPreSamp and increased prop_5mC in this model.**
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ SO4_1yrPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+**Significant association between SO4_1yrPreSamp and increased prop_5mC in this model.**
+
+### Continuous SO4 in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ SO4_3moPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+**Significant association between SO4_3moPreSamp and increased prop_5mC in this model.**
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ SO4_3moPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+**Significant association between SO4_3moPreSamp and increased prop_5mC in this model.**
+
+
+## NO3 Models
+### Continuous NO3 in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ NO3_1yrPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+No significant association between NO3_1yrPreSamp and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ NO3_1yrPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+No significant association between NO3_1yrPreSamp and prop_5mC in this model.
+
+
+### Continuous NO3 in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ NO3_3moPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+No significant association between NO3_3moPreSamp and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ NO3_3moPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+No significant association between NO3_3moPreSamp and prop_5mC in this model.
+
+## NH4 Models
+### Continuous NH4 in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ NH4_1yrPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+**Significant association between NH4_1yrPreSamp and higher prop_5mC in this model.**
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ NH4_1yrPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+**Significant association between NH4_1yrPreSamp and higher prop_5mC in this model.**
+
+### Continuous NH4 in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ NH4_3moPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+**Significant association between NH4_3moPreSamp and higher prop_5mC in this model.**
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ NH4_3moPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+**Significant association between NH4_3moPreSamp and higher prop_5mC in this model.**
+
+
+## BC Models
+### Continuous BC in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ BC_1yrPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+Trends towards higher BC_1yrPreSamp being assoc with higher prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ BC_1yrPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+*Marginal association between BC_1yrPreSamp and higher prop_5mC in this model.*
+
+### Continuous BC in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ BC_3moPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+*Marginal association between higher BC_3moPreSamp and higher prop_5mC in this model.*
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ BC_3moPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+**Significant association between BC_3moPreSamp and higher prop_5mC in this model.**
+
+
+## OM Models
+### Continuous OM in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ OM_1yrPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+No significant association between OM_1yrPreSamp and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ OM_1yrPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+No significant association between OM_1yrPreSamp and prop_5mC in this model.
+
+### Continuous OM in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ OM_3moPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+No significant association between OM_3moPreSamp and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ OM_3moPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+No significant association between OM_3moPreSamp and prop_5mC in this model.
+
+
+## SS Models
+### Continuous SS in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ SS_1yrPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+No significant association between SS_1yrPreSamp and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ SS_1yrPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+No significant association between SS_1yrPreSamp and prop_5mC in this model.
+
+### Continuous SS in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ SS_3moPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+No significant association between SS_3moPreSamp and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ SS_3moPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+No significant association between SS_3moPreSamp and prop_5mC in this model.
+
+## Soil Models
+### Continuous Soil in 1yrs Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ Soil_1yrPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+No significant association between Soil_1yrPreSamp and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ Soil_1yrPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+No significant association between Soil_1yrPreSamp and prop_5mC in this model.
+
+
+### Continuous Soil in 3mo Pre-Sampling
+Unadjusted model
+```{r}
+nonsmoke_model1 <- betareg(prop_5mC ~ Soil_3moPreSamp, data=nonsmoke)
+summary(nonsmoke_model1)
+confint(nonsmoke_model1)  
+nobs(nonsmoke_model1)
+```
+No significant association between Soil_3moPreSamp and prop_5mC in this model.
+
+Adjusted model with age_dx, sex, smokeHx
+```{r}
+nonsmoke_model2 <- betareg(prop_5mC ~ Soil_3moPreSamp + sex + age_dx, data=nonsmoke)
+summary(nonsmoke_model2)
+confint(nonsmoke_model2)  
+nobs(nonsmoke_model2)
+```
+No significant association between Soil_3moPreSamp and prop_5mC in this model.
+
+
